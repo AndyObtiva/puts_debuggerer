@@ -1,4 +1,4 @@
-= puts_debuggerer v0.1.0
+# puts_debuggerer v0.1.0
 
 Ruby tools for improved puts debugging, automatically displaying bonus useful information such as line number and source code.
 
@@ -6,9 +6,9 @@ Partially inspired by this blog post:
 https://tenderlovemaking.com/2016/02/05/i-am-a-puts-debuggerer.html
 (Credit to Tenderlove.)
 
-== Instructions
+# Instructions
 
-=== Bundler
+### Bundler
 
 Add the following to bundler's `Gemfile`.
 
@@ -16,11 +16,11 @@ Add the following to bundler's `Gemfile`.
 gem 'puts_debuggerer', '~> 0.1.0'
 ```
 
-=== Manual
+### Manual
 
 Or manually install and require library.
 
-```
+```bash
 gem install puts_debuggerer
 ```
 
@@ -28,7 +28,7 @@ gem install puts_debuggerer
 require 'puts_debuggerer'
 ```
 
-=== Usage
+### Usage
 
 Simple invoke global `pd` method anywhere you'd like to see line number and source code with output.
 If the argument is a pure string, the print out is simplified by not showing duplicate source.
@@ -47,10 +47,12 @@ pd 'What line number am I?'
 
 Example Printout:
 
+```bash
 pd 2: "Show me the source of the bug: #{bug}".inspect => "Show me the source of the bug: beattle"
 pd 3: "What line number am I?"
+```
 
-== Contributing to puts_debuggerer
+## Contributing to puts_debuggerer
 
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet.
 * Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it.
@@ -60,7 +62,7 @@ pd 3: "What line number am I?"
 * Make sure to add tests for it. This is important so I don't break it in a future version unintentionally.
 * Please try not to mess with the Rakefile, version, or history. If you want to have your own version, or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.
 
-== Copyright
+## Copyright
 
 Copyright (c) 2017 Andy Maleh. See LICENSE.txt for
 further details.
