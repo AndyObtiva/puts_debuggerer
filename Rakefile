@@ -21,6 +21,7 @@ Jeweler::Tasks.new do |gem|
   gem.description = %Q{Ruby tools for improved puts debugging, automatically displaying bonus useful information such as line number and source code}
   gem.email = "andy.am@gmail.com"
   gem.authors = ["Andy Maleh"]
+  gem.files = Dir['lib/**/*.rb']
   # dependencies defined in Gemfile
 end
 Jeweler::RubygemsDotOrgTasks.new
