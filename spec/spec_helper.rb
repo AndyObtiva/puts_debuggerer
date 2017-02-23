@@ -1,19 +1,15 @@
-require 'simplecov'
-
-module SimpleCov::Configuration
-  def clean_filters
-    @filters = []
+if RUBY_VERSION >= '2.3' && !defined?(Rubinius)
+  begin
+    require 'coveralls'
+    Coveralls.wear!
+  rescue LoadError, StandardError => e
+    #no op to support Rubies that do not support Coveralls
+    puts 'Error loading Coveralls'
+    puts e.message
+    puts e.backtrace.join("\n")
   end
 end
 
-SimpleCov.configure do
-  clean_filters
-  load_adapter 'test_frameworks'
-end
-
-ENV["COVERAGE"] && SimpleCov.start do
-  add_filter "/.rvm/"
-end
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 

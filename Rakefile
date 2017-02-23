@@ -18,7 +18,7 @@ Jeweler::Tasks.new do |gem|
   gem.homepage = "http://github.com/AndyObtiva/puts_debuggerer"
   gem.license = "MIT"
   gem.summary = %Q{Ruby tools for improved puts debugging}
-  gem.description = %Q{Ruby tools for improved puts debugging, automatically displaying bonus useful information such as line number, source code, and much much more}
+  gem.description = %Q{Ruby tools for improved puts debugging, automatically displaying bonus useful information such as line number and source code}
   gem.email = "andy.am@gmail.com"
   gem.authors = ["Andy Maleh"]
   # dependencies defined in Gemfile

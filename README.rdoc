@@ -1,9 +1,57 @@
-= puts_debuggerer
+= puts_debuggerer v0.1.0
 
-Description goes here.
+Ruby tools for improved puts debugging, automatically displaying bonus useful information such as line number and source code.
+
+Partially inspired by this blog post:
+https://tenderlovemaking.com/2016/02/05/i-am-a-puts-debuggerer.html
+(Credit to Tenderlove.)
+
+== Instructions
+
+=== Bundler
+
+Add the following to bundler's `Gemfile`.
+
+```ruby
+gem 'puts_debuggerer', '~> 0.1.0'
+```
+
+=== Manual
+
+Or manually install and require library.
+
+```
+gem install puts_debuggerer
+```
+
+```ruby
+require 'puts_debuggerer'
+```
+
+=== Usage
+
+Simple invoke global `pd` method anywhere you'd like to see line number and source code with output.
+If the argument is a pure string, the print out is simplified by not showing duplicate source.
+
+Quickly find printed lines by running a find (e.g. CTRL+F) for "pd " or ".inspect => "
+
+Happy puts debugging!
+
+Example Code:
+
+```ruby
+bug = 'beattle'
+pd "Show me the source of the bug: #{bug}"
+pd 'What line number am I?'
+```
+
+Example Printout:
+
+pd 2: "Show me the source of the bug: #{bug}".inspect => "Show me the source of the bug: beattle"
+pd 3: "What line number am I?"
 
 == Contributing to puts_debuggerer
- 
+
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet.
 * Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it.
 * Fork the project.
@@ -16,4 +64,3 @@ Description goes here.
 
 Copyright (c) 2017 Andy Maleh. See LICENSE.txt for
 further details.
-
