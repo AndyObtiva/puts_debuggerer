@@ -1,4 +1,6 @@
 # puts_debuggerer v0.1.0
+[![Gem Version](https://badge.fury.io/rb/puts_debuggerer.svg)](http://badge.fury.io/rb/puts_debuggerer)
+[![Build Status](https://travis-ci.org/AndyObtiva/puts_debuggerer.svg?branch=master)](https://travis-ci.org/AndyObtiva/puts_debuggerer)
 
 Ruby tools for improved puts debugging, automatically displaying bonus useful information such as line number and source code.
 
