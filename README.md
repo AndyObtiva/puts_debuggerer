@@ -90,7 +90,7 @@ Example:
 
 ```ruby
 # lib/example.rb                        # line 1
-puts "Print out __caller_line_number__" # line 2
+# Print out __caller_line_number__      # line 2
 puts __caller_line_number__             # line 3
 ```
 
@@ -105,8 +105,8 @@ Example:
 
 ```ruby
 # lib/example.rb
-puts "Print out __caller_line_number__"
-puts __caller_line_number__
+# Print out __caller_file__
+puts __caller_file__
 ```
 
 Prints out `lib/example.rb`
@@ -119,8 +119,8 @@ Example:
 
 ```ruby
 # lib/example.rb
-puts "Print out __caller_line_number__"
-puts __caller_line_number__
+# Print out __caller_source_line__
+puts __caller_source_line__
 ```
 
 Prints out `puts __caller_source_line__`
