@@ -11,12 +11,12 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0".freeze) if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib".freeze]
   s.authors = ["Andy Maleh".freeze]
-  s.date = "2017-02-23"
+  s.date = "2017-02-24"
   s.description = "Ruby tools for improved puts debugging, automatically displaying bonus useful information such as line number and source code".freeze
   s.email = "andy.am@gmail.com".freeze
   s.extra_rdoc_files = [
     "LICENSE.txt",
-    "README.rdoc"
+    "README.md"
   ]
   s.files = [
     "lib/puts_debuggerer.rb"
