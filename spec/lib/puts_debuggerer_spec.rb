@@ -1,19 +1,20 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe 'PutsDebuggerer' do
+  let(:puts_debuggerer_invoker_file) {File.expand_path(File.join(__FILE__, '..', '..', 'support', 'puts_debuggerer_invoker.rb'))}
   before do
     $stdout = StringIO.new
   end
   it 'prints file, line number, and literal string object' do
     PutsDebuggererInvoker.static_greeting
     output = $stdout.string
-    expect(output).to eq("pd /Users/User/code/puts_debuggerer/spec/support/puts_debuggerer_invoker.rb:6 \"Hello World\"\n")
+    expect(output).to eq("pd #{puts_debuggerer_invoker_file}:6 \"Hello World\"\n")
   end
   it 'prints file, line number, ruby expression, and evaluated string object' do
     name = 'Muhammad'
     PutsDebuggererInvoker.dynamic_greeting("#{name}")
     output = $stdout.string
-    expect(output).to eq("pd /Users/User/code/puts_debuggerer/spec/support/puts_debuggerer_invoker.rb:10 \"Hello \#{name}\".inspect => \"Hello Muhammad\"\n")
+    expect(output).to eq("pd #{puts_debuggerer_invoker_file}:10 \"Hello \#{name}\".inspect => \"Hello Muhammad\"\n")
   end
   context 'with app path provided' do
     before do
