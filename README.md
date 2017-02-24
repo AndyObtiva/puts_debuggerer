@@ -97,7 +97,7 @@ puts __caller_line_number__             # line 3
 Prints out `3`
 
 
-#### `def __caller_file__(caller_depth=0)`
+#### `__caller_file__(caller_depth=0)`
 
 Provides caller file starting 1 level above caller of this method (with default `caller_depth=0`).
 
@@ -111,7 +111,7 @@ puts __caller_line_number__
 
 Prints out `lib/example.rb`
 
-#### `def __caller_source_line__(caller_depth=0)`
+#### `__caller_source_line__(caller_depth=0)`
 
 Provides caller source line starting 1 level above caller of this method (with default `caller_depth=0`).
 
