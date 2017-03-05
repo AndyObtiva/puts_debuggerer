@@ -1,11 +1,18 @@
-# puts_debuggerer v0.4.0
+# puts_debuggerer v0.5.0
 [![Gem Version](https://badge.fury.io/rb/puts_debuggerer.svg)](http://badge.fury.io/rb/puts_debuggerer)
 [![Build Status](https://travis-ci.org/AndyObtiva/puts_debuggerer.svg?branch=master)](https://travis-ci.org/AndyObtiva/puts_debuggerer)
 [![Coverage Status](https://coveralls.io/repos/github/AndyObtiva/puts_debuggerer/badge.svg?branch=master)](https://coveralls.io/github/AndyObtiva/puts_debuggerer?branch=master)
 
-Ruby tools for improved puts debugging, automatically displaying bonus useful information such as file, line number and source code.
+Ruby library for improved puts debugging, automatically displaying bonus useful information such as source file, line number and source code.
 
-Partially inspired by this blog post:
+Yes, many of us avoid debuggers like the plague and clamp on to our puts
+statements like an umbrella in a stormy day.
+Why not make it official and have puts debugging become its own perfectly
+legitimate thing?!!
+
+And thus, puts_debuggerer was born!!! A guilt-free puts debugger Ruby gem FTW!
+
+Partially inspired (only partially ;) by this blog post:
 https://tenderlovemaking.com/2016/02/05/i-am-a-puts-debuggerer.html
 (Credit to Tenderlove.)
 
@@ -16,7 +23,7 @@ https://tenderlovemaking.com/2016/02/05/i-am-a-puts-debuggerer.html
 Add the following to bundler's `Gemfile`.
 
 ```ruby
-gem 'puts_debuggerer', '~> 0.4.0'
+gem 'puts_debuggerer', '~> 0.5.0'
 ```
 
 ### Manual
@@ -24,7 +31,7 @@ gem 'puts_debuggerer', '~> 0.4.0'
 Or manually install and require library.
 
 ```bash
-gem install puts_debuggerer -v0.4.0
+gem install puts_debuggerer -v0.5.0
 ```
 
 ```ruby
@@ -33,8 +40,8 @@ require 'puts_debuggerer'
 
 ### Usage
 
-Simply invoke global `pd` method anywhere and it prints file, line number,
-source code in addition to output (works even in IRB).
+Simply invoke global `pd` method anywhere and it prints source file, line
+number, and source code in addition to output (works even in IRB).
 If the argument is a literal value with no interpolation, the print out is
 simplified by not showing source code matching output.
 
@@ -93,7 +100,7 @@ Example Printout:
 [PD] pd_test.rb:5 "What line number am I?"
 ```
 
-#### `PutsDebuggerer.header` (default = `nil`)
+#### `PutsDebuggerer.header` (default = `'*'*80`)
 
 Header to include at the top of every print out.
 * Default value is `nil`
@@ -117,7 +124,7 @@ Prints out:
   => "1"
 ```
 
-#### `PutsDebuggerer.footer` (default = `nil`)
+#### `PutsDebuggerer.footer` (default = `'*'*80`)
 
 Footer to include at the bottom of every print out.
 * Default value is `nil`
@@ -192,6 +199,46 @@ Prints out:
   => "1"
 ```
 
+#### `PutsDebuggerer.formatter` (default = `PutsDebuggerer::FORMATTER_DEFAULT`)
+
+Formatter used in every print out
+Passed a data argument with the following keys:
+* :announcer
+* :file
+* :line_number
+* :pd_expression
+* :object
+* :object_printer
+
+NOTE: data for :object_printer is not a string, yet a proc that must
+be called to output value. It is a proc as it automatically handles usage
+of print_engine and encapsulates its details. In any case, data for :object
+is available should one want to avoid altogether.
+
+Example:
+
+```ruby
+PutsDebuggerer.formatter = -> (data) {
+  puts "-<#{data[:announcer]}>-"
+  puts "FILE: #{data[:file]}"
+  puts "LINE: #{data[:line_number]}"
+  puts "EXPRESSION: #{data[:pd_expression]}"
+  print "PRINT OUT: "
+  data[:object_printer].call
+}
+pd (x=1)
+```
+
+Prints out:
+
+```bash
+-<[PD]>-
+FILE: /Users/User/example.rb
+LINE: 9
+EXPRESSION: x=1
+PRINT OUT: 1
+```
+
 ### Bonus
 
 puts_debuggerer comes with the following bonus utility methods:
@@ -238,7 +285,8 @@ Prints out `puts __caller_source_line__`
 
 ## Release Notes
 
-* v0.4.0: custom print engine (e.g. ap), custom announcer, IRB support
+* v0.5.0: custom formatter support
+* v0.4.0: custom print engine (e.g. ap), custom announcer, and IRB support
 * v0.3.0: header/footer support, multi-line printout, improved format
 * v0.2.0: App path exclusion support, Rails root support, improved format
 * v0.1.0: File/line/expression print out

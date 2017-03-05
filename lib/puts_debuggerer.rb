@@ -4,6 +4,11 @@ module PutsDebuggerer
   PRINT_ENGINE_DEFAULT = :p
   PRINT_ENGINE_MESSAGE_INVALID = 'print_engine must be a valid global method symbol (e.g. :p or :puts)'
   ANNOUNCER_DEFAULT = '[PD]'
+  FORMATTER_DEFAULT = -> (data) {
+      print "#{data[:announcer]} #{data[:file]}:#{data[:line_number]}#{__format_pd_expression__(data[:pd_expression], data[:object])} "
+      data[:object_printer].call
+    }
+
   class << self
     # Application root path to exclude when printing out file path
     #
@@ -68,7 +73,7 @@ module PutsDebuggerer
     #   PutsDebuggerer.footer = true
     #   pd (x=1)
     #
-    # Prints out
+    # Prints out:
     #
     #   [PD] /Users/User/example.rb:2
     #      > (x=1).inspect
@@ -103,7 +108,7 @@ module PutsDebuggerer
     #   array = [1, [2, 3]]
     #   pd array
     #
-    # Prints out
+    # Prints out:
     #
     #   [PD] /Users/User/example.rb:5
     #      > (array).inspect
@@ -131,22 +136,63 @@ module PutsDebuggerer
     #   PutsDebuggerer.announcer = "*** PD ***\n  "
     #   pd (x=1)
     #
-    # Prints out
+    # Prints out:
     #
     #   *** PD ***
     #      /Users/User/example.rb:2
     #      > (x=1).inspect
-    #     => "1"
+    #     => 1
     attr_reader :announcer
 
     def announcer=(text)
       @announcer = text.nil? ? ANNOUNCER_DEFAULT : text
     end
+
+    # Formatter used in every print out
+    # Passed a data argument with the following keys:
+    # * :announcer
+    # * :file
+    # * :line_number
+    # * :pd_expression
+    # * :object
+    # * :object_printer
+    #
+    # NOTE: data for :object_printer is not a string, yet a proc that must
+    # be called to output value. It is a proc as it automatically handles usage
+    # of print_engine and encapsulates its details. In any case, data for :object
+    # is available should one want to avoid altogether.
+    #
+    # Example:
+    #
+    #   PutsDebuggerer.formatter = -> (data) {
+    #     puts "-<#{data[:announcer]}>-"
+    #     puts "FILE: #{data[:file]}"
+    #     puts "LINE: #{data[:line_number]}"
+    #     puts "EXPRESSION: #{data[:pd_expression]}"
+    #     print "PRINT OUT: "
+    #     data[:object_printer].call
+    #   }
+    #   pd (x=1)
+    #
+    # Prints out:
+    #
+    #   -<[PD]>-
+    #   FILE: /Users/User/example.rb
+    #   LINE: 9
+    #   EXPRESSION: x=1
+    #   PRINT OUT: 1
+    attr_reader :formatter
+
+    def formatter=(formatter_proc)
+      @formatter = formatter_proc.nil? ? FORMATTER_DEFAULT : formatter_proc
+    end
+
   end
 end
 
 PutsDebuggerer.print_engine = PutsDebuggerer::PRINT_ENGINE_DEFAULT
 PutsDebuggerer.announcer = PutsDebuggerer::ANNOUNCER_DEFAULT
+PutsDebuggerer.formatter = PutsDebuggerer::FORMATTER_DEFAULT
 
 # Prints object with bonus info such as file name, line number and source
 # expression. Optionally prints out header and footer.
@@ -178,17 +224,23 @@ PutsDebuggerer.announcer = PutsDebuggerer::ANNOUNCER_DEFAULT
 #     => "Show me the source of the bug: beattle"
 #   [PD] /Users/User/finance_calculator_app/pd_test.rb:4 "What line number am I?"
 def pd(object, options=nil)
+  data = {
+    announcer: PutsDebuggerer.announcer,
+    file: __caller_file__(1).sub(PutsDebuggerer.app_path.to_s, ''),
+    line_number: __caller_line_number__(1),
+    pd_expression: __caller_pd_expression__(object),
+    object: object,
+    object_printer: lambda do
+      if options.nil? || options == {}
+        send(PutsDebuggerer.print_engine, object)
+      else
+        send(PutsDebuggerer.print_engine, object, options) rescue send(PutsDebuggerer.print_engine, object)
+      end
+    end
+  }
   header = PutsDebuggerer.header? ? "#{PutsDebuggerer.header}\n" : ''
-  announcer = PutsDebuggerer.announcer
-  file = __caller_file__(1).sub(PutsDebuggerer.app_path.to_s, '')
-  line_number = __caller_line_number__(1)
-  pd_expression = __caller_pd_expression__(object)
-  print "#{header}#{announcer} #{file}:#{line_number}#{pd_expression} "
-  if options.nil? || options == {}
-    send(PutsDebuggerer.print_engine, object)
-  else
-    send(PutsDebuggerer.print_engine, object, options) rescue send(PutsDebuggerer.print_engine, object)
-  end
+  print header
+  PutsDebuggerer.formatter.call(data)
   puts PutsDebuggerer.footer if PutsDebuggerer.footer?
 end
 
@@ -249,17 +301,18 @@ end
 
 private
 
+def __format_pd_expression__(expression, object)
+  # avoid printing expression if it matches object inspection to prevent redundancy
+  expression == object.inspect.sub("\n$", '') ? "" : "\n   > (#{expression}).inspect\n  =>"
+end
+
 def __caller_pd_expression__(object)
   # Caller Source Line Depth 2 = 1 to pd method + 1 to caller
   source_line = __caller_source_line__(2)
   source_line = __extract_pd_expression__(source_line)
   source_line = source_line.gsub(/(^'|'$)/, '"') if source_line.start_with?("'") && source_line.end_with?("'")
   source_line = source_line.gsub(/(^\(|\)$)/, '') if source_line.start_with?("(") && source_line.end_with?(")")
-  if source_line == object.inspect.sub("\n$", '')
-    ""
-  else
-    "\n   > (#{source_line}).inspect\n  =>"
-  end
+  source_line
 end
 
 # Extracts pd source line expression.

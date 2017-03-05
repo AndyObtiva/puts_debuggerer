@@ -287,4 +287,41 @@ describe 'PutsDebuggerer' do
       expect(output).to eq("[PD] (irb):285 \"whoami\"\n")
     end
   end
+
+  context 'with custom format' do
+    before do
+      # PutsDebuggerer.simple_formatter = nil
+      PutsDebuggerer.formatter = -> (data) {
+        puts "-<#{data[:announcer]}>-"
+        puts "FILE: #{data[:file]}"
+        puts "LINE: #{data[:line_number]}"
+        puts "EXPRESSION: #{data[:pd_expression]}"
+        print "PRINT OUT: "
+        data[:object_printer].call
+      }
+    end
+    after do
+      PutsDebuggerer.formatter = nil
+    end
+    it 'prints custom format' do
+      name = 'Muhammad'
+      PutsDebuggererInvoker.dynamic_greeting("#{name}")
+      output = $stdout.string
+      expected_output = <<-MULTI
+-<[PD]>-
+FILE: #{puts_debuggerer_invoker_file}
+LINE: 10
+EXPRESSION: "Hello \#{name}"
+PRINT OUT: "Hello Muhammad"
+      MULTI
+      expect(output).to eq(expected_output)
+    end
+    it 'resets format' do
+      PutsDebuggerer.formatter = nil
+      name = 'Muhammad'
+      PutsDebuggererInvoker.dynamic_greeting("#{name}")
+      output = $stdout.string
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > (\"Hello \#{name}\").inspect\n  => \"Hello Muhammad\"\n")
+    end
+  end
 end
