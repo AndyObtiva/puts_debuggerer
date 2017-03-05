@@ -1,6 +1,8 @@
 module PutsDebuggerer
   HEADER_DEFAULT = '*'*80
   FOOTER_DEFAULT = '*'*80
+  PRINT_ENGINE_DEFAULT = :p
+  PRINT_ENGINE_MESSAGE_INVALID = 'print_engine must be a valid global method symbol (e.g. :p or :puts)'
   class << self
     # Application root path to exclude when printing out file path
     #
@@ -76,6 +78,8 @@ module PutsDebuggerer
     def footer=(value)
       if value.equal?(true)
         @footer = FOOTER_DEFAULT
+      elsif value == ''
+        @footer = nil
       else
         @footer = value
       end
@@ -84,8 +88,44 @@ module PutsDebuggerer
     def footer?
       !!@footer
     end
+
+    # Print engine to use in object printout (e.g. `p`, `ap`, `pp`).
+    # It is represented by the print engine's global method name as a symbol
+    # (e.g. `:ap` for awesome_print).
+    # Defaults to Ruby's built-in `p` method identified by the symbol `:p`.
+    #
+    # Example:
+    #
+    #   # File Name: /Users/User/example.rb
+    #   require 'awesome_print'
+    #   PutsDebuggerer.print_engine = :ap
+    #   array = [1, [2, 3]]
+    #   pd array
+    #
+    # Prints out
+    #
+    #   [PD] /Users/User/example.rb:5
+    #      > (array).inspect
+    #     => [
+    #       [0] 1,
+    #       [1] [
+    #           [0] 2,
+    #           [1] 3
+    #       ]
+    #   ]
+    attr_reader :print_engine
+
+    def print_engine=(engine)
+      if engine.nil?
+        @print_engine = PRINT_ENGINE_DEFAULT
+      else
+        @print_engine = method(engine).name rescue raise(PRINT_ENGINE_MESSAGE_INVALID)
+      end
+    end
   end
 end
+
+PutsDebuggerer.print_engine = :p
 
 # Prints object with bonus info such as file name, line number and source
 # expression. Optionally prints out header and footer.
@@ -116,13 +156,18 @@ end
 #      > ("Show me the source of the bug: #{bug}").inspect
 #     => "Show me the source of the bug: beattle"
 #   [PD] /Users/User/finance_calculator_app/pd_test.rb:4 "What line number am I?"
-def pd(object)
+def pd(object, options=nil)
   header = PutsDebuggerer.header? ? "#{PutsDebuggerer.header}\n" : ''
-  pd_expression = __caller_pd_expression__(object)
-  line_number = __caller_line_number__(1)
   file = __caller_file__(1).sub(PutsDebuggerer.app_path.to_s, '')
-  footer = PutsDebuggerer.footer? ? "\n#{PutsDebuggerer.footer}" : ''
-  puts "#{header}[PD] #{file}:#{line_number}#{pd_expression} #{object.inspect}#{footer}"
+  line_number = __caller_line_number__(1)
+  pd_expression = __caller_pd_expression__(object)
+  print "#{header}[PD] #{file}:#{line_number}#{pd_expression} "
+  if options.nil? || options == {}
+    send(PutsDebuggerer.print_engine, object)
+  else
+    send(PutsDebuggerer.print_engine, object, options) rescue send(PutsDebuggerer.print_engine, object)
+  end
+  puts PutsDebuggerer.footer if PutsDebuggerer.footer?
 end
 
 

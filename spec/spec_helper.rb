@@ -23,4 +23,5 @@ RSpec.configure do |config|
 
 end
 
+require 'awesome_print'
 require 'puts_debuggerer'

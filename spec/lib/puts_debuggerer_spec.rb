@@ -23,7 +23,6 @@ describe 'PutsDebuggerer' do
     expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:14\n   > (\"Hello \#{name}\").inspect\n  => \"Hello Muhammad\"\n")
   end
   it 'prints file, line number, ruby expression, and evaluated numeric object without quotes' do
-    name = 'Muhammad'
     PutsDebuggererInvoker.numeric_squaring(3)
     output = $stdout.string
     expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:18\n   > (n*n).inspect\n  => 9\n")
@@ -198,5 +197,60 @@ describe 'PutsDebuggerer' do
     end
   end
 
+  context 'with custom print engine' do
+    let(:expected_object_printout) {
+      "[\n    [0] 1,\n    [1] [\n        [0] 2,\n        [1] 3\n    ]\n]"
+    }
+    let(:expected_object_printout_indent2) {
+      "[\n  [0] 1,\n  [1] [\n    [0] 2,\n    [1] 3\n  ]\n]"
+    }
+    before do
+      @awesome_print_defaults = AwesomePrint.defaults
+      AwesomePrint.defaults = {
+        plain: true
+      }
+      Kernel.class_eval do
+        def print_meh(object)
+          puts "Meh! #{object}"
+        end
+      end
+      PutsDebuggerer.print_engine = :ap
+    end
+    after do
+      PutsDebuggerer.print_engine = nil
+      Kernel.send(:remove_method, :print_meh)
+      AwesomePrint.defaults = @awesome_print_defaults
+    end
+    it 'prints file relative to app path, line number, ruby expression, and evaluated string object' do
+      PutsDebuggererInvoker.static_nested_array
+      output = $stdout.string
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:22 #{expected_object_printout}\n")
+    end
+    it 'prints file relative to app path, line number, ruby expression, and evaluated string object' do
+      PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
+      output = $stdout.string
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > (array, options).inspect\n  => #{expected_object_printout}\n")
+    end
+    it 'defaults to :p print engine if set to nil' do
+      PutsDebuggerer.print_engine = nil
+      PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
+      output = $stdout.string
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > (array, options).inspect\n  => #{[1, [2, 3]].inspect}\n")
+    end
+    it 'raises informative error if print_engine was invalid' do
+      expect {PutsDebuggerer.print_engine = :invalid}.to raise_error('print_engine must be a valid global method symbol (e.g. :p or :puts)')
+    end
+    it 'supports passing extra options to print_engines like awesome_print' do
+      PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], indent: 2)
+      output = $stdout.string
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > (array, options).inspect\n  => #{expected_object_printout_indent2}\n")
+    end
+    it 'ignores extra options with print_engines not supporting them' do
+      PutsDebuggerer.print_engine = :print_meh
+      PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], indent: 2)
+      output = $stdout.string
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > (array, options).inspect\n  => Meh! [1, [2, 3]]\n")
+    end
+  end
 
 end

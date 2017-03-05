@@ -3,6 +3,7 @@ GEM
   specs:
     addressable (2.5.0)
       public_suffix (~> 2.0, >= 2.0.2)
+    awesome_print (1.7.0)
     builder (3.2.3)
     coveralls (0.8.5)
       json (~> 1.8)
@@ -100,6 +101,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  awesome_print (~> 1.7.0)
   bundler (~> 1.0)
   coveralls (= 0.8.5)
   jeweler (~> 2.3.0)

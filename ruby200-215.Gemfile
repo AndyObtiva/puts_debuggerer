@@ -3,6 +3,7 @@ source "http://rubygems.org"
 group :development do
   gem "coveralls", "= 0.8.5", require: false
   gem "simplecov", "~> 0.10.0", require: nil
+  gem "awesome_print", "~> 1.7.0"
 
   # Ruby 2.0.0 - 2.1.5 require some older gems
   gem 'jeweler', '~> 2.0.1'

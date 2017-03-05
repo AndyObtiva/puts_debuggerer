@@ -1,4 +1,4 @@
-# puts_debuggerer v0.3.0
+# puts_debuggerer v0.4.0
 [![Gem Version](https://badge.fury.io/rb/puts_debuggerer.svg)](http://badge.fury.io/rb/puts_debuggerer)
 [![Build Status](https://travis-ci.org/AndyObtiva/puts_debuggerer.svg?branch=master)](https://travis-ci.org/AndyObtiva/puts_debuggerer)
 [![Coverage Status](https://coveralls.io/repos/github/AndyObtiva/puts_debuggerer/badge.svg?branch=master)](https://coveralls.io/github/AndyObtiva/puts_debuggerer?branch=master)
@@ -16,7 +16,7 @@ https://tenderlovemaking.com/2016/02/05/i-am-a-puts-debuggerer.html
 Add the following to bundler's `Gemfile`.
 
 ```ruby
-gem 'puts_debuggerer', '~> 0.3.0'
+gem 'puts_debuggerer', '~> 0.4.0'
 ```
 
 ### Manual
@@ -24,7 +24,7 @@ gem 'puts_debuggerer', '~> 0.3.0'
 Or manually install and require library.
 
 ```bash
-gem install puts_debuggerer -v0.3.0
+gem install puts_debuggerer -v0.4.0
 ```
 
 ```ruby
@@ -65,7 +65,7 @@ Example Printout:
 
 ### Options
 
-#### `PutsDebuggerer.app_path`
+#### `PutsDebuggerer.app_path` (default = `nil`)
 
 Sets absolute application path. Makes `pd` file output relative to it.
 If [Rails](rubyonrails.org) was detected, it is automatically defaulted to `Rails.root.to_s`
@@ -87,7 +87,7 @@ Example Printout:
 [PD] pd_test.rb:5 "What line number am I?"
 ```
 
-#### `PutsDebuggerer.header`
+#### `PutsDebuggerer.header` (default = `nil`)
 
 Header to include at the top of every print out.
 * Default value is `nil`
@@ -111,7 +111,7 @@ Prints out:
   => "1"
 ```
 
-#### `PutsDebuggerer.footer`
+#### `PutsDebuggerer.footer` (default = `nil`)
 
 Footer to include at the bottom of every print out.
 * Default value is `nil`
@@ -133,6 +133,37 @@ Prints out
    > (x=1).inspect
   => "1"
 ********************************************************************************
+```
+
+#### `PutsDebuggerer.print_engine` (default = `:p`)
+
+Print engine to use in object printout (e.g. `p`, `ap`, `pp`).
+It is represented by the print engine's global method name as a symbol
+(e.g. `:ap` for awesome_print).
+Defaults to Ruby's built-in `p` method identified by the symbol `:p`.
+
+Example:
+
+```ruby
+# File Name: /Users/User/example.rb
+require 'awesome_print'
+PutsDebuggerer.print_engine = :ap
+array = [1, [2, 3]]
+pd array
+```
+
+Prints out
+
+```bash
+[PD] /Users/User/example.rb:5
+   > (array).inspect
+  => [
+    [0] 1,
+    [1] [
+        [0] 2,
+        [1] 3
+    ]
+]
 ```
 
 ### Bonus
@@ -181,6 +212,7 @@ Prints out `puts __caller_source_line__`
 
 ## Release Notes
 
+* v0.4.0: print engine support (any like awesome_print)
 * v0.3.0: header/footer support, multi-line printout, improved format
 * v0.2.0: App path exclusion support, Rails root support, improved format
 * v0.1.0: File/line/expression print out
