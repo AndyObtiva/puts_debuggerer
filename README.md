@@ -16,7 +16,7 @@ https://tenderlovemaking.com/2016/02/05/i-am-a-puts-debuggerer.html
 Add the following to bundler's `Gemfile`.
 
 ```ruby
-gem 'puts_debuggerer', '~> 0.2.0'
+gem 'puts_debuggerer', '~> 0.3.0'
 ```
 
 ### Manual
@@ -24,7 +24,7 @@ gem 'puts_debuggerer', '~> 0.2.0'
 Or manually install and require library.
 
 ```bash
-gem install puts_debuggerer -v0.2.0
+gem install puts_debuggerer -v0.3.0
 ```
 
 ```ruby
