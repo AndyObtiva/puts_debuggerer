@@ -253,4 +253,35 @@ describe 'PutsDebuggerer' do
     end
   end
 
+  context 'with custom announcer' do
+    let(:custom_announcer) {'<PD>'}
+    before do
+      PutsDebuggerer.announcer = custom_announcer
+    end
+    after do
+      PutsDebuggerer.announcer = nil
+    end
+    it 'changes [PD] to <PD>' do
+      PutsDebuggererInvoker.static_greeting
+      output = $stdout.string
+      expect(output).to eq("<PD> #{puts_debuggerer_invoker_file}:6 \"Hello World\"\n")
+    end
+    it 'resets to default announcer when announcer is set to nil' do
+      PutsDebuggerer.announcer = nil
+      PutsDebuggererInvoker.static_greeting
+      output = $stdout.string
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:6 \"Hello World\"\n")
+    end
+  end
+
+
+  context 'change format of things using a block if it offers value'
+  context 'exception cases' do
+    xit 'handles multi line ruby expressions correctly'
+  end
+  context 'look into puts debuggerer blog post by tenderlove for other goodies to add'
+  context 'irb support'
+  context 'deadlock detection support'
+  context 'object allocation support' #might need to note having to load this lib first before others for this to work
+  context 'support for console.log and/or alert in js'
 end

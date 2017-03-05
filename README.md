@@ -126,7 +126,7 @@ PutsDebuggerer.footer = true
 pd (x=1)
 ```
 
-Prints out
+Prints out:
 
 ```bash
 [PD] /Users/User/example.rb:2
@@ -152,7 +152,7 @@ array = [1, [2, 3]]
 pd array
 ```
 
-Prints out
+Prints out:
 
 ```bash
 [PD] /Users/User/example.rb:5
@@ -164,6 +164,26 @@ Prints out
         [1] 3
     ]
 ]
+```
+
+#### `PutsDebuggerer.announcer` (default = `"[PD]"`)
+
+Announcer (e.g. `[PD]`) to announce every print out with (default: `"[PD]"`)
+
+Example:
+
+```ruby
+PutsDebuggerer.announcer = "*** PD ***\n  "
+pd (x=1)
+```
+
+Prints out:
+
+```bash
+*** PD ***
+   /Users/User/example.rb:2
+   > (x=1).inspect
+  => "1"
 ```
 
 ### Bonus
@@ -212,7 +232,7 @@ Prints out `puts __caller_source_line__`
 
 ## Release Notes
 
-* v0.4.0: print engine support (any like awesome_print)
+* v0.4.0: custom print engine (e.g. ap), custom announcer,
 * v0.3.0: header/footer support, multi-line printout, improved format
 * v0.2.0: App path exclusion support, Rails root support, improved format
 * v0.1.0: File/line/expression print out

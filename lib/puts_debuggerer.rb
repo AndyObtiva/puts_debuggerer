@@ -3,6 +3,7 @@ module PutsDebuggerer
   FOOTER_DEFAULT = '*'*80
   PRINT_ENGINE_DEFAULT = :p
   PRINT_ENGINE_MESSAGE_INVALID = 'print_engine must be a valid global method symbol (e.g. :p or :puts)'
+  ANNOUNCER_DEFAULT = '[PD]'
   class << self
     # Application root path to exclude when printing out file path
     #
@@ -122,10 +123,30 @@ module PutsDebuggerer
         @print_engine = method(engine).name rescue raise(PRINT_ENGINE_MESSAGE_INVALID)
       end
     end
+
+    # Announcer (e.g. [PD]) to announce every print out with (default: "[PD]")
+    #
+    # Example:
+    #
+    #   PutsDebuggerer.announcer = "*** PD ***\n  "
+    #   pd (x=1)
+    #
+    # Prints out
+    #
+    #   *** PD ***
+    #      /Users/User/example.rb:2
+    #      > (x=1).inspect
+    #     => "1"
+    attr_reader :announcer
+
+    def announcer=(text)
+      @announcer = text.nil? ? ANNOUNCER_DEFAULT : text
+    end
   end
 end
 
-PutsDebuggerer.print_engine = :p
+PutsDebuggerer.print_engine = PutsDebuggerer::PRINT_ENGINE_DEFAULT
+PutsDebuggerer.announcer = PutsDebuggerer::ANNOUNCER_DEFAULT
 
 # Prints object with bonus info such as file name, line number and source
 # expression. Optionally prints out header and footer.
@@ -158,10 +179,11 @@ PutsDebuggerer.print_engine = :p
 #   [PD] /Users/User/finance_calculator_app/pd_test.rb:4 "What line number am I?"
 def pd(object, options=nil)
   header = PutsDebuggerer.header? ? "#{PutsDebuggerer.header}\n" : ''
+  announcer = PutsDebuggerer.announcer
   file = __caller_file__(1).sub(PutsDebuggerer.app_path.to_s, '')
   line_number = __caller_line_number__(1)
   pd_expression = __caller_pd_expression__(object)
-  print "#{header}[PD] #{file}:#{line_number}#{pd_expression} "
+  print "#{header}#{announcer} #{file}:#{line_number}#{pd_expression} "
   if options.nil? || options == {}
     send(PutsDebuggerer.print_engine, object)
   else
