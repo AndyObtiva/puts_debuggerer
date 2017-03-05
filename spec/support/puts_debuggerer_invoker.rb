@@ -9,4 +9,12 @@ module PutsDebuggererInvoker
   def self.dynamic_greeting(name)
     pd "Hello #{name}"
   end
+
+  def self.parentheses_dynamic_greeting(name)
+    pd ("Hello #{name}")
+  end
+
+  def self.numeric_squaring(n)
+    pd n*n
+  end
 end
