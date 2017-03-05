@@ -274,14 +274,17 @@ describe 'PutsDebuggerer' do
     end
   end
 
-
-  context 'change format of things using a block if it offers value'
-  context 'exception cases' do
-    xit 'handles multi line ruby expressions correctly'
+  context 'irb support' do
+    it 'works' do
+      allow_any_instance_of(Kernel).to receive(:caller) {["(irb):285:in ", "(irb):285:in ", "(irb):285:in ", "(irb):285:in "]}
+      io = double("io")
+      allow(io).to receive(:line).with(285).and_return("pd 'whoami'")
+      conf = double("conf", :io => io)
+      allow_any_instance_of(Kernel).to receive(:conf) {conf}
+      allow_any_instance_of(Kernel).to receive(:__LINE__) {'285'}
+      pd 'whoami'
+      output = $stdout.string
+      expect(output).to eq("[PD] (irb):285 \"whoami\"\n")
+    end
   end
-  context 'look into puts debuggerer blog post by tenderlove for other goodies to add'
-  context 'irb support'
-  context 'deadlock detection support'
-  context 'object allocation support' #might need to note having to load this lib first before others for this to work
-  context 'support for console.log and/or alert in js'
 end

@@ -236,9 +236,13 @@ def __caller_source_line__(caller_depth=0)
   source_line_number = __caller_line_number__(caller_depth+1)
   source_file = __caller_file__(caller_depth+1)
   source_line = nil
-  File.open(source_file, 'r') do |f|
-    lines = f.readlines
-    source_line = lines[source_line_number-1]
+  if source_file == '(irb)'
+    source_line = conf.io.line(source_line_number)
+  else
+    File.open(source_file, 'r') do |f|
+      lines = f.readlines
+      source_line = lines[source_line_number-1]
+    end
   end
   source_line
 end

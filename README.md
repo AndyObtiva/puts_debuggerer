@@ -33,15 +33,21 @@ require 'puts_debuggerer'
 
 ### Usage
 
-Simply invoke global `pd` method anywhere you'd like to see line number and source code with output.
-If the argument is a pure string, the print out is simplified by not showing duplicate source.
+Simply invoke global `pd` method anywhere and it prints file, line number,
+source code in addition to output (works even in IRB).
+If the argument is a literal value with no interpolation, the print out is
+simplified by not showing source code matching output.
 
 Quickly locate printed lines using Find feature (e.g. CTRL+F) by looking for:
 * [PD]
 * file:line_number
 * ruby expression.
 
-This gives you the added benefit of easily removing your pd statements later on from the code.
+This gives you the added benefit of easily removing your `pd` statements later
+on.
+
+This can easily be augmented with a print engine like `awesome_print` and
+customized to format output differently as per options below.
 
 Happy puts_debuggerering!
 
@@ -232,7 +238,7 @@ Prints out `puts __caller_source_line__`
 
 ## Release Notes
 
-* v0.4.0: custom print engine (e.g. ap), custom announcer,
+* v0.4.0: custom print engine (e.g. ap), custom announcer, IRB support
 * v0.3.0: header/footer support, multi-line printout, improved format
 * v0.2.0: App path exclusion support, Rails root support, improved format
 * v0.1.0: File/line/expression print out
