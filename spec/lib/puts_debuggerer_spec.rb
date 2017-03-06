@@ -19,18 +19,18 @@ describe 'PutsDebuggerer' do
     name = 'Muhammad'
     PutsDebuggererInvoker.dynamic_greeting(name)
     output = $stdout.string
-    expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > (\"Hello \#{name}\").inspect\n  => \"Hello Muhammad\"\n")
+    expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n")
   end
   it 'prints file, line number, ruby expression, and evaluated string object without extra parentheses when already surrounded' do
     name = 'Muhammad'
     PutsDebuggererInvoker.parentheses_dynamic_greeting(name)
     output = $stdout.string
-    expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:14\n   > (\"Hello \#{name}\").inspect\n  => \"Hello Muhammad\"\n")
+    expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:14\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n")
   end
   it 'prints file, line number, ruby expression, and evaluated numeric object without quotes' do
     PutsDebuggererInvoker.numeric_squaring(3)
     output = $stdout.string
-    expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:18\n   > (n*n).inspect\n  => 9\n")
+    expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:18\n   > pd n*n\n  => 9\n")
   end
   context 'with app path provided' do
     before do
@@ -48,7 +48,7 @@ describe 'PutsDebuggerer' do
       name = 'Muhammad'
       PutsDebuggererInvoker.dynamic_greeting(name)
       output = $stdout.string
-      expect(output).to eq("[PD] spec/support/puts_debuggerer_invoker.rb:10\n   > (\"Hello \#{name}\").inspect\n  => \"Hello Muhammad\"\n")
+      expect(output).to eq("[PD] spec/support/puts_debuggerer_invoker.rb:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n")
     end
   end
   context 'with rails' do
@@ -75,7 +75,7 @@ describe 'PutsDebuggerer' do
       name = 'Muhammad'
       PutsDebuggererInvoker.dynamic_greeting(name)
       output = $stdout.string
-      expect(output).to eq("[PD] spec/support/puts_debuggerer_invoker.rb:10\n   > (\"Hello \#{name}\").inspect\n  => \"Hello Muhammad\"\n")
+      expect(output).to eq("[PD] spec/support/puts_debuggerer_invoker.rb:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n")
     end
   end
   context 'with header support enabled' do
@@ -95,28 +95,28 @@ describe 'PutsDebuggerer' do
         name = 'Muhammad'
         PutsDebuggererInvoker.dynamic_greeting(name)
         output = $stdout.string
-        expect(output).to eq("#{PutsDebuggerer::HEADER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:10\n   > (\"Hello \#{name}\").inspect\n  => \"Hello Muhammad\"\n")
+        expect(output).to eq("#{PutsDebuggerer::HEADER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n")
       end
       it 'disables header with nil header' do
         PutsDebuggerer.header = nil
         name = 'Muhammad'
         PutsDebuggererInvoker.dynamic_greeting(name)
         output = $stdout.string
-        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > (\"Hello \#{name}\").inspect\n  => \"Hello Muhammad\"\n")
+        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n")
       end
       it 'disables header with false header' do
         PutsDebuggerer.header = false
         name = 'Muhammad'
         PutsDebuggererInvoker.dynamic_greeting(name)
         output = $stdout.string
-        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > (\"Hello \#{name}\").inspect\n  => \"Hello Muhammad\"\n")
+        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n")
       end
       it 'disables header with empty string header' do
         PutsDebuggerer.header = ''
         name = 'Muhammad'
         PutsDebuggererInvoker.dynamic_greeting(name)
         output = $stdout.string
-        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > (\"Hello \#{name}\").inspect\n  => \"Hello Muhammad\"\n")
+        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n")
       end
     end
     context 'as custom header' do
@@ -136,7 +136,7 @@ describe 'PutsDebuggerer' do
         name = 'Muhammad'
         PutsDebuggererInvoker.dynamic_greeting(name)
         output = $stdout.string
-        expect(output).to eq("#{custom_header}\n[PD] #{puts_debuggerer_invoker_file}:10\n   > (\"Hello \#{name}\").inspect\n  => \"Hello Muhammad\"\n")
+        expect(output).to eq("#{custom_header}\n[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n")
       end
     end
   end
@@ -158,28 +158,28 @@ describe 'PutsDebuggerer' do
         name = 'Muhammad'
         PutsDebuggererInvoker.dynamic_greeting(name)
         output = $stdout.string
-        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > (\"Hello \#{name}\").inspect\n  => \"Hello Muhammad\"\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
+        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
       end
       it 'disables footer with nil footer' do
         PutsDebuggerer.footer = nil
         name = 'Muhammad'
         PutsDebuggererInvoker.dynamic_greeting(name)
         output = $stdout.string
-        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > (\"Hello \#{name}\").inspect\n  => \"Hello Muhammad\"\n")
+        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n")
       end
       it 'disables footer with false footer' do
         PutsDebuggerer.footer = false
         name = 'Muhammad'
         PutsDebuggererInvoker.dynamic_greeting(name)
         output = $stdout.string
-        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > (\"Hello \#{name}\").inspect\n  => \"Hello Muhammad\"\n")
+        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n")
       end
       it 'disables footer with empty string footer' do
         PutsDebuggerer.footer = ''
         name = 'Muhammad'
         PutsDebuggererInvoker.dynamic_greeting(name)
         output = $stdout.string
-        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > (\"Hello \#{name}\").inspect\n  => \"Hello Muhammad\"\n")
+        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n")
       end
     end
     context 'as custom footer' do
@@ -199,7 +199,7 @@ describe 'PutsDebuggerer' do
         name = 'Muhammad'
         PutsDebuggererInvoker.dynamic_greeting(name)
         output = $stdout.string
-        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > (\"Hello \#{name}\").inspect\n  => \"Hello Muhammad\"\n#{custom_footer}\n")
+        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n#{custom_footer}\n")
       end
     end
   end
@@ -246,7 +246,7 @@ describe 'PutsDebuggerer' do
     it 'prints file relative to app path, line number, ruby expression, and evaluated string object' do
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > (array, options).inspect\n  => #{expected_object_printout}\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => #{expected_object_printout}\n")
     end
     it 'raises informative error if print_engine was invalid' do
       expect {PutsDebuggerer.print_engine = :invalid}.to raise_error('print_engine must be a valid global method symbol (e.g. :p or :puts)')
@@ -254,13 +254,13 @@ describe 'PutsDebuggerer' do
     it 'supports passing extra options to print_engines like awesome_print' do
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], indent: 2)
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > (array, options).inspect\n  => #{expected_object_printout_indent2}\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => #{expected_object_printout_indent2}\n")
     end
     it 'ignores extra options with print_engines not supporting them' do
       PutsDebuggerer.print_engine = :print_meh
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], indent: 2)
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > (array, options).inspect\n  => Meh! [1, [2, 3]]\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => Meh! [1, [2, 3]]\n")
     end
   end
 
@@ -345,7 +345,7 @@ FOOTER: #{'*'*80}
       PutsDebuggererInvoker.dynamic_greeting(name)
       output = $stdout.string
       expected_caller = "     #{__FILE__}:#{__LINE__-2}:in `block (3 levels) in <top (required)>'"
-      expect(output).to eq("#{PutsDebuggerer::HEADER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:10\n   > (\"Hello \#{name}\").inspect\n  => \"Hello Muhammad\"\n#{expected_caller}\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
+      expect(output).to eq("#{PutsDebuggerer::HEADER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n#{expected_caller}\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
     end
     #TODO support formatting header, footer, and caller backtrace too
   end
@@ -355,7 +355,7 @@ FOOTER: #{'*'*80}
       name = 'Muhammad'
       PutsDebuggererInvoker.multi_line_dynamic_greeting(name)
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:30\n   > (\"Hello \" +\n      name.to_s).inspect\n  => \"Hello Muhammad\"\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:30\n   > pd \"Hello \" +\n      name.to_s\n  => \"Hello Muhammad\"\n")
     end
   end
 
@@ -377,7 +377,7 @@ FOOTER: #{'*'*80}
       PutsDebuggererInvoker.dynamic_greeting(name)
       output = $stdout.string
       expected_caller = (["#{__FILE__}:#{__LINE__-2}:in `block (3 levels) in <top (required)>'"] + caller).map {|l| ' '*5 + l}
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > (\"Hello \#{name}\").inspect\n  => \"Hello Muhammad\"\n#{expected_caller.join("\n")}\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n#{expected_caller.join("\n")}\n")
     end
     it 'includes depth-limited caller backtrace when printing file, line number, ruby expression, and evaluated string object' do
       PutsDebuggerer.caller = 0 # just give me one backtrace entry
@@ -385,7 +385,7 @@ FOOTER: #{'*'*80}
       PutsDebuggererInvoker.dynamic_greeting(name)
       output = $stdout.string
       expected_caller = ["     #{__FILE__}:#{__LINE__-2}:in `block (3 levels) in <top (required)>'"]
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > (\"Hello \#{name}\").inspect\n  => \"Hello Muhammad\"\n#{expected_caller.join("\n")}\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n#{expected_caller.join("\n")}\n")
     end
   end
 
@@ -405,59 +405,59 @@ FOOTER: #{'*'*80}
     it 'supports enabling header per single puts' do
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], header: true)
       output = $stdout.string
-      expect(output).to eq("#{PutsDebuggerer::HEADER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:26\n   > (array, options).inspect\n  => [1, [2, 3]]\n")
+      expect(output).to eq("#{PutsDebuggerer::HEADER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => [1, [2, 3]]\n")
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > (array, options).inspect\n  => [1, [2, 3]]\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => [1, [2, 3]]\n")
     end
     it 'supports enabling footer per single puts' do
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], footer: true)
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > (array, options).inspect\n  => [1, [2, 3]]\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => [1, [2, 3]]\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > (array, options).inspect\n  => [1, [2, 3]]\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => [1, [2, 3]]\n")
     end
     it 'supports enabling both header and footer per single puts' do
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], header: '#'*80, footer: true)
       output = $stdout.string
-      expect(output).to eq("#{'#'*80}\n[PD] #{puts_debuggerer_invoker_file}:26\n   > (array, options).inspect\n  => [1, [2, 3]]\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
+      expect(output).to eq("#{'#'*80}\n[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => [1, [2, 3]]\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > (array, options).inspect\n  => [1, [2, 3]]\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => [1, [2, 3]]\n")
     end
     it 'supports switching print engine per single puts' do
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], print_engine: :ap)
       output = $stdout.string
       expected_object_printout = "[\n    [0] 1,\n    [1] [\n        [0] 2,\n        [1] 3\n    ]\n]"
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > (array, options).inspect\n  => #{expected_object_printout}\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => #{expected_object_printout}\n")
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > (array, options).inspect\n  => [1, [2, 3]]\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => [1, [2, 3]]\n")
     end
     it 'supports switching app path per single puts' do
       app_path = File.expand_path(File.join(__FILE__, '..'))
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], app_path: app_path)
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file.sub(app_path, '')}:26\n   > (array, options).inspect\n  => [1, [2, 3]]\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file.sub(app_path, '')}:26\n   > pd array, options\n  => [1, [2, 3]]\n")
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > (array, options).inspect\n  => [1, [2, 3]]\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => [1, [2, 3]]\n")
     end
     it 'supports switching announcer per single puts' do
       app_path = File.expand_path(File.join(__FILE__, '..'))
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], announcer: "!!!!!HELLO!!!!!")
       output = $stdout.string
-      expect(output).to eq("!!!!!HELLO!!!!! #{puts_debuggerer_invoker_file.sub(app_path, '')}:26\n   > (array, options).inspect\n  => [1, [2, 3]]\n")
+      expect(output).to eq("!!!!!HELLO!!!!! #{puts_debuggerer_invoker_file.sub(app_path, '')}:26\n   > pd array, options\n  => [1, [2, 3]]\n")
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > (array, options).inspect\n  => [1, [2, 3]]\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => [1, [2, 3]]\n")
     end
     it 'supports switching formatter per single puts' do
       app_path = File.expand_path(File.join(__FILE__, '..'))
@@ -470,18 +470,18 @@ FOOTER: #{'*'*80}
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > (array, options).inspect\n  => [1, [2, 3]]\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => [1, [2, 3]]\n")
     end
     it 'supports enabling caller per single puts' do
       app_path = File.expand_path(File.join(__FILE__, '..'))
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], caller: 0)
       output = $stdout.string
       expected_caller = ["     #{__FILE__}:#{__LINE__-2}:in `block (3 levels) in <top (required)>'"]
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > (array, options).inspect\n  => [1, [2, 3]]\n#{expected_caller.join("\n")}\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => [1, [2, 3]]\n#{expected_caller.join("\n")}\n")
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > (array, options).inspect\n  => [1, [2, 3]]\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => [1, [2, 3]]\n")
     end
   end
 end

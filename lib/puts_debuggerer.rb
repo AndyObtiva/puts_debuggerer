@@ -13,7 +13,7 @@ module PutsDebuggerer
       puts data[:caller].map {|l| '     ' + l} unless data[:caller].to_a.empty?
       puts data[:footer] if data[:footer]
     }
-  CALLER_DEPTH_ZERO = 3 #depth includes pd + with_options method + nested block
+  CALLER_DEPTH_ZERO = 4 #depth includes pd + with_options method + nested block + build_pd_data method
 
   class << self
     # Application root path to exclude when printing out file path
@@ -27,7 +27,7 @@ module PutsDebuggerer
     # Prints out:
     #
     #   [PD] lib/sample.rb:3
-    #      > (x=1).inspect
+    #      > pd x=1
     #     => "1"
     attr_reader :app_path
 
@@ -50,7 +50,7 @@ module PutsDebuggerer
     #
     #   ********************************************************************************
     #   [PD] /Users/User/example.rb:2
-    #      > (x=1).inspect
+    #      > pd x=1
     #     => "1"
     attr_reader :header
 
@@ -82,7 +82,7 @@ module PutsDebuggerer
     # Prints out:
     #
     #   [PD] /Users/User/example.rb:2
-    #      > (x=1).inspect
+    #      > pd x=1
     #     => "1"
     #   ********************************************************************************
     attr_reader :footer
@@ -118,7 +118,7 @@ module PutsDebuggerer
     # Prints out:
     #
     #   [PD] /Users/User/example.rb:5
-    #      > (array).inspect
+    #      > pd array
     #     => [
     #       [0] 1,
     #       [1] [
@@ -147,7 +147,7 @@ module PutsDebuggerer
     #
     #   *** PD ***
     #      /Users/User/example.rb:2
-    #      > (x=1).inspect
+    #      > pd x=1
     #     => 1
     attr_reader :announcer
 
@@ -218,7 +218,7 @@ module PutsDebuggerer
     # Prints out:
     #
     #   [PD] /Users/User/sample_app/lib/sample.rb:3
-    #      > (x=1).inspect
+    #      > pd x=1
     #     => "1"
     #        /Users/User/sample_app/lib/master_samples.rb:368:in `block (3 levels) in <top (required)>'
     #        /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in `eval'
@@ -294,13 +294,12 @@ PutsDebuggerer.caller = nil
 # Example Printout:
 #
 #   [PD] /Users/User/finance_calculator_app/pd_test.rb:3
-#      > ("Show me the source of the bug: #{bug}").inspect
+#      > pd "Show me the source of the bug: #{bug}"
 #     => "Show me the source of the bug: beattle"
 #   [PD] /Users/User/finance_calculator_app/pd_test.rb:4 "What line number am I?"
 def pd(object, options=nil)
   __with_pd_options__(options) do |print_engine_options|
-    depth_0 = PutsDebuggerer::CALLER_DEPTH_ZERO
-    formatter_pd_data = __build_pd_data__(object, print_engine_options, depth_0+1) #depth adds build method
+    formatter_pd_data = __build_pd_data__(object, print_engine_options) #depth adds build method
     PutsDebuggerer.formatter.call(formatter_pd_data)
   end
   nil
@@ -378,7 +377,8 @@ def __with_pd_options__(options=nil)
   PutsDebuggerer.options = permanent_options
 end
 
-def __build_pd_data__(object, print_engine_options=nil, depth=0)
+def __build_pd_data__(object, print_engine_options=nil)
+  depth = PutsDebuggerer::CALLER_DEPTH_ZERO
   pd_data = {
     announcer: PutsDebuggerer.announcer,
     file: __caller_file__(depth).sub(PutsDebuggerer.app_path.to_s, ''),
@@ -405,7 +405,7 @@ end
 
 def __format_pd_expression__(expression, object)
   # avoid printing expression if it matches object inspection to prevent redundancy
-  expression == object.inspect.sub("\n$", '') ? "" : "\n   > (#{expression}).inspect\n  =>"
+  expression == object.inspect.sub("\n$", '') ? "" : "\n   > pd #{expression}\n  =>"
 end
 
 def __caller_pd_expression__(depth=0)

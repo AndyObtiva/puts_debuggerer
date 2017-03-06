@@ -71,12 +71,42 @@ Example Printout:
 
 ```bash
 [PD] /Users/User/finance_calculator_app/pd_test.rb:3
-   > ("Show me the source of the bug: #{bug}").inspect
+   > pd "Show me the source of the bug: #{bug}"
   => "Show me the source of the bug: beattle"
 [PD] /Users/User/finance_calculator_app/pd_test.rb:4 "What line number am I?"
 ```
 
 ### Options
+
+Options enable more data to be displayed with puts_debuggerer, such as the caller
+backtrace, header, and footer. They also allow customization of output format.
+
+Options can be set as a global configuration or piecemeal per puts statement.
+
+Global configuration is done via `PutsDebuggerer` module attribute writers.
+On the other hand, piecemeal options can be passed to the `pd` global method as
+the second argument.
+
+Example:
+
+```ruby
+# File Name: /Users/User/project/piecemeal.rb
+data = [1, [2, 3]]
+pd data, header: '>'*80, footer: '<'*80, announcer: "   -<[PD]>-\n  "
+```
+
+Prints out:
+
+```bash
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+   -<[PD]>-
+   /Users/User/project/piecemeal.rb:3
+   > pd data
+  => [1, [2, 3]]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+```
+
+Details about all the available options are included below.
 
 #### `PutsDebuggerer.app_path`
 (default = `nil`)
@@ -96,7 +126,7 @@ Example Printout:
 
 ```bash
 [PD] pd_test.rb:4
-   > ("Show me the source of the bug: #{bug}").inspect
+   > pd "Show me the source of the bug: #{bug}"
   => "Show me the source of the bug: beattle"
 [PD] pd_test.rb:5 "What line number am I?"
 ```
@@ -122,7 +152,7 @@ Prints out:
 ```bash
 ********************************************************************************
 [PD] /Users/User/example.rb:2
-   > (x=1).inspect
+   > pd x=1
   => "1"
 ```
 
@@ -146,7 +176,7 @@ Prints out:
 
 ```bash
 [PD] /Users/User/example.rb:2
-   > (x=1).inspect
+   > pd x=1
   => "1"
 ********************************************************************************
 ```
@@ -174,7 +204,7 @@ Prints out:
 
 ```bash
 [PD] /Users/User/example.rb:5
-   > (array).inspect
+   > pd array
   => [
     [0] 1,
     [1] [
@@ -201,7 +231,7 @@ Prints out:
 ```bash
 *** PD ***
    /Users/User/example.rb:2
-   > (x=1).inspect
+   > pd x=1
   => "1"
 ```
 
@@ -230,11 +260,14 @@ Example:
 ```ruby
 PutsDebuggerer.formatter = -> (data) {
   puts "-<#{data[:announcer]}>-"
+  puts "HEADER: #{data[:header]}"
   puts "FILE: #{data[:file]}"
   puts "LINE: #{data[:line_number]}"
   puts "EXPRESSION: #{data[:pd_expression]}"
   print "PRINT OUT: "
   data[:object_printer].call
+  puts "CALLER: #{data[:caller].to_a.first}"
+  puts "FOOTER: #{data[:footer]}"
 }
 pd (x=1)
 ```
@@ -244,9 +277,12 @@ Prints out:
 ```bash
 -<[PD]>-
 FILE: /Users/User/example.rb
+HEADER: ********************************************************************************
 LINE: 9
 EXPRESSION: x=1
 PRINT OUT: 1
+CALLER: #/Users/User/master_examples.rb:83:in `block (3 levels) in <top (required)>'
+FOOTER: ********************************************************************************
 ```
 
 #### `PutsDebuggerer.caller`
@@ -270,7 +306,7 @@ Prints out:
 
 ```bash
 [PD] /Users/User/sample_app/lib/sample.rb:3
-    > (x=1).inspect
+    > pd x=1
    => "1"
      /Users/User/sample_app/lib/master_samples.rb:368:in \`block (3 levels) in <top (required)>\'
      /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in \`eval\'
