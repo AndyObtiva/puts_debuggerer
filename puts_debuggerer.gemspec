@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib".freeze]
   s.authors = ["Andy Maleh".freeze]
   s.date = "2017-03-05"
-  s.description = "Ruby tools for improved puts debugging, automatically displaying bonus useful information such as line number and source code".freeze
+  s.description = "Yes, many of us avoid debuggers like the plague and clamp on to our puts statements like an umbrella in a stormy day. Why not make it official and have puts debugging become its own perfectly legitimate thing?!!\n\nAnd thus, puts_debuggerer was born. A guilt-free puts debugger Ruby gem FTW!\n\nIn other words, a Ruby library for improved puts debugging, automatically displaying bonus useful information such as source line number and source code.\n\nPartially inspired (only partially ;) by this blog post:\nhttps://tenderlovemaking.com/2016/02/05/i-am-a-puts-debuggerer.html\n(Credit to Tenderlove.)\n".freeze
   s.email = "andy.am@gmail.com".freeze
   s.extra_rdoc_files = [
     "LICENSE.txt",
@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
   s.homepage = "http://github.com/AndyObtiva/puts_debuggerer".freeze
   s.licenses = ["MIT".freeze]
   s.rubygems_version = "2.6.10".freeze
-  s.summary = "Ruby tools for improved puts debugging".freeze
+  s.summary = "Ruby library for improved puts debugging, automatically displaying bonus useful information such as source line number and source code.".freeze
 
   if s.respond_to? :specification_version then
     s.specification_version = 4

@@ -1,3 +1,5 @@
+require 'ripper'
+
 module PutsDebuggerer
   HEADER_DEFAULT = '*'*80
   FOOTER_DEFAULT = '*'*80
@@ -5,9 +7,13 @@ module PutsDebuggerer
   PRINT_ENGINE_MESSAGE_INVALID = 'print_engine must be a valid global method symbol (e.g. :p or :puts)'
   ANNOUNCER_DEFAULT = '[PD]'
   FORMATTER_DEFAULT = -> (data) {
+      puts data[:header] if data[:header]
       print "#{data[:announcer]} #{data[:file]}:#{data[:line_number]}#{__format_pd_expression__(data[:pd_expression], data[:object])} "
       data[:object_printer].call
+      puts data[:caller].map {|l| '     ' + l} unless data[:caller].to_a.empty?
+      puts data[:footer] if data[:footer]
     }
+  CALLER_DEPTH_ZERO = 3 #depth includes pd + with_options method + nested block
 
   class << self
     # Application root path to exclude when printing out file path
@@ -23,11 +29,11 @@ module PutsDebuggerer
     #   [PD] lib/sample.rb:3
     #      > (x=1).inspect
     #     => "1"
-    def app_path
-      (@app_path || Rails.root.to_s) rescue nil
-    end
+    attr_reader :app_path
 
-    attr_writer :app_path
+    def app_path=(path)
+      @app_path = (path || Rails.root.to_s) rescue nil
+    end
 
     # Header to include at the top of every print out.
     # * Default value is `nil`
@@ -99,6 +105,7 @@ module PutsDebuggerer
     # It is represented by the print engine's global method name as a symbol
     # (e.g. `:ap` for awesome_print).
     # Defaults to Ruby's built-in `p` method identified by the symbol `:p`.
+    # If it finds awesome_print loaded, it defaults to `ap` as `:ap` instead.
     #
     # Example:
     #
@@ -123,7 +130,7 @@ module PutsDebuggerer
 
     def print_engine=(engine)
       if engine.nil?
-        @print_engine = PRINT_ENGINE_DEFAULT
+        @print_engine = method(:ap).name rescue PRINT_ENGINE_DEFAULT
       else
         @print_engine = method(engine).name rescue raise(PRINT_ENGINE_MESSAGE_INVALID)
       end
@@ -150,12 +157,15 @@ module PutsDebuggerer
 
     # Formatter used in every print out
     # Passed a data argument with the following keys:
-    # * :announcer
-    # * :file
-    # * :line_number
-    # * :pd_expression
-    # * :object
-    # * :object_printer
+    # * :announcer (string)
+    # * :caller (array)
+    # * :file (string)
+    # * :footer (string)
+    # * :header (string)
+    # * :line_number (string)
+    # * :pd_expression (string)
+    # * :object (object)
+    # * :object_printer (proc)
     #
     # NOTE: data for :object_printer is not a string, yet a proc that must
     # be called to output value. It is a proc as it automatically handles usage
@@ -166,11 +176,14 @@ module PutsDebuggerer
     #
     #   PutsDebuggerer.formatter = -> (data) {
     #     puts "-<#{data[:announcer]}>-"
+    #     puts "HEADER: #{data[:header]}"
     #     puts "FILE: #{data[:file]}"
     #     puts "LINE: #{data[:line_number]}"
     #     puts "EXPRESSION: #{data[:pd_expression]}"
     #     print "PRINT OUT: "
     #     data[:object_printer].call
+    #     puts "CALLER: #{data[:caller].to_a.first}"
+    #     puts "FOOTER: #{data[:footer]}"
     #   }
     #   pd (x=1)
     #
@@ -178,13 +191,72 @@ module PutsDebuggerer
     #
     #   -<[PD]>-
     #   FILE: /Users/User/example.rb
+    #   HEADER: ********************************************************************************
     #   LINE: 9
     #   EXPRESSION: x=1
     #   PRINT OUT: 1
+    #   CALLER: #/Users/User/master_examples.rb:83:in `block (3 levels) in <top (required)>'
+    #   FOOTER: ********************************************************************************
     attr_reader :formatter
 
     def formatter=(formatter_proc)
       @formatter = formatter_proc.nil? ? FORMATTER_DEFAULT : formatter_proc
+    end
+
+    # Caller backtrace included at the end of every print out
+    # Passed an argument of true/false, nil, or depth as an integer.
+    # * true and -1 means include full caller backtrace
+    # * false and nil means do not include caller backtrace
+    # * depth (0-based) means include limited caller backtrace depth
+    #
+    # Example:
+    #
+    #   # File Name: /Users/User/sample_app/lib/sample.rb
+    #   PutsDebuggerer.caller = 3
+    #   pd (x=1)
+    #
+    # Prints out:
+    #
+    #   [PD] /Users/User/sample_app/lib/sample.rb:3
+    #      > (x=1).inspect
+    #     => "1"
+    #        /Users/User/sample_app/lib/master_samples.rb:368:in `block (3 levels) in <top (required)>'
+    #        /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in `eval'
+    #        /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in `evaluate'
+    #        /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/context.rb:381:in `evaluate'
+    attr_reader :caller
+
+    def caller=(value)
+      if value.equal?(true)
+        @caller = -1 #needed for upper bound in pd method
+      else
+        @caller = value
+      end
+    end
+
+    def caller?
+      !!caller
+    end
+
+
+    # Options as a hash. Useful for reading and backing up options
+    def options
+      {
+        header: header,
+        footer: footer,
+        print_engine: print_engine,
+        app_path: app_path,
+        announcer: announcer,
+        formatter: formatter,
+        caller: caller
+      }
+    end
+
+    # Sets options included in hash
+    def options=(hash)
+      hash.each do |option, value|
+        send("#{option}=", value)
+      end
     end
 
   end
@@ -193,6 +265,8 @@ end
 PutsDebuggerer.print_engine = PutsDebuggerer::PRINT_ENGINE_DEFAULT
 PutsDebuggerer.announcer = PutsDebuggerer::ANNOUNCER_DEFAULT
 PutsDebuggerer.formatter = PutsDebuggerer::FORMATTER_DEFAULT
+PutsDebuggerer.app_path = nil
+PutsDebuggerer.caller = nil
 
 # Prints object with bonus info such as file name, line number and source
 # expression. Optionally prints out header and footer.
@@ -224,24 +298,12 @@ PutsDebuggerer.formatter = PutsDebuggerer::FORMATTER_DEFAULT
 #     => "Show me the source of the bug: beattle"
 #   [PD] /Users/User/finance_calculator_app/pd_test.rb:4 "What line number am I?"
 def pd(object, options=nil)
-  data = {
-    announcer: PutsDebuggerer.announcer,
-    file: __caller_file__(1).sub(PutsDebuggerer.app_path.to_s, ''),
-    line_number: __caller_line_number__(1),
-    pd_expression: __caller_pd_expression__(object),
-    object: object,
-    object_printer: lambda do
-      if options.nil? || options == {}
-        send(PutsDebuggerer.print_engine, object)
-      else
-        send(PutsDebuggerer.print_engine, object, options) rescue send(PutsDebuggerer.print_engine, object)
-      end
-    end
-  }
-  header = PutsDebuggerer.header? ? "#{PutsDebuggerer.header}\n" : ''
-  print header
-  PutsDebuggerer.formatter.call(data)
-  puts PutsDebuggerer.footer if PutsDebuggerer.footer?
+  __with_pd_options__(options) do |print_engine_options|
+    depth_0 = PutsDebuggerer::CALLER_DEPTH_ZERO
+    formatter_pd_data = __build_pd_data__(object, print_engine_options, depth_0+1) #depth adds build method
+    PutsDebuggerer.formatter.call(formatter_pd_data)
+  end
+  nil
 end
 
 
@@ -291,9 +353,15 @@ def __caller_source_line__(caller_depth=0)
   if source_file == '(irb)'
     source_line = conf.io.line(source_line_number)
   else
-    File.open(source_file, 'r') do |f|
-      lines = f.readlines
-      source_line = lines[source_line_number-1]
+    f = File.new(source_file)
+    source_line = ''
+    done = false
+    f.each_line do |line|
+      if !done && f.lineno == source_line_number
+        source_line << line
+        done = true if Ripper.sexp_raw(source_line)
+        source_line_number+=1
+      end
     end
   end
   source_line
@@ -301,14 +369,48 @@ end
 
 private
 
+def __with_pd_options__(options=nil)
+  options ||= {}
+  permanent_options = PutsDebuggerer.options
+  PutsDebuggerer.options = options.select {|option, _| PutsDebuggerer.options.keys.include?(option)}
+  print_engine_options = options.delete_if {|option, _| PutsDebuggerer.options.keys.include?(option)}
+  yield print_engine_options
+  PutsDebuggerer.options = permanent_options
+end
+
+def __build_pd_data__(object, print_engine_options=nil, depth=0)
+  pd_data = {
+    announcer: PutsDebuggerer.announcer,
+    file: __caller_file__(depth).sub(PutsDebuggerer.app_path.to_s, ''),
+    line_number: __caller_line_number__(depth),
+    pd_expression: __caller_pd_expression__(depth),
+    object: object,
+    object_printer: lambda do
+      if print_engine_options.to_h.empty?
+        send(PutsDebuggerer.print_engine, object)
+      else
+        send(PutsDebuggerer.print_engine, object, print_engine_options) rescue send(PutsDebuggerer.print_engine, object)
+      end
+    end
+  }
+  if PutsDebuggerer.caller?
+    start_depth = depth.to_i
+    caller_depth = PutsDebuggerer.caller == -1 ? -1 : (start_depth + PutsDebuggerer.caller)
+    pd_data[:caller] = caller[start_depth..caller_depth].to_a
+  end
+  pd_data[:header] = PutsDebuggerer.header if PutsDebuggerer.header?
+  pd_data[:footer] = PutsDebuggerer.footer if PutsDebuggerer.footer?
+  pd_data
+end
+
 def __format_pd_expression__(expression, object)
   # avoid printing expression if it matches object inspection to prevent redundancy
   expression == object.inspect.sub("\n$", '') ? "" : "\n   > (#{expression}).inspect\n  =>"
 end
 
-def __caller_pd_expression__(object)
+def __caller_pd_expression__(depth=0)
   # Caller Source Line Depth 2 = 1 to pd method + 1 to caller
-  source_line = __caller_source_line__(2)
+  source_line = __caller_source_line__(depth+1)
   source_line = __extract_pd_expression__(source_line)
   source_line = source_line.gsub(/(^'|'$)/, '"') if source_line.start_with?("'") && source_line.end_with?("'")
   source_line = source_line.gsub(/(^\(|\)$)/, '') if source_line.start_with?("(") && source_line.end_with?(")")

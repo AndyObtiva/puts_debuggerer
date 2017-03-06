@@ -3,14 +3,14 @@
 [![Build Status](https://travis-ci.org/AndyObtiva/puts_debuggerer.svg?branch=master)](https://travis-ci.org/AndyObtiva/puts_debuggerer)
 [![Coverage Status](https://coveralls.io/repos/github/AndyObtiva/puts_debuggerer/badge.svg?branch=master)](https://coveralls.io/github/AndyObtiva/puts_debuggerer?branch=master)
 
-Ruby library for improved puts debugging, automatically displaying bonus useful information such as source file, line number and source code.
-
 Yes, many of us avoid debuggers like the plague and clamp on to our puts
 statements like an umbrella in a stormy day.
 Why not make it official and have puts debugging become its own perfectly
 legitimate thing?!!
 
-And thus, puts_debuggerer was born!!! A guilt-free puts debugger Ruby gem FTW!
+And thus, puts_debuggerer was born. A guilt-free puts debugger Ruby gem FTW!
+
+In other words, puts_debuggerer is a Ruby library for improved puts debugging, automatically displaying bonus useful information such as source line number and source code.
 
 Partially inspired (only partially ;) by this blog post:
 https://tenderlovemaking.com/2016/02/05/i-am-a-puts-debuggerer.html
@@ -53,7 +53,7 @@ Quickly locate printed lines using Find feature (e.g. CTRL+F) by looking for:
 This gives you the added benefit of easily removing your `pd` statements later
 on.
 
-This can easily be augmented with a print engine like `awesome_print` and
+This can easily be augmented with a print engine like [awesome_print](https://github.com/awesome-print/awesome_print) and
 customized to format output differently as per options below.
 
 Happy puts_debuggerering!
@@ -78,7 +78,8 @@ Example Printout:
 
 ### Options
 
-#### `PutsDebuggerer.app_path` (default = `nil`)
+#### `PutsDebuggerer.app_path`
+(default = `nil`)
 
 Sets absolute application path. Makes `pd` file output relative to it.
 If [Rails](rubyonrails.org) was detected, it is automatically defaulted to `Rails.root.to_s`
@@ -100,7 +101,8 @@ Example Printout:
 [PD] pd_test.rb:5 "What line number am I?"
 ```
 
-#### `PutsDebuggerer.header` (default = `'*'*80`)
+#### `PutsDebuggerer.header`
+(default = `'*'*80`)
 
 Header to include at the top of every print out.
 * Default value is `nil`
@@ -124,7 +126,8 @@ Prints out:
   => "1"
 ```
 
-#### `PutsDebuggerer.footer` (default = `'*'*80`)
+#### `PutsDebuggerer.footer`
+(default = `'*'*80`)
 
 Footer to include at the bottom of every print out.
 * Default value is `nil`
@@ -148,12 +151,14 @@ Prints out:
 ********************************************************************************
 ```
 
-#### `PutsDebuggerer.print_engine` (default = `:p`)
+#### `PutsDebuggerer.print_engine`
+(default = `:p`)
 
 Print engine to use in object printout (e.g. `p`, `ap`, `pp`).
 It is represented by the print engine's global method name as a symbol
-(e.g. `:ap` for awesome_print).
+(e.g. `:ap` for [awesome_print](https://github.com/awesome-print/awesome_print)).
 Defaults to Ruby's built-in `p` method identified by the symbol `:p`.
+If it finds [awesome_print](https://github.com/awesome-print/awesome_print) loaded, it defaults to `ap` as `:ap` instead.
 
 Example:
 
@@ -179,7 +184,8 @@ Prints out:
 ]
 ```
 
-#### `PutsDebuggerer.announcer` (default = `"[PD]"`)
+#### `PutsDebuggerer.announcer`
+(default = `"[PD]"`)
 
 Announcer (e.g. `[PD]`) to announce every print out with (default: `"[PD]"`)
 
@@ -199,16 +205,20 @@ Prints out:
   => "1"
 ```
 
-#### `PutsDebuggerer.formatter` (default = `PutsDebuggerer::FORMATTER_DEFAULT`)
+#### `PutsDebuggerer.formatter`
+(default = `PutsDebuggerer::FORMATTER_DEFAULT`)
 
 Formatter used in every print out
 Passed a data argument with the following keys:
-* :announcer
-* :file
-* :line_number
-* :pd_expression
-* :object
-* :object_printer
+* :announcer (string)
+* :caller (array)
+* :file (string)
+* :footer (string)
+* :header (string)
+* :line_number (string)
+* :pd_expression (string)
+* :object (object)
+* :object_printer (proc)
 
 NOTE: data for :object_printer is not a string, yet a proc that must
 be called to output value. It is a proc as it automatically handles usage
@@ -237,6 +247,35 @@ FILE: /Users/User/example.rb
 LINE: 9
 EXPRESSION: x=1
 PRINT OUT: 1
+```
+
+#### `PutsDebuggerer.caller`
+(default = nil)
+
+Caller backtrace included at the end of every print out
+Passed an argument of true/false, nil, or depth as an integer.
+* true and -1 means include full caller backtrace
+* false and nil means do not include caller backtrace
+* depth (0-based) means include limited caller backtrace depth
+
+Example:
+
+```ruby
+# File Name: /Users/User/sample_app/lib/sample.rb
+PutsDebuggerer.caller = 3
+pd (x=1)
+```
+
+Prints out:
+
+```bash
+[PD] /Users/User/sample_app/lib/sample.rb:3
+    > (x=1).inspect
+   => "1"
+     /Users/User/sample_app/lib/master_samples.rb:368:in \`block (3 levels) in <top (required)>\'
+     /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in \`eval\'
+     /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in \`evaluate\'
+     /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/context.rb:381:in \`evaluate\'
 ```
 
 ### Bonus
@@ -285,7 +324,7 @@ Prints out `puts __caller_source_line__`
 
 ## Release Notes
 
-* v0.5.0: custom formatter support
+* v0.5.0: custom formatter, caller backtrace, per-puts piecemeal options, and multi-line support
 * v0.4.0: custom print engine (e.g. ap), custom announcer, and IRB support
 * v0.3.0: header/footer support, multi-line printout, improved format
 * v0.2.0: App path exclusion support, Rails root support, improved format

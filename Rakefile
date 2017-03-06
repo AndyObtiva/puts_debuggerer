@@ -17,8 +17,18 @@ Jeweler::Tasks.new do |gem|
   gem.name = "puts_debuggerer"
   gem.homepage = "http://github.com/AndyObtiva/puts_debuggerer"
   gem.license = "MIT"
-  gem.summary = %Q{Ruby tools for improved puts debugging}
-  gem.description = %Q{Ruby tools for improved puts debugging, automatically displaying bonus useful information such as line number and source code}
+  gem.summary = %Q{Ruby library for improved puts debugging, automatically displaying bonus useful information such as source line number and source code.}
+  gem.description = <<-MULTI
+Yes, many of us avoid debuggers like the plague and clamp on to our puts statements like an umbrella in a stormy day. Why not make it official and have puts debugging become its own perfectly legitimate thing?!!
+
+And thus, puts_debuggerer was born. A guilt-free puts debugger Ruby gem FTW!
+
+In other words, puts_debuggerer is a Ruby library for improved puts debugging, automatically displaying bonus useful information such as source line number and source code.
+
+Partially inspired (only partially ;) by this blog post:
+https://tenderlovemaking.com/2016/02/05/i-am-a-puts-debuggerer.html
+(Credit to Tenderlove.)
+  MULTI
   gem.email = "andy.am@gmail.com"
   gem.authors = ["Andy Maleh"]
   gem.files = Dir['lib/**/*.rb']
