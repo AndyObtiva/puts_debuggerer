@@ -1,4 +1,4 @@
-# puts_debuggerer v0.5.0
+# puts_debuggerer v0.5.0 
 [![Gem Version](https://badge.fury.io/rb/puts_debuggerer.svg)](http://badge.fury.io/rb/puts_debuggerer)
 [![Build Status](https://travis-ci.org/AndyObtiva/puts_debuggerer.svg?branch=master)](https://travis-ci.org/AndyObtiva/puts_debuggerer)
 [![Coverage Status](https://coveralls.io/repos/github/AndyObtiva/puts_debuggerer/badge.svg?branch=master)](https://coveralls.io/github/AndyObtiva/puts_debuggerer?branch=master)
@@ -15,6 +15,10 @@ In other words, puts_debuggerer is a Ruby library for improved puts debugging, a
 Partially inspired (only partially ;) by this blog post:
 https://tenderlovemaking.com/2016/02/05/i-am-a-puts-debuggerer.html
 (Credit to Tenderlove.)
+
+Love PD?! Why not promote with [merchandise](https://www.zazzle.com/i+heart+pd+gifts)?
+
+![PDImage](https://rlv.zcache.com/i_love_pd_trucker_hat-r9227624204cc410bab0f5b50ba220d0d_v9wf1_8byvr_324.jpg)
 
 ## Instructions
 
