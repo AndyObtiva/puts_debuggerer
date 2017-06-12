@@ -18,8 +18,6 @@ https://tenderlovemaking.com/2016/02/05/i-am-a-puts-debuggerer.html
 
 Love PD?! Why not promote with [merchandise](https://www.zazzle.com/i+heart+pd+gifts)?
 
-![PDImage](https://rlv.zcache.com/i_love_pd_trucker_hat-r9227624204cc410bab0f5b50ba220d0d_v9wf1_8byvr_324.jpg)
-
 ## Instructions
 
 ### Bundler
