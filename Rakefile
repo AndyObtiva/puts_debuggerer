@@ -21,7 +21,7 @@ Jeweler::Tasks.new do |gem|
   gem.description = <<-MULTI
 Yes, many of us avoid debuggers like the plague and clamp on to our puts statements like an umbrella in a stormy day. Why not make it official and have puts debugging become its own perfectly legitimate thing?!!
 
-And thus, puts_debuggerer was born. A guilt-free puts debugger Ruby gem FTW!
+Enter puts_debuggerer. A guilt-free puts debugger Ruby gem FTW!
 
 In other words, puts_debuggerer is a Ruby library for improved puts debugging, automatically displaying bonus useful information such as source line number and source code.
 
