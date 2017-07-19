@@ -16,16 +16,16 @@ describe 'PutsDebuggerer' do
     expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:6 \"Hello World\"\n")
   end
   it 'prints file, line number, ruby expression, and evaluated string object' do
-    name = 'Muhammad'
+    name = 'Robert'
     PutsDebuggererInvoker.dynamic_greeting(name)
     output = $stdout.string
-    expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n")
+    expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
   end
   it 'prints file, line number, ruby expression, and evaluated string object without extra parentheses when already surrounded' do
-    name = 'Muhammad'
+    name = 'Robert'
     PutsDebuggererInvoker.parentheses_dynamic_greeting(name)
     output = $stdout.string
-    expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:14\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n")
+    expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:14\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
   end
   it 'prints file, line number, ruby expression, and evaluated numeric object without quotes' do
     PutsDebuggererInvoker.numeric_squaring(3)
@@ -45,26 +45,49 @@ describe 'PutsDebuggerer' do
       expect(output).to eq("[PD] spec/support/puts_debuggerer_invoker.rb:6 \"Hello World\"\n")
     end
     it 'prints file relative to app path, line number, ruby expression, and evaluated string object' do
-      name = 'Muhammad'
+      name = 'Robert'
       PutsDebuggererInvoker.dynamic_greeting(name)
       output = $stdout.string
-      expect(output).to eq("[PD] spec/support/puts_debuggerer_invoker.rb:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n")
+      expect(output).to eq("[PD] spec/support/puts_debuggerer_invoker.rb:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
     end
   end
   context 'with rails' do
     before do
+      load "awesome_print/core_ext/kernel.rb"
+      @awesome_print_defaults = AwesomePrint.defaults
+      AwesomePrint.defaults = {
+        plain: true
+      }
+      Kernel.send(:remove_method, :ap) rescue nil
       Object.class_eval do
         module Rails
+          class Logger
+            def debug(object)
+              # simulate a Rails logger. Adding extra prefix to ease testing.
+              puts "Rails.logger.debug: #{object.inspect}"
+            end
+            def ap(object)
+              # simulate a Rails ap logger. Adding extra prefix to ease testing.
+              print "Rails.logger.ap:"
+              Object.send(:ap, object)
+            end
+          end
           def self.root
             File.expand_path(__FILE__).sub(/spec\/lib\/puts_debuggerer_spec.rb$/, '')
+          end
+          def self.logger
+            @logger ||= Logger.new
           end
         end
       end
       PutsDebuggerer.app_path = nil # defaults to Rails
+      PutsDebuggerer.print_engine = :p
     end
     after do
       Object.send(:remove_const, :Rails)
       PutsDebuggerer.app_path = nil # default app_path
+      Kernel.send(:remove_method, :ap) rescue nil
+      AwesomePrint.defaults = @awesome_print_defaults
     end
     it 'prints file relative to app path, line number, and literal string object' do
       PutsDebuggererInvoker.static_greeting
@@ -72,10 +95,32 @@ describe 'PutsDebuggerer' do
       expect(output).to eq("[PD] spec/support/puts_debuggerer_invoker.rb:6 \"Hello World\"\n")
     end
     it 'prints file relative to app path, line number, ruby expression, and evaluated string object' do
-      name = 'Muhammad'
+      name = 'Robert'
       PutsDebuggererInvoker.dynamic_greeting(name)
       output = $stdout.string
-      expect(output).to eq("[PD] spec/support/puts_debuggerer_invoker.rb:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n")
+      expect(output).to eq("[PD] spec/support/puts_debuggerer_invoker.rb:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
+    end
+    it 'defaults to Rails debug logger lambda in Rails app without awesome_print' do
+      PutsDebuggerer.print_engine = nil
+      PutsDebuggererInvoker.static_greeting
+      output = $stdout.string
+      expect(output).to eq("[PD] spec/support/puts_debuggerer_invoker.rb:6 Rails.logger.debug: \"Hello World\"\n")
+    end
+    it 'defaults to Rails awesome_print logger in Rails app with awesome_print' do
+      load "awesome_print/core_ext/kernel.rb"
+      PutsDebuggerer.print_engine = nil
+      PutsDebuggererInvoker.static_nested_array
+      output = $stdout.string
+      expect(output).to eq(<<-MULTILINE
+[PD] spec/support/puts_debuggerer_invoker.rb:22 Rails.logger.ap:[
+    [0] 1,
+    [1] [
+        [0] 2,
+        [1] 3
+    ]
+]
+      MULTILINE
+      )
     end
   end
   context 'with header support enabled' do
@@ -92,31 +137,31 @@ describe 'PutsDebuggerer' do
         expect(output).to eq("#{PutsDebuggerer::HEADER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:6 \"Hello World\"\n")
       end
       it 'prints asterisk header 80 times by default before dynamic PD print out' do
-        name = 'Muhammad'
+        name = 'Robert'
         PutsDebuggererInvoker.dynamic_greeting(name)
         output = $stdout.string
-        expect(output).to eq("#{PutsDebuggerer::HEADER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n")
+        expect(output).to eq("#{PutsDebuggerer::HEADER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
       end
       it 'disables header with nil header' do
         PutsDebuggerer.header = nil
-        name = 'Muhammad'
+        name = 'Robert'
         PutsDebuggererInvoker.dynamic_greeting(name)
         output = $stdout.string
-        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n")
+        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
       end
       it 'disables header with false header' do
         PutsDebuggerer.header = false
-        name = 'Muhammad'
+        name = 'Robert'
         PutsDebuggererInvoker.dynamic_greeting(name)
         output = $stdout.string
-        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n")
+        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
       end
       it 'disables header with empty string header' do
         PutsDebuggerer.header = ''
-        name = 'Muhammad'
+        name = 'Robert'
         PutsDebuggererInvoker.dynamic_greeting(name)
         output = $stdout.string
-        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n")
+        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
       end
     end
     context 'as custom header' do
@@ -133,10 +178,10 @@ describe 'PutsDebuggerer' do
         expect(output).to eq("#{custom_header}\n[PD] #{puts_debuggerer_invoker_file}:6 \"Hello World\"\n")
       end
       it 'prints asterisk header 80 times by default before dynamic PD print out' do
-        name = 'Muhammad'
+        name = 'Robert'
         PutsDebuggererInvoker.dynamic_greeting(name)
         output = $stdout.string
-        expect(output).to eq("#{custom_header}\n[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n")
+        expect(output).to eq("#{custom_header}\n[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
       end
     end
   end
@@ -155,31 +200,31 @@ describe 'PutsDebuggerer' do
         expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:6 \"Hello World\"\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
       end
       it 'prints asterisk footer 80 times by default before dynamic PD print out' do
-        name = 'Muhammad'
+        name = 'Robert'
         PutsDebuggererInvoker.dynamic_greeting(name)
         output = $stdout.string
-        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
+        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
       end
       it 'disables footer with nil footer' do
         PutsDebuggerer.footer = nil
-        name = 'Muhammad'
+        name = 'Robert'
         PutsDebuggererInvoker.dynamic_greeting(name)
         output = $stdout.string
-        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n")
+        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
       end
       it 'disables footer with false footer' do
         PutsDebuggerer.footer = false
-        name = 'Muhammad'
+        name = 'Robert'
         PutsDebuggererInvoker.dynamic_greeting(name)
         output = $stdout.string
-        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n")
+        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
       end
       it 'disables footer with empty string footer' do
         PutsDebuggerer.footer = ''
-        name = 'Muhammad'
+        name = 'Robert'
         PutsDebuggererInvoker.dynamic_greeting(name)
         output = $stdout.string
-        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n")
+        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
       end
     end
     context 'as custom footer' do
@@ -196,10 +241,10 @@ describe 'PutsDebuggerer' do
         expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:6 \"Hello World\"\n#{custom_footer}\n")
       end
       it 'prints asterisk footer 80 times by default before dynamic PD print out' do
-        name = 'Muhammad'
+        name = 'Robert'
         PutsDebuggererInvoker.dynamic_greeting(name)
         output = $stdout.string
-        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n#{custom_footer}\n")
+        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n#{custom_footer}\n")
       end
     end
   end
@@ -227,8 +272,8 @@ describe 'PutsDebuggerer' do
     after do
       PutsDebuggerer.print_engine = :p
       AwesomePrint.defaults = @awesome_print_defaults
-      Kernel.send(:remove_method, :print_meh)
-      Kernel.send(:remove_method, :ap)
+      Kernel.send(:remove_method, :print_meh) rescue nil
+      Kernel.send(:remove_method, :ap) rescue nil
     end
     it 'defaults to :p print engine if awesome_print not loaded, auto-detects and wires awesome_print as default if loaded' do
       Kernel.send(:remove_method, :ap)
@@ -237,6 +282,13 @@ describe 'PutsDebuggerer' do
       load "awesome_print/core_ext/kernel.rb"
       PutsDebuggerer.print_engine = nil #reset to default
       expect(PutsDebuggerer.print_engine).to eq(:ap)
+    end
+    it 'prints using passed in custom lambda print engine' do
+      Kernel.send(:remove_method, :ap)
+      PutsDebuggerer.print_engine = lambda {|text| puts "**\"#{text}\"**"} #intentionally set as :p
+      PutsDebuggererInvoker.static_greeting
+      output = $stdout.string
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:6 **\"Hello World\"**\n")
     end
     it 'prints file relative to app path, line number, ruby expression, and evaluated string object' do
       PutsDebuggererInvoker.static_nested_array
@@ -249,7 +301,7 @@ describe 'PutsDebuggerer' do
       expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => #{expected_object_printout}\n")
     end
     it 'raises informative error if print_engine was invalid' do
-      expect {PutsDebuggerer.print_engine = :invalid}.to raise_error('print_engine must be a valid global method symbol (e.g. :p or :puts)')
+      expect {PutsDebuggerer.print_engine = :invalid}.to raise_error('print_engine must be a valid global method symbol (e.g. :p or :puts) or lambda/proc')
     end
     it 'supports passing extra options to print_engines like awesome_print' do
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], indent: 2)
@@ -324,7 +376,7 @@ describe 'PutsDebuggerer' do
       PutsDebuggerer.caller = nil
     end
     it 'prints custom format' do
-      name = 'Muhammad'
+      name = 'Robert'
       PutsDebuggererInvoker.dynamic_greeting(name)
       output = $stdout.string
       expected_output = <<-MULTI
@@ -333,7 +385,7 @@ HEADER: #{'*'*80}
 FILE: #{puts_debuggerer_invoker_file}
 LINE: 10
 EXPRESSION: "Hello \#{name}"
-PRINT OUT: "Hello Muhammad"
+PRINT OUT: "Hello Robert"
 CALLER: #{__FILE__}:#{__LINE__-9}:in `block (3 levels) in <top (required)>'
 FOOTER: #{'*'*80}
       MULTI
@@ -341,22 +393,23 @@ FOOTER: #{'*'*80}
     end
     it 'resets format' do
       PutsDebuggerer.formatter = nil
-      name = 'Muhammad'
+      name = 'Robert'
       PutsDebuggererInvoker.dynamic_greeting(name)
       output = $stdout.string
       expected_caller = "     #{__FILE__}:#{__LINE__-2}:in `block (3 levels) in <top (required)>'"
-      expect(output).to eq("#{PutsDebuggerer::HEADER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n#{expected_caller}\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
+      expect(output).to eq("#{PutsDebuggerer::HEADER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n#{expected_caller}\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
     end
     #TODO support formatting header, footer, and caller backtrace too
   end
 
   context 'exception cases' do
     it 'handles multi line ruby expressions correctly' do
-      name = 'Muhammad'
+      name = 'Robert'
       PutsDebuggererInvoker.multi_line_dynamic_greeting(name)
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:30\n   > pd \"Hello \" +\n      name.to_s\n  => \"Hello Muhammad\"\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:30\n   > pd \"Hello \" +\n      name.to_s\n  => \"Hello Robert\"\n")
     end
+    it 'what if something implements method method?' #e.g. rails request has method implemented to represet http method (bad choice on their part but whatevs)
   end
 
   context 'with caller backtrace' do
@@ -373,19 +426,19 @@ FOOTER: #{'*'*80}
       expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:6 \"Hello World\"\n#{expected_caller.join("\n")}\n")
     end
     it 'includes full caller backtrace when printing file, line number, ruby expression, and evaluated string object' do
-      name = 'Muhammad'
+      name = 'Robert'
       PutsDebuggererInvoker.dynamic_greeting(name)
       output = $stdout.string
       expected_caller = (["#{__FILE__}:#{__LINE__-2}:in `block (3 levels) in <top (required)>'"] + caller).map {|l| ' '*5 + l}
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n#{expected_caller.join("\n")}\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n#{expected_caller.join("\n")}\n")
     end
     it 'includes depth-limited caller backtrace when printing file, line number, ruby expression, and evaluated string object' do
       PutsDebuggerer.caller = 0 # just give me one backtrace entry
-      name = 'Muhammad'
+      name = 'Robert'
       PutsDebuggererInvoker.dynamic_greeting(name)
       output = $stdout.string
       expected_caller = ["     #{__FILE__}:#{__LINE__-2}:in `block (3 levels) in <top (required)>'"]
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Muhammad\"\n#{expected_caller.join("\n")}\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n#{expected_caller.join("\n")}\n")
     end
   end
 

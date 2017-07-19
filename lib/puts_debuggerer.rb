@@ -4,7 +4,7 @@ module PutsDebuggerer
   HEADER_DEFAULT = '*'*80
   FOOTER_DEFAULT = '*'*80
   PRINT_ENGINE_DEFAULT = :p
-  PRINT_ENGINE_MESSAGE_INVALID = 'print_engine must be a valid global method symbol (e.g. :p or :puts)'
+  PRINT_ENGINE_MESSAGE_INVALID = 'print_engine must be a valid global method symbol (e.g. :p or :puts) or lambda/proc'
   ANNOUNCER_DEFAULT = '[PD]'
   FORMATTER_DEFAULT = -> (data) {
       puts data[:header] if data[:header]
@@ -130,7 +130,17 @@ module PutsDebuggerer
 
     def print_engine=(engine)
       if engine.nil?
-        @print_engine = method(:ap).name rescue PRINT_ENGINE_DEFAULT
+        if Object.const_defined?(:Rails)
+          if Object.respond_to?(:ap, 'Hello')
+            @print_engine = lambda {|object| Rails.logger.ap(object)}
+          else
+            @print_engine = lambda {|object| Rails.logger.debug(object)}
+          end
+        else
+          @print_engine = method(:ap).name rescue PRINT_ENGINE_DEFAULT
+        end
+      elsif engine.is_a?(Proc)
+        @print_engine = engine #TODO check that it takes one parameter or else fail fast
       else
         @print_engine = method(engine).name rescue raise(PRINT_ENGINE_MESSAGE_INVALID)
       end
@@ -258,14 +268,13 @@ module PutsDebuggerer
         send("#{option}=", value)
       end
     end
-
   end
 end
 
 PutsDebuggerer.print_engine = PutsDebuggerer::PRINT_ENGINE_DEFAULT
 PutsDebuggerer.announcer = PutsDebuggerer::ANNOUNCER_DEFAULT
 PutsDebuggerer.formatter = PutsDebuggerer::FORMATTER_DEFAULT
-PutsDebuggerer.app_path = nil
+PutsDebuggerer.app_path = nil #TODO also have it set Rails root on first PD
 PutsDebuggerer.caller = nil
 
 # Prints object with bonus info such as file name, line number and source
@@ -345,9 +354,9 @@ end
 #   puts __caller_source_line__
 #
 # prints out `puts __caller_source_line__`
-def __caller_source_line__(caller_depth=0)
-  source_line_number = __caller_line_number__(caller_depth+1)
-  source_file = __caller_file__(caller_depth+1)
+def __caller_source_line__(caller_depth=0, source_file=nil, source_line_number=nil)
+  source_line_number ||= __caller_line_number__(caller_depth+1)
+  source_file ||= __caller_file__(caller_depth+1)
   source_line = nil
   if source_file == '(irb)'
     source_line = conf.io.line(source_line_number)
@@ -386,10 +395,14 @@ def __build_pd_data__(object, print_engine_options=nil)
     pd_expression: __caller_pd_expression__(depth),
     object: object,
     object_printer: lambda do
-      if print_engine_options.to_h.empty?
-        send(PutsDebuggerer.print_engine, object)
+      if PutsDebuggerer.print_engine.is_a?(Proc)
+        PutsDebuggerer.print_engine.call(object)
       else
-        send(PutsDebuggerer.print_engine, object, print_engine_options) rescue send(PutsDebuggerer.print_engine, object)
+        if print_engine_options.to_h.empty?
+          send(PutsDebuggerer.print_engine, object)
+        else
+          send(PutsDebuggerer.print_engine, object, print_engine_options) rescue send(PutsDebuggerer.print_engine, object)
+        end
       end
     end
   }

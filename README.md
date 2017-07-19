@@ -1,4 +1,4 @@
-# puts_debuggerer v0.5.0 
+# puts_debuggerer v0.5.1
 [![Gem Version](https://badge.fury.io/rb/puts_debuggerer.svg)](http://badge.fury.io/rb/puts_debuggerer)
 [![Build Status](https://travis-ci.org/AndyObtiva/puts_debuggerer.svg?branch=master)](https://travis-ci.org/AndyObtiva/puts_debuggerer)
 [![Coverage Status](https://coveralls.io/repos/github/AndyObtiva/puts_debuggerer/badge.svg?branch=master)](https://coveralls.io/github/AndyObtiva/puts_debuggerer?branch=master)
@@ -8,7 +8,7 @@ statements like an umbrella in a stormy day.
 Why not make it official and have puts debugging become its own perfectly
 legitimate thing?!!
 
-And thus, puts_debuggerer was born. A guilt-free puts debugger Ruby gem FTW!
+Enter puts_debuggerer. A guilt-free puts debugger Ruby gem FTW!
 
 In other words, puts_debuggerer is a Ruby library for improved puts debugging, automatically displaying bonus useful information such as source line number and source code.
 
@@ -20,20 +20,22 @@ Love PD?! Why not promote with [merchandise](https://www.zazzle.com/i+heart+pd+g
 
 ## Instructions
 
-### Bundler
+### Option 1: Bundler
 
 Add the following to bundler's `Gemfile`.
 
 ```ruby
-gem 'puts_debuggerer', '~> 0.5.0'
+gem 'puts_debuggerer', '~> 0.5.1'
 ```
 
-### Manual
+This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you may create an initializer under `config/initializers` named `puts_debuggerer_options.rb` to enable further customizations as per the [Options](#options) section below.
+
+### Option 2: Manual
 
 Or manually install and require library.
 
 ```bash
-gem install puts_debuggerer -v0.5.0
+gem install puts_debuggerer -v0.5.1
 ```
 
 ```ruby
@@ -63,19 +65,23 @@ Happy puts_debuggerering!
 Example Code:
 
 ```ruby
-# /Users/User/finance_calculator_app/pd_test.rb # line 1
-bug = 'beattle'                                 # line 2
-pd "Show me the source of the bug: #{bug}"      # line 3
-pd 'What line number am I?'                     # line 4
+# /Users/User/finance_calculator_app/pd_test.rb           # line 1
+bug = 'beattle'                                           # line 2
+pd 'Debugging Info:'                                      # line 3 (literal)
+pd "Show me the source of the bug: #{bug}"                # line 4
+pd "Show me the result of the calculation: #{(12.0/3.0)}" # line 5
 ```
 
 Example Printout:
 
 ```bash
-[PD] /Users/User/finance_calculator_app/pd_test.rb:3
+[PD] /Users/User/finance_calculator_app/pd_test.rb:3 "Debugging Info:"
+[PD] /Users/User/finance_calculator_app/pd_test.rb:4
    > pd "Show me the source of the bug: #{bug}"
   => "Show me the source of the bug: beattle"
-[PD] /Users/User/finance_calculator_app/pd_test.rb:4 "What line number am I?"
+[PD] /Users/User/finance_calculator_app/pd_test.rb:5
+   > pd "Show me the result of the calculation: #{(12.0/3.0)}"
+  => "Show me the result of the calculation: 4.0"
 ```
 
 ### Options
@@ -89,7 +95,24 @@ Global configuration is done via `PutsDebuggerer` module attribute writers.
 On the other hand, piecemeal options can be passed to the `pd` global method as
 the second argument.
 
-Example:
+Example 1:
+
+```ruby
+# File Name: /Users/User/project/piecemeal.rb
+data = [1, [2, 3]]
+pd data, header: true
+```
+
+Prints out:
+
+```bash
+********************************************************************************
+[PD] /Users/User/project/piecemeal.rb:3
+   > pd data, header: true
+  => [1, [2, 3]]
+```
+
+Example 2:
 
 ```ruby
 # File Name: /Users/User/project/piecemeal.rb
@@ -103,7 +126,7 @@ Prints out:
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
    -<[PD]>-
    /Users/User/project/piecemeal.rb:3
-   > pd data
+   > pd data, header: '>'*80, footer: '<'*80, announcer: "   -<[PD]>-\n  "
   => [1, [2, 3]]
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ```
@@ -186,11 +209,10 @@ Prints out:
 #### `PutsDebuggerer.print_engine`
 (default = `:p`)
 
-Print engine to use in object printout (e.g. `p`, `ap`, `pp`).
-It is represented by the print engine's global method name as a symbol
-(e.g. `:ap` for [awesome_print](https://github.com/awesome-print/awesome_print)).
+Print engine is a global method symbol or lambda expression to use in object printout. Examples of global methods are `:p`, `:ap`, and `:pp`. An example of a lambda expression is `lambda {|o| Rails.logger.info(o)}`
+
 Defaults to Ruby's built-in `p` method identified by the symbol `:p`.
-If it finds [awesome_print](https://github.com/awesome-print/awesome_print) loaded, it defaults to `ap` as `:ap` instead.
+If it finds [awesome_print](https://github.com/awesome-print/awesome_print) loaded, it defaults to `ap` as `:ap` instead. Also, if it finds Rails loaded without ap, it relies on `lambda {|o| Rails.logger.debug(o)}` as the print engine. Otherwise if both Rails and [awesome_print](https://github.com/awesome-print/awesome_print) are loaded, then it relies on `lambda {|o| Rails.logger.ap(o)}` instead
 
 Example:
 
@@ -373,7 +395,7 @@ Prints out `puts __caller_source_line__`
 
 ## Release Notes
 
-* v0.5.0: custom formatter, caller backtrace, per-puts piecemeal options, and multi-line support
+* v0.5.1: custom formatter, caller backtrace, per-puts piecemeal options, and multi-line support
 * v0.4.0: custom print engine (e.g. ap), custom announcer, and IRB support
 * v0.3.0: header/footer support, multi-line printout, improved format
 * v0.2.0: App path exclusion support, Rails root support, improved format
