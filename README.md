@@ -318,7 +318,18 @@ Prints out:
 
 ### Bonus
 
-puts_debuggerer comes with the following bonus utility methods:
+puts_debuggerer comes with a number of bonus goodies.
+
+It comes with [awesome_print](https://github.com/awesome-print/awesome_print).
+
+You may disable by not requiring in Ruby or by adding an explicit reference to awesome_print with `require: false` in bundler:
+
+```ruby
+gem "awesome_print", require: false
+gem "puts_debugger"
+```
+
+Additionally, puts_debuggerer comes with the following bonus utility methods:
 
 #### `__caller_line_number__(caller_depth=0)`
 
