@@ -33,19 +33,4 @@ describe 'PutsDebuggerer' do
     output = $stdout.string
     expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:35\n   > greeting = \"Hello \#{pd(name)}\"\n  => \"Robert\"\n")
   end
-
-  # TODO remove bad names (like moh') from old repo code via rebase interactive
-  # TODO break spec into multiple smaller spec files
-
-  context 'super_method (parent) information inclusion' do
-    it 'includes super_method only' # auto-detect if it exists? and have option be true/false/auto?
-    it 'includes super_method hierarchy (full)'
-    it 'includes super_method hierarchy (at a depth)'
-  end
-
-
-  context 'look into puts debuggerer blog post by tenderlove for other goodies to add'
-  context 'deadlock detection support'
-  context 'object allocation support' #might need to note having to load this lib first before others for this to work
-  context 'support for console.log and/or alert in js'
 end
