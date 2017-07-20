@@ -1,4 +1,4 @@
-# puts_debuggerer v0.5.1
+# puts_debuggerer v0.6.0
 [![Gem Version](https://badge.fury.io/rb/puts_debuggerer.svg)](http://badge.fury.io/rb/puts_debuggerer)
 [![Build Status](https://travis-ci.org/AndyObtiva/puts_debuggerer.svg?branch=master)](https://travis-ci.org/AndyObtiva/puts_debuggerer)
 [![Coverage Status](https://coveralls.io/repos/github/AndyObtiva/puts_debuggerer/badge.svg?branch=master)](https://coveralls.io/github/AndyObtiva/puts_debuggerer?branch=master)
@@ -10,7 +10,7 @@ legitimate thing?!!
 
 Enter puts_debuggerer. A guilt-free puts debugger Ruby gem FTW!
 
-In other words, puts_debuggerer is a Ruby library for improved puts debugging, automatically displaying bonus useful information such as source line number and source code.
+In other words, puts_debuggerer is a Ruby library that provides improved puts debugging, automatically displaying bonus useful information such as source line numbers and source code, among many other goodies (mentioned in the README.)
 
 Partially inspired (only partially ;) by this blog post:
 https://tenderlovemaking.com/2016/02/05/i-am-a-puts-debuggerer.html
@@ -25,7 +25,7 @@ Love PD?! Why not promote with [merchandise](https://www.zazzle.com/i+heart+pd+g
 Add the following to bundler's `Gemfile`.
 
 ```ruby
-gem 'puts_debuggerer', '~> 0.5.1'
+gem 'puts_debuggerer', '~> 0.6.0'
 ```
 
 This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you may create an initializer under `config/initializers` named `puts_debuggerer_options.rb` to enable further customizations as per the [Options](#options) section below.
@@ -35,7 +35,7 @@ This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you m
 Or manually install and require library.
 
 ```bash
-gem install puts_debuggerer -v0.5.1
+gem install puts_debuggerer -v0.6.0
 ```
 
 ```ruby
@@ -44,45 +44,57 @@ require 'puts_debuggerer'
 
 ### Usage
 
-Simply invoke global `pd` method anywhere and it prints source file, line
-number, and source code in addition to output (works even in IRB).
-If the argument is a literal value with no interpolation, the print out is
-simplified by not showing source code matching output.
+Simply invoke global `pd` method anywhere in your code passing an object or an expression argument.
 
-Quickly locate printed lines using Find feature (e.g. CTRL+F) by looking for:
-* [PD]
-* file:line_number
-* ruby expression.
-
-This gives you the added benefit of easily removing your `pd` statements later
-on.
-
-This can easily be augmented with a print engine like [awesome_print](https://github.com/awesome-print/awesome_print) and
-customized to format output differently as per options below.
-
-Happy puts_debuggerering!
+It will then provide helpful debugging information by printing the source file, line number, and source code in addition to output (works even in IRB).
 
 Example Code:
 
 ```ruby
 # /Users/User/finance_calculator_app/pd_test.rb           # line 1
 bug = 'beattle'                                           # line 2
-pd 'Debugging Info:'                                      # line 3 (literal)
-pd "Show me the source of the bug: #{bug}"                # line 4
-pd "Show me the result of the calculation: #{(12.0/3.0)}" # line 5
+pd "Show me the source of the bug: #{bug}"                # line 3
+pd "Show me the result of the calculation: #{(12.0/3.0)}" # line 4
 ```
 
 Example Printout:
 
 ```bash
-[PD] /Users/User/finance_calculator_app/pd_test.rb:3 "Debugging Info:"
-[PD] /Users/User/finance_calculator_app/pd_test.rb:4
+[PD] /Users/User/finance_calculator_app/pd_test.rb:3
    > pd "Show me the source of the bug: #{bug}"
   => "Show me the source of the bug: beattle"
-[PD] /Users/User/finance_calculator_app/pd_test.rb:5
+[PD] /Users/User/finance_calculator_app/pd_test.rb:4
    > pd "Show me the result of the calculation: #{(12.0/3.0)}"
   => "Show me the result of the calculation: 4.0"
 ```
+
+Quickly locate printed lines using Find feature (e.g. CTRL+F) by looking for:
+* [PD]
+* file:line_number
+* known ruby expression.
+
+This gives you the added benefit of easily removing your `pd` statements later
+on once done debugging.
+
+Note that `pd` returns the passed in object or expression argument unchanged, permitting debugging with shorter syntax than tap, and supporting chaining of extra method invocations afterward.
+
+Example Code:
+
+```ruby
+# /Users/User/greeting_app/pd_test.rb                     # line 1
+name = 'Robert'                                           # line 2
+greeting = "Hello #{pd(name)}"                            # line 3
+```
+
+Example Printout:
+
+```bash
+[PD] /Users/User/greeting_app/pd_test.rb:3
+   > greeting = "Hello #{pd(name)}"
+  => "Hello Robert"
+```
+
+Happy puts_debuggerering!
 
 ### Options
 
@@ -144,16 +156,14 @@ If [Rails](rubyonrails.org) was detected, it is automatically defaulted to `Rail
 PutsDebuggerer.app_path = File.join('/Users', 'User', 'finance_calculator_app') # line 2
 bug = 'beattle'                                                                 # line 3
 pd "Show me the source of the bug: #{bug}"                                      # line 4
-pd 'What line number am I?'                                                     # line 5
 ```
 
 Example Printout:
 
 ```bash
-[PD] pd_test.rb:4
+[PD] /pd_test.rb:4
    > pd "Show me the source of the bug: #{bug}"
   => "Show me the source of the bug: beattle"
-[PD] pd_test.rb:5 "What line number am I?"
 ```
 
 #### `PutsDebuggerer.header`
@@ -395,7 +405,9 @@ Prints out `puts __caller_source_line__`
 
 ## Release Notes
 
-* v0.5.1: custom formatter, caller backtrace, per-puts piecemeal options, and multi-line support
+* v0.6.0: unofficial erb support, returning evaluated object/expression, removed static syntax support (replaced with header support)
+* v0.5.1: support for print engine lambdas and smart defaults for leveraging Rails and AwesomePrint debuggers in Rails
+* v0.5.0: custom formatter, caller backtrace, per-puts piecemeal options, and multi-line support
 * v0.4.0: custom print engine (e.g. ap), custom announcer, and IRB support
 * v0.3.0: header/footer support, multi-line printout, improved format
 * v0.2.0: App path exclusion support, Rails root support, improved format

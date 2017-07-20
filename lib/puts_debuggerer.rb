@@ -311,7 +311,7 @@ def pd(object, options=nil)
     formatter_pd_data = __build_pd_data__(object, print_engine_options) #depth adds build method
     PutsDebuggerer.formatter.call(formatter_pd_data)
   end
-  nil
+  object
 end
 
 
@@ -367,7 +367,7 @@ def __caller_source_line__(caller_depth=0, source_file=nil, source_line_number=n
     f.each_line do |line|
       if !done && f.lineno == source_line_number
         source_line << line
-        done = true if Ripper.sexp_raw(source_line)
+        done = true if Ripper.sexp_raw(source_line) || source_line.include?('%>') #the last condition is for erb support (unofficial)
         source_line_number+=1
       end
     end
@@ -417,8 +417,7 @@ def __build_pd_data__(object, print_engine_options=nil)
 end
 
 def __format_pd_expression__(expression, object)
-  # avoid printing expression if it matches object inspection to prevent redundancy
-  expression == object.inspect.sub("\n$", '') ? "" : "\n   > pd #{expression}\n  =>"
+  "\n   > #{expression}\n  =>"
 end
 
 def __caller_pd_expression__(depth=0)
@@ -438,5 +437,5 @@ end
 #
 # outputs `(x=1)`
 def __extract_pd_expression__(source_line)
-  source_line.strip.sub(/^[ ]*pd[ ]+/, '').strip
+  source_line.strip
 end
