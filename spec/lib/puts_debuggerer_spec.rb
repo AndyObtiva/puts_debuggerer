@@ -34,16 +34,6 @@ describe 'PutsDebuggerer' do
     expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:35\n   > greeting = \"Hello \#{pd(name)}\"\n  => \"Robert\"\n")
   end
 
-  context 'exception cases' do
-    it 'handles multi line ruby expressions correctly' do
-      name = 'Robert'
-      PutsDebuggererInvoker.multi_line_dynamic_greeting(name)
-      output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:30\n   > pd \"Hello \" +\n      name.to_s\n  => \"Hello Robert\"\n")
-    end
-    it 'what if something implements method method?' #e.g. rails request has method implemented to represet http method (bad choice on their part but whatevs)
-  end
-
   context 'with caller backtrace' do
     before do
       PutsDebuggerer.caller = true
