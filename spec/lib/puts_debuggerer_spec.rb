@@ -34,29 +34,6 @@ describe 'PutsDebuggerer' do
     expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:35\n   > greeting = \"Hello \#{pd(name)}\"\n  => \"Robert\"\n")
   end
 
-  context 'with custom announcer' do
-    let(:custom_announcer) {'<PD>'}
-    before do
-      PutsDebuggerer.announcer = custom_announcer
-    end
-    after do
-      PutsDebuggerer.announcer = nil
-    end
-    it 'changes [PD] to <PD>' do
-      name = 'Robert'
-      PutsDebuggererInvoker.dynamic_greeting(name)
-      output = $stdout.string
-      expect(output).to eq("<PD> #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
-    end
-    it 'resets to default announcer when announcer is set to nil' do
-      PutsDebuggerer.announcer = nil
-      name = 'Robert'
-      PutsDebuggererInvoker.dynamic_greeting(name)
-      output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
-    end
-  end
-
   context 'irb support' do
     it 'works' do
       # senseless faking to get irb support to work (tested in IRB as working)
