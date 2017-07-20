@@ -405,7 +405,8 @@ Prints out `puts __caller_source_line__`
 
 ## Release Notes
 
-* v0.6.1: unofficial erb support, returning evaluated object/expression, removed static syntax support (replaced with header support)
+* v0.6.1: updated README and broke apart specs
+* v0.6.0: unofficial erb support, returning evaluated object/expression, removed static syntax support (replaced with header support)
 * v0.5.1: support for print engine lambdas and smart defaults for leveraging Rails and AwesomePrint debuggers in Rails
 * v0.5.0: custom formatter, caller backtrace, per-puts piecemeal options, and multi-line support
 * v0.4.0: custom print engine (e.g. ap), custom announcer, and IRB support
