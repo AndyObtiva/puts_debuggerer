@@ -1,4 +1,4 @@
-# puts_debuggerer v0.7.0
+# puts_debuggerer v0.7.1
 [![Gem Version](https://badge.fury.io/rb/puts_debuggerer.svg)](http://badge.fury.io/rb/puts_debuggerer)
 [![Build Status](https://travis-ci.org/AndyObtiva/puts_debuggerer.svg?branch=master)](https://travis-ci.org/AndyObtiva/puts_debuggerer)
 [![Coverage Status](https://coveralls.io/repos/github/AndyObtiva/puts_debuggerer/badge.svg?branch=master)](https://coveralls.io/github/AndyObtiva/puts_debuggerer?branch=master)
@@ -25,7 +25,7 @@ Love PD?! Why not promote with [merchandise](https://www.zazzle.com/i+heart+pd+g
 Add the following to bundler's `Gemfile`.
 
 ```ruby
-gem 'puts_debuggerer', '~> 0.7.0'
+gem 'puts_debuggerer', '~> 0.7.1'
 ```
 
 This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you may create an initializer under `config/initializers` named `puts_debuggerer_options.rb` to enable further customizations as per the [Options](#options) section below.
@@ -35,7 +35,7 @@ This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you m
 Or manually install and require library.
 
 ```bash
-gem install puts_debuggerer -v0.7.0
+gem install puts_debuggerer -v0.7.1
 ```
 
 ```ruby
@@ -475,6 +475,7 @@ Prints out `puts __caller_source_line__`
 
 ## Release Notes
 
+* v0.7.1: default print engine to :ap (AwesomePrint)
 * v0.7.0: `run_at` option, global and piecemeal.
 * v0.6.1: updated README and broke apart specs
 * v0.6.0: unofficial erb support, returning evaluated object/expression, removed static syntax support (replaced with header support)
