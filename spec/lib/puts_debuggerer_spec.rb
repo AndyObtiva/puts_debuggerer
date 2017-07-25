@@ -33,4 +33,9 @@ describe 'PutsDebuggerer' do
     output = $stdout.string
     expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:35\n   > greeting = \"Hello \#{pd(name)}\"\n  => \"Robert\"\n")
   end
+
+  context 'look into puts debuggerer blog post by tenderlove for other goodies to add'
+  context 'deadlock detection support'
+  context 'object allocation support' #might need to note having to load this lib first before others for this to work
+  context 'support for console.log and/or alert in js'
 end

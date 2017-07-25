@@ -14,6 +14,7 @@ module PutsDebuggerer
       puts data[:footer] if data[:footer]
     }
   CALLER_DEPTH_ZERO = 4 #depth includes pd + with_options method + nested block + build_pd_data method
+  OBJECT_WHEN = {}
 
   class << self
     # Application root path to exclude when printing out file path
@@ -258,7 +259,8 @@ module PutsDebuggerer
         app_path: app_path,
         announcer: announcer,
         formatter: formatter,
-        caller: caller
+        caller: caller,
+        run_at: run_at
       }
     end
 
@@ -268,6 +270,68 @@ module PutsDebuggerer
         send("#{option}=", value)
       end
     end
+
+    # When to print as specified by an index or range.
+    # * Default value is `nil` meaning always
+    # * Value as an Integer index (0-based) specifies at which run to print once
+    # * Value as an Array of indices specifies at which runs to print multiple times
+    # * Value as a range specifies at which runs to print multiple times,
+    #   indefinitely if it ends with ..-1
+    #
+    # Example:
+    #
+    #   PutsDebuggerer.when = 0
+    #   pd (x=1) # prints standard PD output
+    #   pd (x=1) # prints nothing
+    #
+    #   PutsDebuggerer.when = 1
+    #   pd (x=1) # prints nothing
+    #   pd (x=1) # prints standard PD output
+    #
+    #   PutsDebuggerer.when = [0, 2]
+    #   pd (x=1) # prints standard PD output
+    #   pd (x=1) # prints nothing
+    #   pd (x=1) # prints standard PD output
+    #   pd (x=1) # prints nothing
+    #
+    #   PutsDebuggerer.when = 2..5
+    #   pd (x=1) # prints nothing
+    #   pd (x=1) # prints nothing
+    #   pd (x=1) # prints standard PD output
+    #   pd (x=1) # prints standard PD output
+    #   pd (x=1) # prints standard PD output
+    #   pd (x=1) # prints standard PD output
+    #   pd (x=1) # prints nothing
+    #
+    #   PutsDebuggerer.when = 2...5
+    #   pd (x=1) # prints nothing
+    #   pd (x=1) # prints nothing
+    #   pd (x=1) # prints standard PD output
+    #   pd (x=1) # prints standard PD output
+    #   pd (x=1) # prints standard PD output
+    #   pd (x=1) # prints nothing
+    #
+    #   PutsDebuggerer.when = 2..-1
+    #   pd (x=1) # prints nothing
+    #   pd (x=1) # prints nothing
+    #   pd (x=1) # prints standard PD output
+    #   pd (x=1) ... continue printing indefinitely on all subsequent runs
+    #
+    #   PutsDebuggerer.when = 2...-1
+    #   pd (x=1) # prints nothing
+    #   pd (x=1) # prints nothing
+    #   pd (x=1) # prints standard PD output
+    #   pd (x=1) ... continue printing indefinitely on all subsequent runs
+    attr_reader :run_at
+
+    def run_at=(value)
+      @run_at = value
+    end
+
+    def run_at?
+      !!@run_at
+    end
+
   end
 end
 
@@ -307,16 +371,31 @@ PutsDebuggerer.caller = nil
 #     => "Show me the source of the bug: beattle"
 #   [PD] /Users/User/finance_calculator_app/pd_test.rb:4 "What line number am I?"
 def pd(object, options=nil)
-  __with_pd_options__(options) do |print_engine_options|
-    formatter_pd_data = __build_pd_data__(object, print_engine_options) #depth adds build method
-    PutsDebuggerer.formatter.call(formatter_pd_data)
+  run_at = options && options[:run_at]
+  execute_pd = false
+  if run_at.nil?
+    execute_pd = true
+  elsif run_at.is_a?(Integer)
+    PutsDebuggerer::OBJECT_WHEN[[object,run_at]] = -1 if PutsDebuggerer::OBJECT_WHEN[[object,run_at]].nil?
+    PutsDebuggerer::OBJECT_WHEN[[object,run_at]] += 1
+    execute_pd = true if run_at == PutsDebuggerer::OBJECT_WHEN[[object,run_at]]
   end
+
+  if execute_pd
+    __with_pd_options__(options) do |print_engine_options|
+      formatter_pd_data = __build_pd_data__(object, print_engine_options) #depth adds build method
+      PutsDebuggerer.formatter.call(formatter_pd_data)
+    end
+  end
+
   object
 end
 
 
+# TODO move up and consider placing in module
 STACK_TRACE_CALL_LINE_NUMBER_REGEX = /\:(\d+)\:in /
 STACK_TRACE_CALL_SOURCE_FILE_REGEX = /[ ]*([^:]+)\:\d+\:in /
+
 
 # Provides caller line number starting 1 level above caller of
 # this method.
