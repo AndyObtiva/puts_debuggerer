@@ -17,6 +17,5 @@ describe 'PutsDebuggerer' do
       output = $stdout.string
       expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:30\n   > pd \"Hello \" +\n      name.to_s\n  => \"Hello Robert\"\n")
     end
-    it 'what if something implements method method?' #e.g. rails request has method implemented to represet http method (bad choice on their part but whatevs)
   end
 end

@@ -217,12 +217,11 @@ Prints out:
 ```
 
 #### `PutsDebuggerer.print_engine`
-(default = `:p`)
+(default = `:ap`)
 
 Print engine is a global method symbol or lambda expression to use in object printout. Examples of global methods are `:p`, `:ap`, and `:pp`. An example of a lambda expression is `lambda {|o| Rails.logger.info(o)}`
 
-Defaults to Ruby's built-in `p` method identified by the symbol `:p`.
-If it finds [awesome_print](https://github.com/awesome-print/awesome_print) loaded, it defaults to `ap` as `:ap` instead. Also, if it finds Rails loaded without ap, it relies on `lambda {|o| Rails.logger.debug(o)}` as the print engine. Otherwise if both Rails and [awesome_print](https://github.com/awesome-print/awesome_print) are loaded, then it relies on `lambda {|o| Rails.logger.ap(o)}` instead
+Defaults to [awesome_print](https://github.com/awesome-print/awesome_print). If it finds Rails loaded it defaults to `lambda {|o| Rails.logger.ap(o)}` instead
 
 Example:
 

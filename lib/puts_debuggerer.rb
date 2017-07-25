@@ -1,9 +1,10 @@
 require 'ripper'
+require 'awesome_print'
 
 module PutsDebuggerer
   HEADER_DEFAULT = '*'*80
   FOOTER_DEFAULT = '*'*80
-  PRINT_ENGINE_DEFAULT = :p
+  PRINT_ENGINE_DEFAULT = :ap
   PRINT_ENGINE_MESSAGE_INVALID = 'print_engine must be a valid global method symbol (e.g. :p or :puts) or lambda/proc'
   ANNOUNCER_DEFAULT = '[PD]'
   FORMATTER_DEFAULT = -> (data) {
@@ -107,14 +108,13 @@ module PutsDebuggerer
     # Print engine to use in object printout (e.g. `p`, `ap`, `pp`).
     # It is represented by the print engine's global method name as a symbol
     # (e.g. `:ap` for awesome_print).
-    # Defaults to Ruby's built-in `p` method identified by the symbol `:p`.
-    # If it finds awesome_print loaded, it defaults to `ap` as `:ap` instead.
+    # Defaults to awesome_print loaded.
     #
     # Example:
     #
     #   # File Name: /Users/User/example.rb
     #   require 'awesome_print'
-    #   PutsDebuggerer.print_engine = :ap
+    #   PutsDebuggerer.print_engine = :p
     #   array = [1, [2, 3]]
     #   pd array
     #
@@ -122,28 +122,19 @@ module PutsDebuggerer
     #
     #   [PD] /Users/User/example.rb:5
     #      > pd array
-    #     => [
-    #       [0] 1,
-    #       [1] [
-    #           [0] 2,
-    #           [1] 3
-    #       ]
+    #     => [1, [2, 3]]
     #   ]
     attr_reader :print_engine
 
     def print_engine=(engine)
       if engine.nil?
         if Object.const_defined?(:Rails)
-          if Object.respond_to?(:ap, 'Hello')
-            @print_engine = lambda {|object| Rails.logger.ap(object)}
-          else
-            @print_engine = lambda {|object| Rails.logger.debug(object)}
-          end
+          @print_engine = lambda {|object| Rails.logger.ap(object)}
         else
-          @print_engine = method(:ap).name rescue PRINT_ENGINE_DEFAULT
+          @print_engine = PRINT_ENGINE_DEFAULT
         end
       elsif engine.is_a?(Proc)
-        @print_engine = engine #TODO check that it takes one parameter or else fail fast
+        @print_engine = engine
       else
         @print_engine = method(engine).name rescue raise(PRINT_ENGINE_MESSAGE_INVALID)
       end

@@ -54,13 +54,6 @@ describe 'PutsDebuggerer' do
       output = $stdout.string
       expect(output).to eq("[PD] /spec/support/puts_debuggerer_invoker.rb:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
     end
-    it 'defaults to Rails debug logger lambda in Rails app without awesome_print' do
-      PutsDebuggerer.print_engine = nil
-      name = 'Robert'
-      PutsDebuggererInvoker.dynamic_greeting(name)
-      output = $stdout.string
-      expect(output).to eq("[PD] /spec/support/puts_debuggerer_invoker.rb:10\n   > pd \"Hello \#{name}\"\n  => Rails.logger.debug: \"Hello Robert\"\n")
-    end
     it 'defaults to Rails awesome_print logger in Rails app with awesome_print' do
       load "awesome_print/core_ext/kernel.rb"
       PutsDebuggerer.print_engine = nil

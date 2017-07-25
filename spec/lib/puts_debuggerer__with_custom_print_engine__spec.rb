@@ -37,16 +37,7 @@ describe 'PutsDebuggerer' do
       Kernel.send(:remove_method, :print_meh) rescue nil
       Kernel.send(:remove_method, :ap) rescue nil
     end
-    it 'defaults to :p print engine if awesome_print not loaded, auto-detects and wires awesome_print as default if loaded' do
-      Kernel.send(:remove_method, :ap)
-      PutsDebuggerer.print_engine = nil #intentionally set as :p
-      expect(PutsDebuggerer.print_engine).to eq(:p)
-      load "awesome_print/core_ext/kernel.rb"
-      PutsDebuggerer.print_engine = nil #reset to default
-      expect(PutsDebuggerer.print_engine).to eq(:ap)
-    end
     it 'prints using passed in custom lambda print engine' do
-      Kernel.send(:remove_method, :ap)
       PutsDebuggerer.print_engine = lambda {|text| puts "**\"#{text}\"**"} #intentionally set as :p
       name = 'Robert'
       PutsDebuggererInvoker.dynamic_greeting(name)
