@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
     s.specification_version = 4
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<awesome_print>.freeze, ["~> 1.7.0"])
+      s.add_runtime_dependency(%q<awesome_print>.freeze, ["~> 1.8.0"])
       s.add_development_dependency(%q<rspec>.freeze, ["~> 3.5.0"])
       s.add_development_dependency(%q<rspec-mocks>.freeze, ["~> 3.5.0"])
       s.add_development_dependency(%q<rdoc>.freeze, ["~> 3.12"])
@@ -39,7 +39,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<coveralls>.freeze, ["= 0.8.5"])
       s.add_development_dependency(%q<simplecov>.freeze, ["~> 0.10.0"])
     else
-      s.add_dependency(%q<awesome_print>.freeze, ["~> 1.7.0"])
+      s.add_dependency(%q<awesome_print>.freeze, ["~> 1.8.0"])
       s.add_dependency(%q<rspec>.freeze, ["~> 3.5.0"])
       s.add_dependency(%q<rspec-mocks>.freeze, ["~> 3.5.0"])
       s.add_dependency(%q<rdoc>.freeze, ["~> 3.12"])
@@ -49,7 +49,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<simplecov>.freeze, ["~> 0.10.0"])
     end
   else
-    s.add_dependency(%q<awesome_print>.freeze, ["~> 1.7.0"])
+    s.add_dependency(%q<awesome_print>.freeze, ["~> 1.8.0"])
     s.add_dependency(%q<rspec>.freeze, ["~> 3.5.0"])
     s.add_dependency(%q<rspec-mocks>.freeze, ["~> 3.5.0"])
     s.add_dependency(%q<rdoc>.freeze, ["~> 3.12"])
