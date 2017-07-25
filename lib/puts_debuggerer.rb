@@ -14,7 +14,7 @@ module PutsDebuggerer
       puts data[:footer] if data[:footer]
     }
   CALLER_DEPTH_ZERO = 4 #depth includes pd + with_options method + nested block + build_pd_data method
-  OBJECT_WHEN = {}
+  OBJECT_RUN_AT = {}
   STACK_TRACE_CALL_LINE_NUMBER_REGEX = /\:(\d+)\:in /
   STACK_TRACE_CALL_SOURCE_FILE_REGEX = /[ ]*([^:]+)\:\d+\:in /
 
@@ -273,53 +273,53 @@ module PutsDebuggerer
       end
     end
 
-    # When to print as specified by an index or range.
+    # When to run as specified by an index, array, or range.
     # * Default value is `nil` meaning always
-    # * Value as an Integer index (0-based) specifies at which run to print once
+    # * Value as an Integer index (1-based) specifies at which run to print once
     # * Value as an Array of indices specifies at which runs to print multiple times
     # * Value as a range specifies at which runs to print multiple times,
     #   indefinitely if it ends with ..-1
     #
     # Example:
     #
-    #   PutsDebuggerer.when = 0
+    #   PutsDebuggerer.run_at = 1
     #   pd (x=1) # prints standard PD output
     #   pd (x=1) # prints nothing
     #
-    #   PutsDebuggerer.when = 1
+    #   PutsDebuggerer.run_at = 2
     #   pd (x=1) # prints nothing
     #   pd (x=1) # prints standard PD output
     #
-    #   PutsDebuggerer.when = [0, 2]
+    #   PutsDebuggerer.run_at = [1, 3]
     #   pd (x=1) # prints standard PD output
     #   pd (x=1) # prints nothing
     #   pd (x=1) # prints standard PD output
     #   pd (x=1) # prints nothing
     #
-    #   PutsDebuggerer.when = 2..5
+    #   PutsDebuggerer.run_at = 3..5
     #   pd (x=1) # prints nothing
     #   pd (x=1) # prints nothing
     #   pd (x=1) # prints standard PD output
+    #   pd (x=1) # prints standard PD output
+    #   pd (x=1) # prints standard PD output
+    #   pd (x=1) # prints nothing
+    #   pd (x=1) # prints nothing
+    #
+    #   PutsDebuggerer.run_at = 3...6
+    #   pd (x=1) # prints nothing
+    #   pd (x=1) # prints nothing
     #   pd (x=1) # prints standard PD output
     #   pd (x=1) # prints standard PD output
     #   pd (x=1) # prints standard PD output
     #   pd (x=1) # prints nothing
     #
-    #   PutsDebuggerer.when = 2...5
-    #   pd (x=1) # prints nothing
-    #   pd (x=1) # prints nothing
-    #   pd (x=1) # prints standard PD output
-    #   pd (x=1) # prints standard PD output
-    #   pd (x=1) # prints standard PD output
-    #   pd (x=1) # prints nothing
-    #
-    #   PutsDebuggerer.when = 2..-1
+    #   PutsDebuggerer.run_at = 3..-1
     #   pd (x=1) # prints nothing
     #   pd (x=1) # prints nothing
     #   pd (x=1) # prints standard PD output
     #   pd (x=1) ... continue printing indefinitely on all subsequent runs
     #
-    #   PutsDebuggerer.when = 2...-1
+    #   PutsDebuggerer.run_at = 3...-1
     #   pd (x=1) # prints nothing
     #   pd (x=1) # prints nothing
     #   pd (x=1) # prints standard PD output
@@ -334,14 +334,53 @@ module PutsDebuggerer
       !!@run_at
     end
 
+    attr_reader :run_at_global_number
+
+    def run_at_global_number=(value)
+      @run_at_global_number = value
+    end
+
+    def init_run_at_global_number(object, run_at)
+      @run_at_global_number = 1
+    end
+
+    def increment_run_at_global_number(object, run_at)
+      @run_at_global_number += 1
+    end
+
+    def reset_run_at_global_number(object, run_at)
+      @run_at_global_number = nil
+    end
+
+    def run_at_number(object, run_at)
+      PutsDebuggerer::OBJECT_RUN_AT[[object,run_at]]
+    end
+
+    def init_run_at_number(object, run_at)
+      PutsDebuggerer::OBJECT_RUN_AT[[object,run_at]] = 1
+    end
+
+    def increment_run_at_number(object, run_at)
+      PutsDebuggerer::OBJECT_RUN_AT[[object,run_at]] += 1
+    end
+
+    def reset_run_at_number(object, run_at)
+      PutsDebuggerer::OBJECT_RUN_AT.delete([object, run_at])
+    end
+
+    def reset_run_at_numbers
+      PutsDebuggerer::OBJECT_RUN_AT.clear
+    end
+
   end
 end
 
 PutsDebuggerer.print_engine = PutsDebuggerer::PRINT_ENGINE_DEFAULT
 PutsDebuggerer.announcer = PutsDebuggerer::ANNOUNCER_DEFAULT
 PutsDebuggerer.formatter = PutsDebuggerer::FORMATTER_DEFAULT
-PutsDebuggerer.app_path = nil #TODO also have it set Rails root on first PD
+PutsDebuggerer.app_path = nil
 PutsDebuggerer.caller = nil
+PutsDebuggerer.run_at = nil
 
 # Prints object with bonus info such as file name, line number and source
 # expression. Optionally prints out header and footer.
@@ -373,17 +412,9 @@ PutsDebuggerer.caller = nil
 #     => "Show me the source of the bug: beattle"
 #   [PD] /Users/User/finance_calculator_app/pd_test.rb:4 "What line number am I?"
 def pd(object, options=nil)
-  run_at = options && options[:run_at]
-  execute_pd = false
-  if run_at.nil?
-    execute_pd = true
-  elsif run_at.is_a?(Integer)
-    PutsDebuggerer::OBJECT_WHEN[[object,run_at]] = -1 if PutsDebuggerer::OBJECT_WHEN[[object,run_at]].nil?
-    PutsDebuggerer::OBJECT_WHEN[[object,run_at]] += 1
-    execute_pd = true if run_at == PutsDebuggerer::OBJECT_WHEN[[object,run_at]]
-  end
+  run_at = ((options && options[:run_at]) || PutsDebuggerer.run_at)
 
-  if execute_pd
+  if __run_pd__(object, run_at)
     __with_pd_options__(options) do |print_engine_options|
       formatter_pd_data = __build_pd_data__(object, print_engine_options) #depth adds build method
       PutsDebuggerer.formatter.call(formatter_pd_data)
@@ -391,6 +422,37 @@ def pd(object, options=nil)
   end
 
   object
+end
+
+def __run_pd__(object, run_at)
+  run_pd = false
+  if run_at.nil?
+    run_pd = true
+  else
+    if PutsDebuggerer.run_at_global_number.nil?
+      if PutsDebuggerer.run_at_number(object, run_at).nil?
+        PutsDebuggerer.init_run_at_number(object, run_at)
+      else
+        PutsDebuggerer.increment_run_at_number(object, run_at)
+      end
+      run_number = PutsDebuggerer.run_at_number(object, run_at)
+    else
+      if PutsDebuggerer.run_at_global_number.nil?
+        PutsDebuggerer.init_run_at_global_number
+      else
+        PutsDebuggerer.increment_run_at_global_number
+      end
+      run_number = PutsDebuggerer.run_at_global_number
+    end
+    if run_at.is_a?(Integer)
+      run_pd = true if run_at == run_number
+    elsif run_at.is_a?(Array)
+      run_pd = true if run_at.include?(run_number)
+    elsif run_at.is_a?(Range)
+      run_pd = true if run_at.cover?(run_number) || (run_at.end == -1 && run_number >= run_at.begin)
+    end
+  end
+  run_pd
 end
 
 # Provides caller line number starting 1 level above caller of

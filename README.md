@@ -1,4 +1,4 @@
-# puts_debuggerer v0.6.1
+# puts_debuggerer v0.7.0
 [![Gem Version](https://badge.fury.io/rb/puts_debuggerer.svg)](http://badge.fury.io/rb/puts_debuggerer)
 [![Build Status](https://travis-ci.org/AndyObtiva/puts_debuggerer.svg?branch=master)](https://travis-ci.org/AndyObtiva/puts_debuggerer)
 [![Coverage Status](https://coveralls.io/repos/github/AndyObtiva/puts_debuggerer/badge.svg?branch=master)](https://coveralls.io/github/AndyObtiva/puts_debuggerer?branch=master)
@@ -25,7 +25,7 @@ Love PD?! Why not promote with [merchandise](https://www.zazzle.com/i+heart+pd+g
 Add the following to bundler's `Gemfile`.
 
 ```ruby
-gem 'puts_debuggerer', '~> 0.6.1'
+gem 'puts_debuggerer', '~> 0.7.0'
 ```
 
 This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you may create an initializer under `config/initializers` named `puts_debuggerer_options.rb` to enable further customizations as per the [Options](#options) section below.
@@ -35,7 +35,7 @@ This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you m
 Or manually install and require library.
 
 ```bash
-gem install puts_debuggerer -v0.6.1
+gem install puts_debuggerer -v0.7.0
 ```
 
 ```ruby
@@ -348,6 +348,75 @@ Prints out:
      /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/context.rb:381:in \`evaluate\'
 ```
 
+#### `PutsDebuggerer.run_at`
+(default = nil)
+
+Set condition for when to run as specified by an index, array, or range.
+* Default value is `nil` meaning always
+* Value as an Integer index (1-based) specifies at which run to print once
+* Value as an Array of indices specifies at which runs to print multiple times
+* Value as a range specifies at which runs to print multiple times,
+  indefinitely if it ends with ..-1 or ...-1
+
+Can be set globally via `PutsDebuggerer.run_at` or piecemeal via `pd object, run_at: run_at_value`
+
+Global usage should be good enough for most cases. When there is a need to track
+a single expression among several, you may add the option piecemeal, but it expects
+the same exact `object` passed to `pd` for counting.
+
+Examples (global):
+
+  PutsDebuggerer.run_at = 1
+  pd (x=1) # prints standard PD output
+  pd (x=1) # prints nothing
+
+  PutsDebuggerer.run_at = 2
+  pd (x=1) # prints nothing
+  pd (x=1) # prints standard PD output
+
+  PutsDebuggerer.run_at = [1, 3]
+  pd (x=1) # prints standard PD output
+  pd (x=1) # prints nothing
+  pd (x=1) # prints standard PD output
+  pd (x=1) # prints nothing
+
+  PutsDebuggerer.run_at = 3..5
+  pd (x=1) # prints nothing
+  pd (x=1) # prints nothing
+  pd (x=1) # prints standard PD output
+  pd (x=1) # prints standard PD output
+  pd (x=1) # prints standard PD output
+  pd (x=1) # prints nothing
+  pd (x=1) # prints nothing
+
+  PutsDebuggerer.run_at = 3...6
+  pd (x=1) # prints nothing
+  pd (x=1) # prints nothing
+  pd (x=1) # prints standard PD output
+  pd (x=1) # prints standard PD output
+  pd (x=1) # prints standard PD output
+  pd (x=1) # prints nothing
+
+  PutsDebuggerer.run_at = 3..-1
+  pd (x=1) # prints nothing
+  pd (x=1) # prints nothing
+  pd (x=1) # prints standard PD output
+  pd (x=1) ... continue printing indefinitely on all subsequent runs
+
+  PutsDebuggerer.run_at = 3...-1
+  pd (x=1) # prints nothing
+  pd (x=1) # prints nothing
+  pd (x=1) # prints standard PD output
+  pd (x=1) ... continue printing indefinitely on all subsequent runs
+
+You may reset the run_at number counter via:
+`PutsDebuggerer.reset_run_at_global_number` for global usage.
+
+And:
+`PutsDebuggerer.reset_run_at_number` or
+`PutsDebuggerer.reset_run_at_numbers`
+for piecemeal usage.
+
 ### Bonus
 
 puts_debuggerer comes with a number of bonus goodies.
@@ -405,6 +474,7 @@ Prints out `puts __caller_source_line__`
 
 ## Release Notes
 
+* v0.7.0: `run_at` option, global and piecemeal.
 * v0.6.1: updated README and broke apart specs
 * v0.6.0: unofficial erb support, returning evaluated object/expression, removed static syntax support (replaced with header support)
 * v0.5.1: support for print engine lambdas and smart defaults for leveraging Rails and AwesomePrint debuggers in Rails
