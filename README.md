@@ -366,6 +366,7 @@ the same exact `object` passed to `pd` for counting.
 
 Examples (global):
 
+```ruby
   PutsDebuggerer.run_at = 1
   pd (x=1) # prints standard PD output
   pd (x=1) # prints nothing
@@ -401,13 +402,14 @@ Examples (global):
   pd (x=1) # prints nothing
   pd (x=1) # prints nothing
   pd (x=1) # prints standard PD output
-  pd (x=1) ... continue printing indefinitely on all subsequent runs
+  pd (x=1) # ... continue printing indefinitely on all subsequent runs
 
   PutsDebuggerer.run_at = 3...-1
   pd (x=1) # prints nothing
   pd (x=1) # prints nothing
   pd (x=1) # prints standard PD output
-  pd (x=1) ... continue printing indefinitely on all subsequent runs
+  pd (x=1) # ... continue printing indefinitely on all subsequent runs
+```
 
 You may reset the run_at number counter via:
 `PutsDebuggerer.reset_run_at_global_number` for global usage.
