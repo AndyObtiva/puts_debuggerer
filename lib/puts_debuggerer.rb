@@ -15,6 +15,8 @@ module PutsDebuggerer
     }
   CALLER_DEPTH_ZERO = 4 #depth includes pd + with_options method + nested block + build_pd_data method
   OBJECT_WHEN = {}
+  STACK_TRACE_CALL_LINE_NUMBER_REGEX = /\:(\d+)\:in /
+  STACK_TRACE_CALL_SOURCE_FILE_REGEX = /[ ]*([^:]+)\:\d+\:in /
 
   class << self
     # Application root path to exclude when printing out file path
@@ -391,12 +393,6 @@ def pd(object, options=nil)
   object
 end
 
-
-# TODO move up and consider placing in module
-STACK_TRACE_CALL_LINE_NUMBER_REGEX = /\:(\d+)\:in /
-STACK_TRACE_CALL_SOURCE_FILE_REGEX = /[ ]*([^:]+)\:\d+\:in /
-
-
 # Provides caller line number starting 1 level above caller of
 # this method.
 #
@@ -408,7 +404,7 @@ STACK_TRACE_CALL_SOURCE_FILE_REGEX = /[ ]*([^:]+)\:\d+\:in /
 #
 # prints out `3`
 def __caller_line_number__(caller_depth=0)
-  caller[caller_depth][STACK_TRACE_CALL_LINE_NUMBER_REGEX, 1].to_i
+  caller[caller_depth][PutsDebuggerer::STACK_TRACE_CALL_LINE_NUMBER_REGEX, 1].to_i
 end
 
 # Provides caller file starting 1 level above caller of
@@ -421,7 +417,7 @@ end
 #
 # prints out `lib/example.rb`
 def __caller_file__(caller_depth=0)
-  caller[caller_depth][STACK_TRACE_CALL_SOURCE_FILE_REGEX, 1]
+  caller[caller_depth][PutsDebuggerer::STACK_TRACE_CALL_SOURCE_FILE_REGEX, 1]
 end
 
 
