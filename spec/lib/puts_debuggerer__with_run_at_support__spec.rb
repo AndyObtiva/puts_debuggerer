@@ -24,13 +24,13 @@ describe 'PutsDebuggerer' do
         name = 'Robert'
         PutsDebuggererInvoker.dynamic_greeting_run_at(name, 5)
         output = $stdout.string
-        expect(output).to be_blank
+        expect(output).to be_empty
         PutsDebuggererInvoker.dynamic_greeting_run_at(name, 5)
-        expect(output).to be_blank
+        expect(output).to be_empty
         PutsDebuggererInvoker.dynamic_greeting_run_at(name, 5)
-        expect(output).to be_blank
+        expect(output).to be_empty
         PutsDebuggererInvoker.dynamic_greeting_run_at(name, 5)
-        expect(output).to be_blank
+        expect(output).to be_empty
         PutsDebuggererInvoker.dynamic_greeting_run_at(name, 5)
         expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
         PutsDebuggererInvoker.dynamic_greeting_run_at(name, 5)
@@ -77,9 +77,9 @@ describe 'PutsDebuggerer' do
           name = 'Robert'
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 3..5)
           output = $stdout.string
-          expect(output).to be_blank
+          expect(output).to be_empty
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 3..5)
-          expect(output).to be_blank
+          expect(output).to be_empty
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 3..5)
           expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 3..5)
@@ -95,9 +95,9 @@ describe 'PutsDebuggerer' do
           name = 'Robert'
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 3...5)
           output = $stdout.string
-          expect(output).to be_blank
+          expect(output).to be_empty
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 3...5)
-          expect(output).to be_blank
+          expect(output).to be_empty
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 3...5)
           expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 3...5)
@@ -115,9 +115,9 @@ describe 'PutsDebuggerer' do
           name = 'Robert'
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 3..-1)
           output = $stdout.string
-          expect(output).to be_blank
+          expect(output).to be_empty
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 3..-1)
-          expect(output).to be_blank
+          expect(output).to be_empty
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 3..-1)
           expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 3..-1)
@@ -133,9 +133,9 @@ describe 'PutsDebuggerer' do
           name = 'Robert'
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 3...-1)
           output = $stdout.string
-          expect(output).to be_blank
+          expect(output).to be_empty
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 3...-1)
-          expect(output).to be_blank
+          expect(output).to be_empty
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 3...-1)
           expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 3...-1)
@@ -154,9 +154,9 @@ describe 'PutsDebuggerer' do
           name = 'Robert'
           PutsDebuggererInvoker.dynamic_greeting(name)
           output = $stdout.string
-          expect(output).to be_blank
+          expect(output).to be_empty
           PutsDebuggererInvoker.dynamic_greeting(name)
-          expect(output).to be_blank
+          expect(output).to be_empty
           PutsDebuggererInvoker.dynamic_greeting(name)
           expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
           PutsDebuggererInvoker.dynamic_greeting(name)
