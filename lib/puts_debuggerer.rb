@@ -331,15 +331,15 @@ module PutsDebuggerer
       @run_at_global_number = value
     end
 
-    def init_run_at_global_number(object, run_at)
+    def init_run_at_global_number
       @run_at_global_number = 1
     end
 
-    def increment_run_at_global_number(object, run_at)
+    def increment_run_at_global_number
       @run_at_global_number += 1
     end
 
-    def reset_run_at_global_number(object, run_at)
+    def reset_run_at_global_number
       @run_at_global_number = nil
     end
 
@@ -420,20 +420,20 @@ def __run_pd__(object, run_at)
   if run_at.nil?
     run_pd = true
   else
-    if PutsDebuggerer.run_at_global_number.nil?
-      if PutsDebuggerer.run_at_number(object, run_at).nil?
-        PutsDebuggerer.init_run_at_number(object, run_at)
-      else
-        PutsDebuggerer.increment_run_at_number(object, run_at)
-      end
-      run_number = PutsDebuggerer.run_at_number(object, run_at)
-    else
+    if PutsDebuggerer.run_at?
       if PutsDebuggerer.run_at_global_number.nil?
         PutsDebuggerer.init_run_at_global_number
       else
         PutsDebuggerer.increment_run_at_global_number
       end
       run_number = PutsDebuggerer.run_at_global_number
+    else
+      if PutsDebuggerer.run_at_number(object, run_at).nil?
+        PutsDebuggerer.init_run_at_number(object, run_at)
+      else
+        PutsDebuggerer.increment_run_at_number(object, run_at)
+      end
+      run_number = PutsDebuggerer.run_at_number(object, run_at)
     end
     if run_at.is_a?(Integer)
       run_pd = true if run_at == run_number

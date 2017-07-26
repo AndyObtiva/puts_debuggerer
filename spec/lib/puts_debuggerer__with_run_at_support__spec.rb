@@ -151,6 +151,7 @@ describe 'PutsDebuggerer' do
       context 'set as a global option' do
         it 'skips first 2 runs, prints on 3rd, 4th, 5th, and skips the rest' do
           PutsDebuggerer.run_at = 3..5
+          expect(PutsDebuggerer.run_at?).to be_truthy
           name = 'Robert'
           PutsDebuggererInvoker.dynamic_greeting(name)
           output = $stdout.string
@@ -219,7 +220,7 @@ describe 'PutsDebuggerer' do
           PutsDebuggererInvoker.dynamic_greeting(name)
           expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n" * 2)
 
-          PutsDebuggerer.reset_run_at_number("Hello Robert", 1..2)
+          PutsDebuggerer.reset_run_at_global_number
 
           PutsDebuggererInvoker.dynamic_greeting(name)
           expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n" * 3)
