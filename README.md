@@ -42,7 +42,7 @@ require 'puts_debuggerer'
 
 ### Usage
 
-First, add `pd` method anywhere in your code to display details about an object or expression.
+First, add `pd` method anywhere in your code to display details about an object or expression (if you're used to awesome_print, you're in luck! puts_debuggerer includes awesome_print as the default print engine for output).
 
 Example:
 
@@ -64,14 +64,14 @@ Output:
   => "Show me the result of the calculation: 4.0"
 ```
 
-In addition to the main object or expression output, you get to see the source file name, line number, and source code to help you debug and troubleshoot problems quickly and easily (it even works in IRB).
+In addition to the main object/expression output, you get to see the source file name, line number, and source code to help you debug and troubleshoot problems quicker (it even works in IRB).
 
-Second, quickly locate printed lines using Find feature (e.g. CTRL+F) by looking for:
+Second, quickly locate printed lines using the Find feature (e.g. CTRL+F) by looking for:
 * [PD]
 * file:line_number
 * known ruby expression.
 
-Third, easily remove your ` pd ` statements via source code Find feature once done debugging.
+Third, easily remove your ` pd ` statements via the source code Find feature once done debugging.
 
 Note that `pd` returns the passed in object or expression argument unchanged, permitting debugging with shorter syntax than tap, and supporting chaining of extra method invocations afterward.
 
