@@ -8,15 +8,13 @@ statements like an umbrella in a stormy day.
 Why not make it official and have puts debugging become its own perfectly
 legitimate thing?!!
 
-Enter puts_debuggerer. A guilt-free puts debugger Ruby gem FTW!
-
-In other words, puts_debuggerer is a Ruby library that provides improved puts debugging, automatically displaying bonus useful information such as source line numbers and source code, among many other goodies (mentioned in the README.)
+Enter puts_debuggerer. A guilt-free puts debugging Ruby gem FTW!
 
 Partially inspired (only partially ;) by this blog post:
 https://tenderlovemaking.com/2016/02/05/i-am-a-puts-debuggerer.html
 (Credit to Tenderlove.)
 
-Love PD?! Why not promote with [merchandise](https://www.zazzle.com/i+heart+pd+gifts)?
+Love PD?! Why not promote with [merchandise](https://www.zazzle.com/i+heart+pd+gifts)? I'll buy everyone wearing this merchandise at conferences beer.
 
 ## Instructions
 
@@ -44,11 +42,9 @@ require 'puts_debuggerer'
 
 ### Usage
 
-Simply invoke global `pd` method anywhere in your code passing an object or an expression argument.
+First, add `pd` method anywhere in your code to display details about an object or expression.
 
-It will then provide helpful debugging information by printing the source file, line number, and source code in addition to output (works even in IRB).
-
-Example Code:
+Example:
 
 ```ruby
 # /Users/User/finance_calculator_app/pd_test.rb           # line 1
@@ -57,7 +53,7 @@ pd "Show me the source of the bug: #{bug}"                # line 3
 pd "Show me the result of the calculation: #{(12.0/3.0)}" # line 4
 ```
 
-Example Printout:
+Output:
 
 ```bash
 [PD] /Users/User/finance_calculator_app/pd_test.rb:3
@@ -68,17 +64,18 @@ Example Printout:
   => "Show me the result of the calculation: 4.0"
 ```
 
-Quickly locate printed lines using Find feature (e.g. CTRL+F) by looking for:
+In addition to the main object or expression output, you get to see the source file name, line number, and source code to help you debug and troubleshoot problems quickly and easily (it even works in IRB).
+
+Second, quickly locate printed lines using Find feature (e.g. CTRL+F) by looking for:
 * [PD]
 * file:line_number
 * known ruby expression.
 
-This gives you the added benefit of easily removing your `pd` statements later
-on once done debugging.
+Third, easily remove your ` pd ` statements via source code Find feature once done debugging.
 
 Note that `pd` returns the passed in object or expression argument unchanged, permitting debugging with shorter syntax than tap, and supporting chaining of extra method invocations afterward.
 
-Example Code:
+Example:
 
 ```ruby
 # /Users/User/greeting_app/pd_test.rb                     # line 1
@@ -86,7 +83,7 @@ name = 'Robert'                                           # line 2
 greeting = "Hello #{pd(name)}"                            # line 3
 ```
 
-Example Printout:
+Output:
 
 ```bash
 [PD] /Users/User/greeting_app/pd_test.rb:3
