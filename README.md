@@ -14,7 +14,73 @@ Partially inspired (only partially ;) by this blog post:
 https://tenderlovemaking.com/2016/02/05/i-am-a-puts-debuggerer.html
 (Credit to Tenderlove.)
 
-Love PD?! Why not promote with [merchandise](https://www.zazzle.com/i+heart+pd+gifts)? I'll buy everyone wearing this merchandise at conferences beer.
+Love PD?! Why not promote with [merchandise](https://www.zazzle.com/i+heart+pd+gifts)? Maybe I'll buy everyone wearing the merchandise a beer at software conferences.
+
+## Background
+
+It can be quite frustrating to lose puts statements in a large output or log file. One way to help find them is add a header (e.g. `puts "The Order Total"`) or an announcer (e.g. `puts '*'*80`) before every puts statement, leading to repetitive wasteful effort.
+
+puts_debuggerer automates that work via the short and simple `pd` command, automatically printing meaningful headers for output.
+
+Example without pd:
+
+```ruby
+puts order_total
+```
+
+Output:
+```
+195.50
+```
+
+Which gets lost in a logging stream such as:
+
+```
+   (2.7ms)  CREATE TABLE "ar_internal_metadata" ("key" character varying PRIMARY KEY, "value" character varying, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)
+  ActiveRecord::InternalMetadata Load (0.4ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
+   (0.2ms)  BEGIN
+  SQL (0.3ms)  INSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"  [["key", "environment"], ["value", "development"], ["created_at", 2017-08-24 22:56:52 UTC], ["updated_at", 2017-08-24 22:56:52 UTC]]
+   (0.3ms)  COMMIT
+   195.50
+  ActiveRecord::InternalMetadata Load (0.3ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
+   (0.2ms)  BEGIN
+   (0.2ms)  COMMIT
+```
+
+Example with pd:
+
+```ruby
+pd order_total
+```
+
+Output:
+
+```
+[PD] /Users/User/ordering/order.rb:39
+  > pd order_total  
+ => 195.50
+```
+
+This is not only easy to locate in a logging stream such as the one below, but also includes the `order_total` variable for easy findability among other pd statements.
+
+```
+   (2.7ms)  CREATE TABLE "ar_internal_metadata" ("key" character varying PRIMARY KEY, "value" character varying, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)
+  ActiveRecord::InternalMetadata Load (0.4ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
+[PD] /Users/User/ordering/order.rb:39
+  > pd order_total  
+ => 195.50
+   (0.2ms)  BEGIN
+  SQL (0.3ms)  INSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"  [["key", "environment"], ["value", "development"], ["created_at", 2017-08-24 22:56:52 UTC], ["updated_at", 2017-08-24 22:56:52 UTC]]
+   (0.3ms)  COMMIT
+[PD] /Users/User/ordering/order.rb:72
+  > pd order_subtotal  
+ => 181.00
+  ActiveRecord::InternalMetadata Load (0.3ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
+   (0.2ms)  BEGIN
+   (0.2ms)  COMMIT
+```
+
+And it is easy to search for using the `[PD]` announcer.
 
 ## Instructions
 
