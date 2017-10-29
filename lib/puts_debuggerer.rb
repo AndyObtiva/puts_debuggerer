@@ -4,8 +4,10 @@ require 'awesome_print'
 module PutsDebuggerer
   HEADER_DEFAULT = '*'*80
   FOOTER_DEFAULT = '*'*80
+  PRINTER_DEFAULT = :puts
   PRINT_ENGINE_DEFAULT = :ap
-  PRINT_ENGINE_MESSAGE_INVALID = 'print_engine must be a valid global method symbol (e.g. :p or :puts) or lambda/proc'
+  PRINTER_MESSAGE_INVALID = 'printer must be a valid global method symbol (e.g. :puts) or lambda/proc receiving a text arg'
+  PRINT_ENGINE_MESSAGE_INVALID = 'print_engine must be a valid global method symbol (e.g. :p, :ap or :pp) or lambda/proc receiving an object arg'
   ANNOUNCER_DEFAULT = '[PD]'
   FORMATTER_DEFAULT = -> (data) {
       puts data[:header] if data[:header]
@@ -105,10 +107,49 @@ module PutsDebuggerer
       !!@footer
     end
 
-    # Print engine to use in object printout (e.g. `p`, `ap`, `pp`).
-    # It is represented by the print engine's global method name as a symbol
-    # (e.g. `:ap` for awesome_print).
-    # Defaults to awesome_print loaded.
+    # Printer is a global method symbol or lambda expression to use in printing to the user.
+    # Examples of global methods are `:puts` and `:print`.
+    # An example of a lambda expression is `lambda {|output| Rails.logger.ap(output)}`
+    #
+    # Defaults to `:puts`
+    # In Rails, it defaults to: `lambda {|output| Rails.logger.ap(output)}`
+    #
+    # Example:
+    #
+    # # File Name: /Users/User/example.rb
+    # PutsDebuggerer.printer = lambda {|output| Rails.logger.error(output)}
+    # str = "Hello"
+    # pd str
+    #
+    # Prints out in the Rails app log as error lines:
+    #
+    # [PD] /Users/User/example.rb:5
+    #    > pd str
+    #   => Hello
+    attr_reader :printer
+
+    def printer=(printer)
+      if printer.nil?
+        if Object.const_defined?(:Rails)
+          @printer = lambda {|output| Rails.logger.debug(output)}
+        else
+          @printer = PRINTER_DEFAULT
+        end
+      elsif printer.is_a?(Proc)
+        @printer = printer
+      else
+        @printer = method(printer).name rescue raise(PRINTER_MESSAGE_INVALID)
+      end
+    end
+
+    # Print engine is similar to `printer`, except it is focused on the scope of formatting
+    # the data object being printed (excluding metadata such as file name, line number,
+    # and expression, which are handled by the `printer`).
+    # As such, it is also a global method symbol or lambda expression.
+    # Examples of global methods are `:p`, `:ap`, and `:pp`.
+    # An example of a lambda expression is `lambda {|object| puts object.to_a.join(" | ")}`
+    #
+    # Defaults to [awesome_print](https://github.com/awesome-print/awesome_print).
     #
     # Example:
     #
@@ -128,11 +169,7 @@ module PutsDebuggerer
 
     def print_engine=(engine)
       if engine.nil?
-        if Object.const_defined?(:Rails)
-          @print_engine = lambda {|object| Rails.logger.ap(object)}
-        else
-          @print_engine = PRINT_ENGINE_DEFAULT
-        end
+        @print_engine = PRINT_ENGINE_DEFAULT
       elsif engine.is_a?(Proc)
         @print_engine = engine
       else
@@ -248,6 +285,7 @@ module PutsDebuggerer
       {
         header: header,
         footer: footer,
+        printer: printer,
         print_engine: print_engine,
         app_path: app_path,
         announcer: announcer,
@@ -366,9 +404,11 @@ module PutsDebuggerer
   end
 end
 
-PutsDebuggerer.print_engine = PutsDebuggerer::PRINT_ENGINE_DEFAULT
-PutsDebuggerer.announcer = PutsDebuggerer::ANNOUNCER_DEFAULT
-PutsDebuggerer.formatter = PutsDebuggerer::FORMATTER_DEFAULT
+# setting values to nil defaults them properly
+PutsDebuggerer.printer = nil
+PutsDebuggerer.print_engine = nil
+PutsDebuggerer.announcer = nil
+PutsDebuggerer.formatter = nil
 PutsDebuggerer.app_path = nil
 PutsDebuggerer.caller = nil
 PutsDebuggerer.run_at = nil
@@ -408,7 +448,15 @@ def pd(object, options=nil)
   if __run_pd__(object, run_at)
     __with_pd_options__(options) do |print_engine_options|
       formatter_pd_data = __build_pd_data__(object, print_engine_options) #depth adds build method
+      stdout = $stdout
+      $stdout = sio = StringIO.new
       PutsDebuggerer.formatter.call(formatter_pd_data)
+      $stdout = stdout
+      if PutsDebuggerer.printer.is_a?(Proc)
+        PutsDebuggerer.printer.call(sio.string)
+      else
+        send(PutsDebuggerer.send(:printer), sio.string)
+      end
     end
   end
 

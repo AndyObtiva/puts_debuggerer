@@ -4,6 +4,7 @@ describe 'PutsDebuggerer' do
   let(:puts_debuggerer_invoker_file) {File.expand_path(File.join(__FILE__, '..', '..', 'support', 'puts_debuggerer_invoker.rb'))}
   before do
     $stdout = StringIO.new
+    PutsDebuggerer.printer = :puts
     PutsDebuggerer.print_engine = :p
     PutsDebuggerer.formatter = nil
     PutsDebuggerer.header = nil
@@ -55,7 +56,7 @@ describe 'PutsDebuggerer' do
       expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => #{expected_object_printout}\n")
     end
     it 'raises informative error if print_engine was invalid' do
-      expect {PutsDebuggerer.print_engine = :invalid}.to raise_error('print_engine must be a valid global method symbol (e.g. :p or :puts) or lambda/proc')
+      expect {PutsDebuggerer.print_engine = :invalid}.to raise_error('print_engine must be a valid global method symbol (e.g. :p, :ap or :pp) or lambda/proc receiving an object arg')
     end
     it 'supports passing extra options to print_engines like awesome_print' do
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], indent: 2)

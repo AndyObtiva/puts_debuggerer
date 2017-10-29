@@ -62,7 +62,7 @@ describe 'PutsDebuggerer' do
       expect(output).to eq(<<-MULTILINE
 [PD] /spec/support/puts_debuggerer_invoker.rb:22
    > pd [1, [2, 3]]
-  => Rails.logger.ap:[
+  => [
     [0] 1,
     [1] [
         [0] 2,

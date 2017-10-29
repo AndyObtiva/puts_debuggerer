@@ -1,4 +1,4 @@
-# puts_debuggerer v0.7.1
+# puts_debuggerer v0.8.0
 [![Gem Version](https://badge.fury.io/rb/puts_debuggerer.svg)](http://badge.fury.io/rb/puts_debuggerer)
 [![Build Status](https://travis-ci.org/AndyObtiva/puts_debuggerer.svg?branch=master)](https://travis-ci.org/AndyObtiva/puts_debuggerer)
 [![Coverage Status](https://coveralls.io/repos/github/AndyObtiva/puts_debuggerer/badge.svg?branch=master)](https://coveralls.io/github/AndyObtiva/puts_debuggerer?branch=master)
@@ -89,7 +89,7 @@ And it is easy to search for using the `[PD]` announcer.
 Add the following to bundler's `Gemfile`.
 
 ```ruby
-gem 'puts_debuggerer', '~> 0.7.1'
+gem 'puts_debuggerer', '~> 0.8.0'
 ```
 
 This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you may create an initializer under `config/initializers` named `puts_debuggerer_options.rb` to enable further customizations as per the [Options](#options) section below.
@@ -99,7 +99,7 @@ This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you m
 Or manually install and require library.
 
 ```bash
-gem install puts_debuggerer -v0.7.1
+gem install puts_debuggerer -v0.8.0
 ```
 
 ```ruby
@@ -279,19 +279,50 @@ Prints out:
 ********************************************************************************
 ```
 
-#### `PutsDebuggerer.print_engine`
-(default = `:ap`)
+#### `PutsDebuggerer.printer`
+(default = `:puts`)
 
-Print engine is a global method symbol or lambda expression to use in object printout. Examples of global methods are `:p`, `:ap`, and `:pp`. An example of a lambda expression is `lambda {|o| Rails.logger.info(o)}`
+Printer is a global method symbol or lambda expression to use in printing to the user.
+Examples of global methods are `:puts` and `:print`.
+An example of a lambda expression is `lambda {|output| Rails.logger.info(output)}`
 
-Defaults to [awesome_print](https://github.com/awesome-print/awesome_print). If it finds Rails loaded it defaults to `lambda {|o| Rails.logger.ap(o)}` instead
+Defaults to `:puts`
+In Rails, it defaults to: `lambda {|output| Rails.logger.debug(output)}`
 
 Example:
 
 ```ruby
 # File Name: /Users/User/example.rb
-require 'awesome_print'
-PutsDebuggerer.print_engine = :ap
+PutsDebuggerer.printer = lambda {|output| Rails.logger.error(output)}
+str = "Hello"
+pd str
+```
+
+Prints out in the Rails app log as error lines:
+
+```bash
+[PD] /Users/User/example.rb:5
+   > pd str
+  => Hello
+```
+
+#### `PutsDebuggerer.print_engine`
+(default = `:ap`)
+
+Print engine is similar to `printer`, except it is focused on the scope of formatting
+the data object being printed (excluding metadata such as file name, line number,
+and expression, which are handled by the `printer`).
+As such, it is also a global method symbol or lambda expression.
+Examples of global methods are `:p`, `:ap`, and `:pp`.
+An example of a lambda expression is `lambda {|object| puts object.to_a.join(" | ")}`
+
+Defaults to [awesome_print](https://github.com/awesome-print/awesome_print).
+
+Example:
+
+```ruby
+# File Name: /Users/User/example.rb
+PutsDebuggerer.print_engine = :p
 array = [1, [2, 3]]
 pd array
 ```
@@ -301,13 +332,7 @@ Prints out:
 ```bash
 [PD] /Users/User/example.rb:5
    > pd array
-  => [
-    [0] 1,
-    [1] [
-        [0] 2,
-        [1] 3
-    ]
-]
+  => [1, [2, 3]]
 ```
 
 #### `PutsDebuggerer.announcer`
@@ -538,6 +563,7 @@ Prints out `puts __caller_source_line__`
 
 ## Release Notes
 
+* v0.8.0: `printer` option support
 * v0.7.1: default print engine to :ap (AwesomePrint)
 * v0.7.0: `run_at` option, global and piecemeal.
 * v0.6.1: updated README and broke apart specs
@@ -548,6 +574,10 @@ Prints out `puts __caller_source_line__`
 * v0.3.0: header/footer support, multi-line printout, improved format
 * v0.2.0: App path exclusion support, Rails root support, improved format
 * v0.1.0: File/line/expression print out
+
+## TODO
+
+* display run_at run number in printout
 
 ## Contributing
 
