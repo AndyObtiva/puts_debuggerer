@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0".freeze) if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib".freeze]
   s.authors = ["Andy Maleh".freeze]
-  s.date = "2017-07-25"
+  s.date = "2017-11-25"
   s.description = "Yes, many of us avoid debuggers like the plague and clamp on to our puts statements like an umbrella in a stormy day. Why not make it official and have puts debugging become its own perfectly legitimate thing?!!\n\nEnter puts_debuggerer. A guilt-free puts debugger Ruby gem FTW!\n\nIn other words, puts_debuggerer is a Ruby library for improved puts debugging, automatically displaying bonus useful information such as source line number and source code.\n\nPartially inspired (only partially ;) by this blog post:\nhttps://tenderlovemaking.com/2016/02/05/i-am-a-puts-debuggerer.html\n(Credit to Tenderlove.)\n".freeze
   s.email = "andy.am@gmail.com".freeze
   s.extra_rdoc_files = [
@@ -59,3 +59,4 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<simplecov>.freeze, ["~> 0.10.0"])
   end
 end
+
