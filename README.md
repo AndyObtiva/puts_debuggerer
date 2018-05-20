@@ -14,8 +14,6 @@ Partially inspired (only partially ;) by this blog post:
 https://tenderlovemaking.com/2016/02/05/i-am-a-puts-debuggerer.html
 (Credit to Tenderlove.)
 
-Love PD?! Why not promote with [merchandise](https://www.zazzle.com/i+heart+pd+gifts)? Maybe I'll buy everyone wearing the merchandise a beer at software conferences.
-
 ## Background
 
 It can be quite frustrating to lose puts statements in a large output or log file. One way to help find them is add a header (e.g. `puts "The Order Total"`) or an announcer (e.g. `puts '*'*80`) before every puts statement, leading to repetitive wasteful effort.
