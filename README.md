@@ -10,9 +10,8 @@ legitimate thing?!!
 
 Enter puts_debuggerer. A guilt-free puts debugging Ruby gem FTW!
 
-Partially inspired (only partially ;) by this blog post:
+For background, please read this blog post by Aaron Patterson:
 https://tenderlovemaking.com/2016/02/05/i-am-a-puts-debuggerer.html
-(Credit to Tenderlove.)
 
 ## Background
 
