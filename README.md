@@ -1,4 +1,4 @@
-# puts_debuggerer v0.8.0 (debugger-less debugging FTW)
+# Puts Debuggerer (debugger-less debugging FTW)
 [![Gem Version](https://badge.fury.io/rb/puts_debuggerer.svg)](http://badge.fury.io/rb/puts_debuggerer)
 [![Build Status](https://travis-ci.org/AndyObtiva/puts_debuggerer.svg?branch=master)](https://travis-ci.org/AndyObtiva/puts_debuggerer)
 [![Coverage Status](https://coveralls.io/repos/github/AndyObtiva/puts_debuggerer/badge.svg?branch=master)](https://coveralls.io/github/AndyObtiva/puts_debuggerer?branch=master)
@@ -86,7 +86,7 @@ And it is easy to search for using the `[PD]` announcer.
 Add the following to bundler's `Gemfile`.
 
 ```ruby
-gem 'puts_debuggerer', '~> 0.8.0'
+gem 'puts_debuggerer', '~> 0.8.1'
 ```
 
 This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you may create an initializer under `config/initializers` named `puts_debuggerer_options.rb` to enable further customizations as per the [Options](#options) section below.
@@ -96,7 +96,7 @@ This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you m
 Or manually install and require library.
 
 ```bash
-gem install puts_debuggerer -v0.8.0
+gem install puts_debuggerer -v0.8.1
 ```
 
 ```ruby
@@ -284,7 +284,13 @@ Examples of global methods are `:puts` and `:print`.
 An example of a lambda expression is `lambda {|output| Rails.logger.info(output)}`
 
 Defaults to `:puts`
-In Rails, it defaults to: `lambda {|output| Rails.logger.debug(output)}`
+In Rails, it defaults to:
+```ruby
+lambda do |output|
+  puts output if Rails.env.test?
+  Rails.logger.debug(output)
+end
+```
 
 Example:
 
@@ -560,6 +566,7 @@ Prints out `puts __caller_source_line__`
 
 ## Release Notes
 
+* v0.8.1: `printer` option support for Rails test environment
 * v0.8.0: `printer` option support
 * v0.7.1: default print engine to :ap (AwesomePrint)
 * v0.7.0: `run_at` option, global and piecemeal.
@@ -574,7 +581,10 @@ Prints out `puts __caller_source_line__`
 
 ## TODO
 
+* fix issue with printing in rspec inside a Rails project without having to do extra configuration
+* fix issue with erb support
 * display run_at run number in printout
+* implement fallback in irb for when line number cannot be discovered (issue happens in pry, perhaps this just means support pry)
 
 ## Contributing
 

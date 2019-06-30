@@ -5,11 +5,12 @@ describe 'PutsDebuggerer' do
   before do
     $stdout = StringIO.new
     PutsDebuggerer.printer = :puts
-      PutsDebuggerer.print_engine = :p
+    PutsDebuggerer.print_engine = :p
     PutsDebuggerer.formatter = nil
     PutsDebuggerer.header = nil
     PutsDebuggerer.footer = nil
     PutsDebuggerer.caller = nil
+    PutsDebuggerer.app_path = nil
   end
   it 'prints file, line number, ruby expression, and evaluated string object; returns evaluated object' do
     name = 'Robert'

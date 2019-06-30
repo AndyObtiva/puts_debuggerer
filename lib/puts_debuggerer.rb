@@ -5,6 +5,10 @@ module PutsDebuggerer
   HEADER_DEFAULT = '*'*80
   FOOTER_DEFAULT = '*'*80
   PRINTER_DEFAULT = :puts
+  PRINTER_RAILS = lambda do |output|
+    puts output if Rails.env.test?
+    Rails.logger.debug(output)
+  end
   PRINT_ENGINE_DEFAULT = :ap
   PRINTER_MESSAGE_INVALID = 'printer must be a valid global method symbol (e.g. :puts) or lambda/proc receiving a text arg'
   PRINT_ENGINE_MESSAGE_INVALID = 'print_engine must be a valid global method symbol (e.g. :p, :ap or :pp) or lambda/proc receiving an object arg'
@@ -131,7 +135,7 @@ module PutsDebuggerer
     def printer=(printer)
       if printer.nil?
         if Object.const_defined?(:Rails)
-          @printer = lambda {|output| Rails.logger.debug(output)}
+          @printer = PRINTER_RAILS
         else
           @printer = PRINTER_DEFAULT
         end

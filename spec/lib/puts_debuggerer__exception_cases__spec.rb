@@ -10,6 +10,7 @@ describe 'PutsDebuggerer' do
     PutsDebuggerer.header = nil
     PutsDebuggerer.footer = nil
     PutsDebuggerer.caller = nil
+    PutsDebuggerer.app_path = nil
   end
   context 'exception cases' do
     it 'handles multi line ruby expressions correctly' do

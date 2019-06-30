@@ -10,6 +10,7 @@ describe 'PutsDebuggerer' do
     PutsDebuggerer.header = nil
     PutsDebuggerer.footer = nil
     PutsDebuggerer.caller = nil
+    PutsDebuggerer.app_path = nil
   end
   context 'with custom announcer' do
     let(:custom_announcer) {'<PD>'}

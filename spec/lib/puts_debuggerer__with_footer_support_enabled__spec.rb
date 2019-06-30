@@ -10,6 +10,7 @@ describe 'PutsDebuggerer' do
     PutsDebuggerer.header = nil
     PutsDebuggerer.footer = nil
     PutsDebuggerer.caller = nil
+    PutsDebuggerer.app_path = nil
   end
   context 'with footer support enabled' do
     context 'as default footer' do

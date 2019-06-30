@@ -12,6 +12,7 @@ describe 'PutsDebuggerer' do
     PutsDebuggerer.caller = nil
     PutsDebuggerer.run_at = nil
     PutsDebuggerer.run_at_global_number = nil
+    PutsDebuggerer.app_path = nil
     PutsDebuggerer::OBJECT_RUN_AT.clear
   end
   context 'with run_at specified' do
