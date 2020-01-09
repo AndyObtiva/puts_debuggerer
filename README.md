@@ -12,9 +12,9 @@ In day-to-day test-driven development and simple debugging though, a puts statem
 For initial background, please read this blog post by Aaron Patterson (part of the inspiration for this gem):
 https://tenderlovemaking.com/2016/02/05/i-am-a-puts-debuggerer.html
 
-It can be quite frustrating to lose puts statements in a large output or log file. One way to help find them is add a header (e.g. `puts "The Order Total"`) or an announcer (e.g. `puts '*'*80`) before every puts statement, leading to repetitive wasteful effort that adds up quickly over many work sessions.
+It can be quite frustrating to lose puts statements in a large output or log file. One way to help find them is add a header (e.g. `puts "The Order Total"`) or an announcer (e.g. `puts '*'*80`) before every puts statement. Unfortunately, that leads to repetitive wasteful effort that adds up quickly over many work sessions and interrupts thinking flow while solving problems.
 
-puts_debuggerer automates that work via the short and simple `pd` command, automatically printing meaningful headers for output.
+puts_debuggerer automates that work via the short and simple `pd` command, automatically printing meaningful headers for output and accelerating problem solving work due to ease of typing.
 
 Example without pd:
 
@@ -41,7 +41,29 @@ Which gets lost in a logging stream such as:
    (0.2ms)  COMMIT
 ```
 
-Example with pd:
+Problem can be mitigated by adding a few more puts statements:
+
+```ruby
+puts "*"*40
+puts "order_total"
+puts order_total
+```
+
+But those add up pretty quickly when inspecting multiple variables:
+
+```ruby
+puts "*"*40
+puts "order_total"
+puts order_total
+puts "*"*40
+puts "order_summary"
+puts order_summary
+puts "*"*40
+puts "order_details"
+puts order_details
+```
+
+Here is a simple example using `pd` instead:
 
 ```ruby
 pd order_total
@@ -74,7 +96,15 @@ This is not only easy to locate in a logging stream such as the one below, but a
    (0.2ms)  COMMIT
 ```
 
-And it is easy to search for using the `[PD]` announcer.
+And it is easy to search for using the `[PD]` announcer (customizable).
+
+When inspecting multiple variables, debugging code is still a snap:
+
+```ruby
+pd order_total
+pd order_summary
+pd order_details
+```
 
 ## Instructions
 
