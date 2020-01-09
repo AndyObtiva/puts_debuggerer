@@ -3,17 +3,14 @@
 [![Build Status](https://travis-ci.org/AndyObtiva/puts_debuggerer.svg?branch=master)](https://travis-ci.org/AndyObtiva/puts_debuggerer)
 [![Coverage Status](https://coveralls.io/repos/github/AndyObtiva/puts_debuggerer/badge.svg?branch=master)](https://coveralls.io/github/AndyObtiva/puts_debuggerer?branch=master)
 
-Yes, many of us avoid debuggers like the plague and clamp on to our puts
-statements like an umbrella in a stormy day.
-Why not make it official and have puts debugging become its own perfectly
-legitimate thing?!!
+Debuggers are great! They help us troubleshoot complicated programming problems by inspecting values produced by code, line by line. They are invaluable when trying to understand what is going on in a large application composed of thousands or millions of lines of code.
 
-Enter puts_debuggerer. A guilt-free puts debugging Ruby gem FTW!
-
-For background, please read this blog post by Aaron Patterson:
-https://tenderlovemaking.com/2016/02/05/i-am-a-puts-debuggerer.html
+In day-to-day test-driven development and simple debugging though, a puts statement can be a lot quicker in revealing what is going on than halting execution completely just to inspect a single value or a few. This is certainly true when writing the simplest possible code that could possibly work, and running a test every few seconds or minutes. Enter puts_debuggerer. A guilt-free puts debugging Ruby gem FTW!
 
 ## Background
+
+For background, please read this blog post by Aaron Patterson (part of the inspiration for this gem):
+https://tenderlovemaking.com/2016/02/05/i-am-a-puts-debuggerer.html
 
 It can be quite frustrating to lose puts statements in a large output or log file. One way to help find them is add a header (e.g. `puts "The Order Total"`) or an announcer (e.g. `puts '*'*80`) before every puts statement, leading to repetitive wasteful effort.
 
