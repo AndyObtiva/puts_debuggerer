@@ -12,7 +12,7 @@ In day-to-day test-driven development and simple debugging though, a puts statem
 For initial background, please read this blog post by Aaron Patterson (part of the inspiration for this gem):
 https://tenderlovemaking.com/2016/02/05/i-am-a-puts-debuggerer.html
 
-It can be quite frustrating to lose puts statements in a large output or log file. One way to help find them is add a header (e.g. `puts "The Order Total"`) or an announcer (e.g. `puts '*'*80`) before every puts statement, leading to repetitive wasteful effort.
+It can be quite frustrating to lose puts statements in a large output or log file. One way to help find them is add a header (e.g. `puts "The Order Total"`) or an announcer (e.g. `puts '*'*80`) before every puts statement, leading to repetitive wasteful effort that adds up quickly over many work sessions.
 
 puts_debuggerer automates that work via the short and simple `pd` command, automatically printing meaningful headers for output.
 
