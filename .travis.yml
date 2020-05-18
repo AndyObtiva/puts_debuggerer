@@ -22,9 +22,9 @@ matrix:
     - rvm: 2.4.10
       gemfile: ruby200-215.Gemfile
     - rvm: 2.3.8
-      gemfile: ruby200-215.Gemfile
+      gemfile: Gemfile
     - rvm: 2.2.10
-      gemfile: ruby200-215.Gemfile
+      gemfile: Gemfile
     - rvm: 2.1.5
       gemfile: Gemfile
     - rvm: 2.0.0
