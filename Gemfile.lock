@@ -99,7 +99,6 @@ PLATFORMS
 
 DEPENDENCIES
   awesome_print (~> 1.8.0)
-  bundler (~> 1.0)
   coveralls (= 0.8.5)
   jeweler (~> 2.3.0)
   rdoc (~> 3.12)
@@ -108,4 +107,4 @@ DEPENDENCIES
   simplecov (~> 0.10.0)
 
 BUNDLED WITH
-   1.14.5
+   1.17.3
