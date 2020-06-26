@@ -4,28 +4,6 @@ rvm:
   - 2.6.6
   - 2.5.8
   - 2.4.10
-  - 2.3.8
-  - 2.2.10
-  - 2.1.5
-  - 2.0.0
-gemfile:
-  - Gemfile
-  - ruby200-215.Gemfile
-matrix:
-  exclude:
-    - rvm: 2.7.1
-      gemfile: ruby200-215.Gemfile
-    - rvm: 2.6.6
-      gemfile: ruby200-215.Gemfile
-    - rvm: 2.5.8
-      gemfile: ruby200-215.Gemfile
-    - rvm: 2.4.10
-      gemfile: ruby200-215.Gemfile
-    - rvm: 2.3.8
-      gemfile: Gemfile
-    - rvm: 2.2.10
-      gemfile: Gemfile
-    - rvm: 2.1.5
-      gemfile: Gemfile
-    - rvm: 2.0.0
-      gemfile: Gemfile
+after_script:
+  ruby -e "$(curl -s https://undercover-ci.com/uploader.rb)" -- --repo AndyObtiva/puts_debuggerer --commit $TRAVIS_COMMIT --lcov coverage/lcov/puts_debuggerer.lcov
+

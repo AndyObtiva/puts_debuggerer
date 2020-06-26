@@ -1,13 +1,14 @@
-if RUBY_VERSION >= '2.3' && !defined?(Rubinius)
-  begin
-    require 'coveralls'
-    Coveralls.wear!
-  rescue LoadError, StandardError => e
-    #no op to support Rubies that do not support Coveralls
-    puts 'Error loading Coveralls'
-    puts e.message
-    puts e.backtrace.join("\n")
-  end
+require 'simplecov'
+require 'simplecov-lcov'
+require 'coveralls' if ENV['TRAVIS']
+
+SimpleCov::Formatter::LcovFormatter.config.report_with_single_file = true
+formatters = []
+formatters << SimpleCov::Formatter::LcovFormatter
+formatters << Coveralls::SimpleCov::Formatter if ENV['TRAVIS']
+SimpleCov.formatters = formatters
+SimpleCov.start do
+  add_filter(/^\/spec\//)
 end
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
