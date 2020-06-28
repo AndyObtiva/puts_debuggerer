@@ -7,23 +7,6 @@ Debuggers are great! They help us troubleshoot complicated programming problems 
 
 In day-to-day test-driven development and simple debugging though, a puts statement can be a lot quicker in revealing what is going on than halting execution completely just to inspect a single value or a few. This is certainly true when writing the simplest possible code that could possibly work, and running a test every few seconds or minutes. Problem is you need to locate puts statements in large output logs, know which methods were invoked, find out what variable names are being printed, and see nicely formatted output. Enter puts_debuggerer. A guilt-free puts debugging Ruby gem FTW that prints file names, line numbers, code statements, and formats output nicely courtesy of awesome_print.
 
-Basic Example:
-
-```ruby
-# /Users/User/trivia_app.rb      # line 1
-require 'puts_debuggerer'        # line 2
-bug_or_band = 'beattle'          # line 3
-pd bug_or_band                   # line 4
-```
-
-Output:
-
-```bash
-[PD] trivia_app.rb:4
-   > pd bug_or_band                   # line 4
-  => "beattle"
-```
-
 ## Background
 
 For initial background, please read this blog post by Aaron Patterson (part of the inspiration for this gem):
