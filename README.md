@@ -5,7 +5,24 @@
 
 Debuggers are great! They help us troubleshoot complicated programming problems by inspecting values produced by code, line by line. They are invaluable when trying to understand what is going on in a large application composed of thousands or millions of lines of code.
 
-In day-to-day test-driven development and simple debugging though, a puts statement can be a lot quicker in revealing what is going on than halting execution completely just to inspect a single value or a few. This is certainly true when writing the simplest possible code that could possibly work, and running a test every few seconds or minutes. Enter puts_debuggerer. A guilt-free puts debugging Ruby gem FTW!
+In day-to-day test-driven development and simple debugging though, a puts statement can be a lot quicker in revealing what is going on than halting execution completely just to inspect a single value or a few. This is certainly true when writing the simplest possible code that could possibly work, and running a test every few seconds or minutes. Problem is you need to locate puts statements in large output logs, know which methods were invoked, find out what variable names are being printed, and see nicely formatted output. Enter puts_debuggerer. A guilt-free puts debugging Ruby gem FTW that prints file names, line numbers, code statements, and formats output nicely courtesy of awesome_print.
+
+Basic Example:
+
+```ruby
+# /Users/User/trivia_app.rb      # line 1
+require 'puts_debuggerer'        # line 2
+bug_or_band = 'beattle'          # line 3
+pd bug_or_band                   # line 4
+```
+
+Output:
+
+```bash
+[PD] trivia_app.rb:4
+   > pd bug_or_band                   # line 4
+  => "beattle"
+```
 
 ## Background
 
@@ -128,6 +145,17 @@ gem install puts_debuggerer -v0.8.1
 
 ```ruby
 require 'puts_debuggerer'
+```
+
+### Awesome Print
+
+puts_debuggerer comes with [awesome_print](https://github.com/awesome-print/awesome_print).
+
+You may disable when needed by not requiring in Ruby or by adding an explicit reference to awesome_print with `require: false` in bundler:
+
+```ruby
+gem "awesome_print", require: false
+gem "puts_debugger"
 ```
 
 ### Usage
@@ -536,20 +564,9 @@ And:
 `PutsDebuggerer.reset_run_at_numbers`
 for piecemeal usage.
 
-### Bonus
+### Bonus API
 
-puts_debuggerer comes with a number of bonus goodies.
-
-It comes with [awesome_print](https://github.com/awesome-print/awesome_print).
-
-You may disable by not requiring in Ruby or by adding an explicit reference to awesome_print with `require: false` in bundler:
-
-```ruby
-gem "awesome_print", require: false
-gem "puts_debugger"
-```
-
-Additionally, puts_debuggerer comes with the following bonus utility methods:
+puts_debuggerer comes with the following bonus API methods:
 
 #### `__caller_line_number__(caller_depth=0)`
 
