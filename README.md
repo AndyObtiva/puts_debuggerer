@@ -77,7 +77,15 @@ Output:
  => 195.50
 ```
 
-This is not only easy to locate in a logging stream such as the one below, but also includes the `order_total` variable for easy findability among other pd statements.
+This is not only easy to locate in a logging stream such as the one below, but also prints the `order_total` variable name for easy findability among other pd statements:
+
+```ruby
+pd order_total
+pd order_summary
+pd order_details
+```
+
+Output:
 
 ```
    (2.7ms)  CREATE TABLE "ar_internal_metadata" ("key" character varying PRIMARY KEY, "value" character varying, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)
@@ -88,22 +96,78 @@ This is not only easy to locate in a logging stream such as the one below, but a
    (0.2ms)  BEGIN
   SQL (0.3ms)  INSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"  [["key", "environment"], ["value", "development"], ["created_at", 2017-08-24 22:56:52 UTC], ["updated_at", 2017-08-24 22:56:52 UTC]]
    (0.3ms)  COMMIT
-[PD] /Users/User/ordering/order.rb:72
-  > pd order_subtotal  
- => 181.00
+[PD] /Users/User/ordering/order.rb:40
+  > pd order_summary  
+ => "Pragmatic Ruby Book"
   ActiveRecord::InternalMetadata Load (0.3ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
    (0.2ms)  BEGIN
    (0.2ms)  COMMIT
+[PD] /Users/User/ordering/order.rb:41
+  > pd order_details  
+ => "[Hard Cover] Pragmatic Ruby Book - English Version"
 ```
 
-And it is easy to search for using the `[PD]` announcer (customizable).
-
-When inspecting multiple variables, debugging code is still a snap:
+What if you would like to add a header for faster findability? Just use the `header` option:
 
 ```ruby
-pd order_total
+pd order_total, header: true
 pd order_summary
 pd order_details
+```
+
+Output:
+
+```
+   (2.7ms)  CREATE TABLE "ar_internal_metadata" ("key" character varying PRIMARY KEY, "value" character varying, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)
+  ActiveRecord::InternalMetadata Load (0.4ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
+********************************************************************************
+[PD] /Users/User/ordering/order.rb:39
+  > pd order_total  
+ => 195.50
+   (0.2ms)  BEGIN
+  SQL (0.3ms)  INSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"  [["key", "environment"], ["value", "development"], ["created_at", 2017-08-24 22:56:52 UTC], ["updated_at", 2017-08-24 22:56:52 UTC]]
+   (0.3ms)  COMMIT
+[PD] /Users/User/ordering/order.rb:40
+  > pd order_summary  
+ => "Pragmatic Ruby Book"
+  ActiveRecord::InternalMetadata Load (0.3ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
+   (0.2ms)  BEGIN
+   (0.2ms)  COMMIT
+[PD] /Users/User/ordering/order.rb:41
+  > pd order_details  
+ => "[Hard Cover] Pragmatic Ruby Book - English Version"
+```
+
+Wanna customize the header and add a footer too? No problem:
+
+```ruby
+pd order_total, header: '>'*80
+pd order_summary
+pd order_details, footer: '<'*80
+```
+
+Output:
+
+```
+   (2.7ms)  CREATE TABLE "ar_internal_metadata" ("key" character varying PRIMARY KEY, "value" character varying, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)
+  ActiveRecord::InternalMetadata Load (0.4ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[PD] /Users/User/ordering/order.rb:39
+  > pd order_total  
+ => 195.50
+   (0.2ms)  BEGIN
+  SQL (0.3ms)  INSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"  [["key", "environment"], ["value", "development"], ["created_at", 2017-08-24 22:56:52 UTC], ["updated_at", 2017-08-24 22:56:52 UTC]]
+   (0.3ms)  COMMIT
+[PD] /Users/User/ordering/order.rb:40
+  > pd order_summary  
+ => "Pragmatic Ruby Book"
+  ActiveRecord::InternalMetadata Load (0.3ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
+   (0.2ms)  BEGIN
+   (0.2ms)  COMMIT
+[PD] /Users/User/ordering/order.rb:41
+  > pd order_details  
+ => "[Hard Cover] Pragmatic Ruby Book - English Version"
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ```
 
 ## Instructions
