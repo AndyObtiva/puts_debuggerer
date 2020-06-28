@@ -77,7 +77,7 @@ Output:
  => 195.50
 ```
 
-This is not only easy to locate in a logging stream such as the one below, but also announces the `order_total` variable with `[PD]` for easy findability among other pd statements (you may always enter `[PD]` or variables name `order_total` using the CMD+F Quick Find to instantly jump to that line in the log):
+This is not only easy to locate in a logging stream such as the one below, but also announces the `order_total` variable with `[PD]` for easy findability among other pd statements (you may always enter `[PD]` or variable name `order_total` using the CMD+F Quick Find to instantly jump to that line in the log):
 
 ```ruby
 pd order_total
