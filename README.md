@@ -276,8 +276,7 @@ Header to include at the top of every print out.
 Example:
 
 ```ruby
-PutsDebuggerer.header = true
-pd (x=1)
+pd (x=1), header: true
 ```
 
 Prints out:
@@ -285,8 +284,29 @@ Prints out:
 ```bash
 ********************************************************************************
 [PD] /Users/User/example.rb:2
-   > pd x=1
+   > pd (x=1), header: true
   => "1"
+```
+
+Global Option Example:
+
+```ruby
+PutsDebuggerer.header = true
+pd (x=1)
+pd (x=2)
+```
+
+Prints out:
+
+```bash
+********************************************************************************
+[PD] /Users/User/example.rb:2
+   > pd (x=1)
+  => "1"
+********************************************************************************
+[PD] /Users/User/example.rb:3
+   > pd (x=2)
+  => "2"
 ```
 
 #### `PutsDebuggerer.footer`
@@ -301,16 +321,36 @@ Footer to include at the bottom of every print out.
 Example:
 
 ```ruby
-PutsDebuggerer.footer = true
-pd (x=1)
+pd (x=1), footer: true
 ```
 
 Prints out:
 
 ```bash
 [PD] /Users/User/example.rb:2
-   > pd x=1
+   > pd (x=1), footer: true
   => "1"
+********************************************************************************
+```
+
+Global Option Example:
+
+```ruby
+PutsDebuggerer.footer = true
+pd (x=1)
+pd (x=2)
+```
+
+Prints out:
+
+```bash
+[PD] /Users/User/example.rb:2
+   > pd (x=1)
+  => "1"
+********************************************************************************
+[PD] /Users/User/example.rb:2
+   > pd (x=2)
+  => "2"
 ********************************************************************************
 ```
 
