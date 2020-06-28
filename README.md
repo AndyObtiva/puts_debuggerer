@@ -63,7 +63,7 @@ puts "order_details"
 puts order_details
 ```
 
-Here is a simple example using `pd` instead:
+Here is a simple example using `pd` instead, which provides everything the puts statements above provide in addition to deducing file name and line number automatically for you to make it dead easy to debug:
 
 ```ruby
 pd order_total
