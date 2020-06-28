@@ -1,5 +1,6 @@
 require 'ripper'
 require 'awesome_print'
+require 'stringio'
 
 module PutsDebuggerer
   HEADER_DEFAULT = '*'*80

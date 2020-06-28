@@ -130,7 +130,7 @@ pd order_details
 Add the following to bundler's `Gemfile`.
 
 ```ruby
-gem 'puts_debuggerer', '~> 0.8.1'
+gem 'puts_debuggerer', '~> 0.8.2'
 ```
 
 This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you may create an initializer under `config/initializers` named `puts_debuggerer_options.rb` to enable further customizations as per the [Options](#options) section below.
@@ -140,7 +140,7 @@ This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you m
 Or manually install and require library.
 
 ```bash
-gem install puts_debuggerer -v0.8.1
+gem install puts_debuggerer -v0.8.2
 ```
 
 ```ruby
@@ -610,6 +610,7 @@ Prints out `puts __caller_source_line__`
 
 ## Release Notes
 
+* v0.8.2: require 'stringio' for projects that don't require automatically via other gems
 * v0.8.1: `printer` option support for Rails test environment
 * v0.8.0: `printer` option support
 * v0.7.1: default print engine to :ap (AwesomePrint)
