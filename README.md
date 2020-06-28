@@ -170,6 +170,42 @@ Output:
  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ```
 
+Need a quick stack trace? Just use the `caller` option (you may surround with header and footer too).
+
+```ruby
+pd order_total, caller: true, header: true, footer: true
+pd order_summary
+pd order_details
+```
+
+Output:
+
+```
+   (2.7ms)  CREATE TABLE "ar_internal_metadata" ("key" character varying PRIMARY KEY, "value" character varying, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)
+  ActiveRecord::InternalMetadata Load (0.4ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
+********************************************************************************
+[PD] /Users/User/ordering/order.rb:39
+  > pd order_total  
+ => 195.50
+   /Users/User/sample_app/lib/master_samples.rb:368:in \`block (3 levels) in <top (required)>\'
+   /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in \`eval\'
+   /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in \`evaluate\'
+   /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/context.rb:381:in \`evaluate\'
+ ********************************************************************************
+   (0.2ms)  BEGIN
+  SQL (0.3ms)  INSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"  [["key", "environment"], ["value", "development"], ["created_at", 2017-08-24 22:56:52 UTC], ["updated_at", 2017-08-24 22:56:52 UTC]]
+   (0.3ms)  COMMIT
+[PD] /Users/User/ordering/order.rb:40
+  > pd order_summary  
+ => "Pragmatic Ruby Book"
+  ActiveRecord::InternalMetadata Load (0.3ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
+   (0.2ms)  BEGIN
+   (0.2ms)  COMMIT
+[PD] /Users/User/ordering/order.rb:41
+  > pd order_details  
+ => "[Hard Cover] Pragmatic Ruby Book - English Version"
+```
+
 ## Instructions
 
 ### Option 1: Bundler
@@ -412,7 +448,7 @@ Prints out:
    > pd (x=1)
   => "1"
 ********************************************************************************
-[PD] /Users/User/example.rb:2
+[PD] /Users/User/example.rb:3
    > pd (x=2)
   => "2"
 ********************************************************************************
@@ -564,16 +600,43 @@ Example:
 
 ```ruby
 # File Name: /Users/User/sample_app/lib/sample.rb
-PutsDebuggerer.caller = 3
-pd (x=1)
+pd (x=1), caller: true
 ```
 
 Prints out:
 
 ```bash
-[PD] /Users/User/sample_app/lib/sample.rb:3
+[PD] /Users/User/sample_app/lib/sample.rb:2
     > pd x=1
    => "1"
+     /Users/User/sample_app/lib/master_samples.rb:368:in \`block (3 levels) in <top (required)>\'
+     /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in \`eval\'
+     /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in \`evaluate\'
+     /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/context.rb:381:in \`evaluate\'
+```
+
+Global Option Example:
+
+```ruby
+# File Name: /Users/User/sample_app/lib/sample.rb
+PutsDebuggerer.caller = 3 # always print 3 lines only of the stack trace
+pd (x=1)
+pd (x=2)
+```
+
+Prints out:
+
+```bash
+[PD] /Users/User/sample_app/lib/sample.rb:2
+    > pd (x=1)
+   => "1"
+     /Users/User/sample_app/lib/master_samples.rb:368:in \`block (3 levels) in <top (required)>\'
+     /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in \`eval\'
+     /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in \`evaluate\'
+     /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/context.rb:381:in \`evaluate\'
+[PD] /Users/User/sample_app/lib/sample.rb:3
+    > pd (x=2)
+   => "2"
      /Users/User/sample_app/lib/master_samples.rb:368:in \`block (3 levels) in <top (required)>\'
      /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in \`eval\'
      /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in \`evaluate\'
