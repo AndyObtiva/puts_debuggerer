@@ -8,6 +8,7 @@
 - Special handling of exceptions (prints using full_message)
 - Change :ap printer default to :p when unavailable
 - Support varargs printing (example: `pd arg1, arg2, arg3`)
+- Display `run_at` run number in printout
 
 ## 0.8.2
 

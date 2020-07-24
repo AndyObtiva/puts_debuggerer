@@ -18,7 +18,7 @@ module PutsDebuggerer
   FORMATTER_DEFAULT = -> (data) {
       puts data[:wrapper] if data[:wrapper]
       puts data[:header] if data[:header]
-      print "#{data[:announcer]} #{data[:file]}:#{data[:line_number]}#{__format_pd_expression__(data[:pd_expression], data[:object])} "
+      print "#{data[:announcer]} #{data[:file]}:#{data[:line_number]}#{" (run:#{data[:run_number]})" if data[:run_number]}#{__format_pd_expression__(data[:pd_expression], data[:object])} "
       data[:object_printer].call
       puts data[:caller].map {|l| '     ' + l} unless data[:caller].to_a.empty?
       puts data[:footer] if data[:footer]
@@ -517,7 +517,8 @@ def pd(*objects)
 
   if __run_pd__(object, run_at)
     __with_pd_options__(options) do |print_engine_options|
-      formatter_pd_data = __build_pd_data__(object, print_engine_options, PutsDebuggerer.source_line_count) #depth adds build method
+      run_number = PutsDebuggerer.run_at_global_number || PutsDebuggerer.run_at_number(object, run_at)
+      formatter_pd_data = __build_pd_data__(object, print_engine_options, PutsDebuggerer.source_line_count, run_number) #depth adds build method
       stdout = $stdout
       $stdout = sio = StringIO.new
       PutsDebuggerer.formatter.call(formatter_pd_data)
@@ -638,13 +639,14 @@ def __with_pd_options__(options=nil)
   PutsDebuggerer.options = permanent_options
 end
 
-def __build_pd_data__(object, print_engine_options=nil, source_line_count=nil)
+def __build_pd_data__(object, print_engine_options=nil, source_line_count=nil, run_number=nil)
   depth = PutsDebuggerer::CALLER_DEPTH_ZERO
   pd_data = {
     announcer: PutsDebuggerer.announcer,
     file: __caller_file__(depth)&.sub(PutsDebuggerer.app_path.to_s, ''),
     line_number: __caller_line_number__(depth),
     pd_expression: __caller_pd_expression__(depth, source_line_count),
+    run_number: run_number,
     object: object,
     object_printer: lambda do
       if object.is_a?(Exception) && object.respond_to?(:full_message)

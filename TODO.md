@@ -6,9 +6,6 @@ Here are tasks considered for future versions. Once done, they are moved to the 
 
 ### 0.9.0
 
-- display run_at run number in printout
-- support sequences for run_at, such as print on odd numbers
-
 
 ### Version TBD
 
@@ -16,4 +13,5 @@ Here are tasks considered for future versions. Once done, they are moved to the 
 - Provide as logging device and/or formatter for Ruby logger API and/or logging gem
 * fix issue with printing in rspec inside a Rails project without having to do extra configuration
 * fix issue with erb support
+- support sequences for run_at, such as print on odd/even numbers
 * pry support: implement fallback in irb for when line number cannot be discovered (issue happens in pry, perhaps this just means support pry)
