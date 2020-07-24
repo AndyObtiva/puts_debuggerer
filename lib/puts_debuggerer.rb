@@ -654,7 +654,9 @@ def __build_pd_data__(object, print_engine_options=nil, source_line_count=nil)
     pd_expression: __caller_pd_expression__(depth, source_line_count),
     object: object,
     object_printer: lambda do
-      if PutsDebuggerer.print_engine.is_a?(Proc)
+      if object.is_a?(Exception) && object.respond_to?(:full_message)
+        puts object.full_message
+      elsif PutsDebuggerer.print_engine.is_a?(Proc)
         PutsDebuggerer.print_engine.call(object)
       else
         if print_engine_options.to_h.empty?

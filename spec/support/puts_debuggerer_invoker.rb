@@ -43,4 +43,8 @@ module PutsDebuggererInvoker
     pd "Hello " +
       name.to_s, source_line_count: 2
   end
+  # intentional empty line
+  def self.exception_stack_trace(error)
+    pd error
+  end
 end

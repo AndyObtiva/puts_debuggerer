@@ -4,10 +4,6 @@ Here are tasks considered for future versions. Once done, they are moved to the 
 
 ## Next
 
-### 0.9.0
-
-- Special handling of exceptions (using full_message not to_s)
-
 ### Version TBD
 
 - Support pd arg1, arg2, arg3

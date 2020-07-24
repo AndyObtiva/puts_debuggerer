@@ -12,28 +12,44 @@ describe 'PutsDebuggerer' do
     PutsDebuggerer.caller = nil
     PutsDebuggerer.app_path = nil
   end
+  
   it 'prints file, line number, ruby expression, and evaluated string object; returns evaluated object' do
     name = 'Robert'
     expect(PutsDebuggererInvoker.dynamic_greeting(name)).to eq('Hello Robert')
     output = $stdout.string
     expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
   end
+  
   it 'prints file, line number, ruby expression, and evaluated string object without extra parentheses when already surrounded; returns evaluated object' do
     name = 'Robert'
     expect(PutsDebuggererInvoker.parentheses_dynamic_greeting(name)).to eq("Hello Robert")
     output = $stdout.string
     expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:14\n   > pd (\"Hello \#{name}\")\n  => \"Hello Robert\"\n")
   end
+  
   it 'prints file, line number, ruby expression, and evaluated numeric object without quotes; returns evaluated integer' do
     expect(PutsDebuggererInvoker.numeric_squaring(3)).to eq(9)
     output = $stdout.string
     expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:18\n   > pd n*n\n  => 9\n")
   end
+  
   it 'prints inside pd expression' do
     name = 'Robert'
     expect(PutsDebuggererInvoker.inside_dynamic_greeting(name)).to eq('Hello Robert')
     output = $stdout.string
     expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:35\n   > greeting = \"Hello \#{pd(name)}\"\n  => \"Robert\"\n")
+  end
+
+  it 'prints exception stack trace' do
+    class FakeException < Exception
+      def full_message
+        'StackTrace'
+      end
+    end
+    e = FakeException.new
+    PutsDebuggererInvoker.exception_stack_trace(e)
+    output = $stdout.string
+    expect(output).to eq("[PD] /Users/User/code/puts_debuggerer/spec/support/puts_debuggerer_invoker.rb:48\n   > pd error\n  => StackTrace\n")
   end
 
   context 'look into puts debuggerer blog post by tenderlove for other goodies to add'
