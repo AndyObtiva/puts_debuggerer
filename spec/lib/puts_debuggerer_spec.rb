@@ -51,6 +51,20 @@ describe 'PutsDebuggerer' do
     output = $stdout.string
     expect(output).to eq("[PD] /Users/User/code/puts_debuggerer/spec/support/puts_debuggerer_invoker.rb:48\n   > pd error\n  => StackTrace\n")
   end
+  
+  it 'prints *args array' do    
+    result = PutsDebuggererInvoker.vararg_array
+    expect(result).to eq(['hello', 3, true])
+    output = $stdout.string
+    expect(output).to eq("[PD] /Users/User/code/puts_debuggerer/spec/support/puts_debuggerer_invoker.rb:52\n   > pd 'hello', 3, true\n  => [\"hello\", 3, true]\n")
+  end
+
+  it 'prints *args array with options at the end' do
+    result = PutsDebuggererInvoker.vararg_array_with_options(wrapper: true)
+    expect(result).to eq(['hello', 3, true])
+    output = $stdout.string
+    expect(output).to eq("********************************************************************************\n[PD] /Users/User/code/puts_debuggerer/spec/support/puts_debuggerer_invoker.rb:56\n   > pd 'hello', 3, true, options\n  => [\"hello\", 3, true]\n********************************************************************************\n")
+  end
 
   context 'look into puts debuggerer blog post by tenderlove for other goodies to add'
   context 'deadlock detection support'

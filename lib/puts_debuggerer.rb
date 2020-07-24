@@ -510,7 +510,9 @@ PutsDebuggerer.source_line_count = nil
 #      > pd "Show me the source of the bug: #{bug}"
 #     => "Show me the source of the bug: beattle"
 #   [PD] /Users/User/finance_calculator_app/pd_test.rb:4 "What line number am I?"
-def pd(object, options=nil)
+def pd(*objects)
+  options = objects.delete_at(-1) if objects.size > 1 && objects.last.is_a?(Hash)
+  object = objects.compact.size > 1 ? objects : objects.first
   run_at = ((options && options[:run_at]) || PutsDebuggerer.run_at)
 
   if __run_pd__(object, run_at)

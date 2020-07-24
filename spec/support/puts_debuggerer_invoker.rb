@@ -47,4 +47,12 @@ module PutsDebuggererInvoker
   def self.exception_stack_trace(error)
     pd error
   end
+  # intentional empty line
+  def self.vararg_array
+    pd 'hello', 3, true
+  end
+  # intentional empty line
+  def self.vararg_array_with_options(options)
+    pd 'hello', 3, true, options
+  end
 end
