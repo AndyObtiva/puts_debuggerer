@@ -4,6 +4,7 @@
 
 - Provide partial support for Opal Ruby (missing display of file name, line number, and source code)
 - `source_line_count` option
+- `wraper` option for including both `header` and `footer`
 
 ## 0.8.2
 

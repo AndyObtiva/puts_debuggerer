@@ -13,6 +13,7 @@ require 'stringio'
 module PutsDebuggerer
   SOURCE_LINE_COUNT_DEFAULT = 1
   HEADER_DEFAULT = '*'*80
+  WRAPPER_DEFAULT = '*'*80
   FOOTER_DEFAULT = '*'*80
   PRINTER_DEFAULT = :puts
   PRINTER_RAILS = lambda do |output|
@@ -24,11 +25,13 @@ module PutsDebuggerer
   PRINT_ENGINE_MESSAGE_INVALID = 'print_engine must be a valid global method symbol (e.g. :p, :ap or :pp) or lambda/proc receiving an object arg'
   ANNOUNCER_DEFAULT = '[PD]'
   FORMATTER_DEFAULT = -> (data) {
+      puts data[:wrapper] if data[:wrapper]
       puts data[:header] if data[:header]
       print "#{data[:announcer]} #{data[:file]}:#{data[:line_number]}#{__format_pd_expression__(data[:pd_expression], data[:object])} "
       data[:object_printer].call
       puts data[:caller].map {|l| '     ' + l} unless data[:caller].to_a.empty?
       puts data[:footer] if data[:footer]
+      puts data[:wrapper] if data[:wrapper]
     }
   CALLER_DEPTH_ZERO = 4 #depth includes pd + with_options method + nested block + build_pd_data method
   OBJECT_RUN_AT = {}
@@ -110,6 +113,39 @@ module PutsDebuggerer
       !!@header
     end
 
+    # Wrapper to include at the top and bottom of every print out (both header and footer).
+    # * Default value is `nil`
+    # * Value `true` enables wrapper as `'*'*80`
+    # * Value `false`, `nil`, or empty string disables wrapper
+    # * Any other string value gets set as a custom wrapper
+    #
+    # Example:
+    #
+    #   PutsDebuggerer.wrapper = true
+    #   pd (x=1)
+    #
+    # Prints out:
+    #
+    #   [PD] /Users/User/example.rb:2
+    #      > pd x=1
+    #     => "1"
+    #   ********************************************************************************
+    attr_reader :wrapper
+
+    def wrapper=(value)
+      if value.equal?(true)
+        @wrapper = WRAPPER_DEFAULT
+      elsif value == ''
+        @wrapper = nil
+      else
+        @wrapper = value
+      end
+    end
+
+    def wrapper?
+      !!@wrapper
+    end
+    
     # Footer to include at the bottom of every print out.
     # * Default value is `nil`
     # * Value `true` enables footer as `'*'*80`
@@ -237,12 +273,14 @@ module PutsDebuggerer
     # * :announcer (string)
     # * :caller (array)
     # * :file (string)
+    # * :wrapper (string)
     # * :footer (string)
     # * :header (string)
     # * :line_number (string)
     # * :pd_expression (string)
     # * :object (object)
     # * :object_printer (proc)
+    # * :source_line_count (integer)
     #
     # NOTE: data for :object_printer is not a string, yet a proc that must
     # be called to output value. It is a proc as it automatically handles usage
@@ -320,6 +358,7 @@ module PutsDebuggerer
     def options
       {
         header: header,
+        wrapper: wrapper,
         footer: footer,
         printer: printer,
         print_engine: print_engine,
@@ -632,6 +671,7 @@ def __build_pd_data__(object, print_engine_options=nil, source_line_count=nil)
     pd_data[:caller] = caller[start_depth..caller_depth].to_a
   end
   pd_data[:header] = PutsDebuggerer.header if PutsDebuggerer.header?
+  pd_data[:wrapper] = PutsDebuggerer.wrapper if PutsDebuggerer.wrapper?
   pd_data[:footer] = PutsDebuggerer.footer if PutsDebuggerer.footer?
   pd_data
 end
