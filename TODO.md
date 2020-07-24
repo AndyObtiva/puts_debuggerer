@@ -15,4 +15,3 @@ Here are tasks considered for future versions. Once done, they are moved to the 
 * fix issue with erb support
 - support sequences for run_at, such as print on odd/even numbers
 * pry support: implement fallback in irb for when line number cannot be discovered (issue happens in pry, perhaps this just means support pry)
-- Adding full Opal support by also implementing support for Opal File reading of Ruby gem files (allowing any file in a gem to be read in the browser)
