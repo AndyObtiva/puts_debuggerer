@@ -678,7 +678,7 @@ Prints out `puts __caller_source_line__`
 - IRB
 - Rails Console.
 
-It has partial-compatibility with [Opal Ruby](https://opalrb.com/) with everything working except these features:
+It provides partial-compatibility for [Opal Ruby](https://opalrb.com/), with everything working except these features:
 - File name display
 - Line number display
 - Source code call display
