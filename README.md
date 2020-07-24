@@ -19,7 +19,7 @@ pd bug_or_band                   # line 4
 Output:
 
 ```bash
-[PD] trivia_app.rb:4
+[PD] /Users/User/trivia_app.rb:4
    > pd bug_or_band                   # line 4
   => "beattle"
 ```
