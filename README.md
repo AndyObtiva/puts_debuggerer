@@ -225,6 +225,8 @@ Output:
  => "[Hard Cover] Pragmatic Ruby Book - English Version"
 ```
 
+There are many more options and powerful features in [puts_debuggerer](https://rubygems.org/gems/puts_debuggerer) as detailed below.
+
 ## Instructions
 
 ### Option 1: Bundler
