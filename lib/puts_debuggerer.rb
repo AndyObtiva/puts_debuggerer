@@ -74,7 +74,7 @@ module PutsDebuggerer
     attr_reader :source_line_count
 
     def source_line_count=(value)
-      @source_line_count = value.to_i || SOURCE_LINE_COUNT_DEFAULT
+      @source_line_count = value || SOURCE_LINE_COUNT_DEFAULT
     end
 
     # Header to include at the top of every print out.
@@ -578,12 +578,16 @@ def __caller_source_line__(caller_depth=0, source_line_count=nil, source_file=ni
     f = File.new(source_file)
     if f.respond_to?(:readline) # Opal Ruby Compatibility
       source_lines = []
-      while f.lineno < source_line_number - 1 + source_line_count
-        file_line_number = f.lineno
-        file_line = f.readline
-        if file_line_number >= source_line_number - 1 && file_line_number < source_line_number - 1 + source_line_count
-          source_lines << file_line
+      begin
+        while f.lineno < source_line_number + source_line_count
+          file_line_number = f.lineno + 1
+          file_line = f.readline
+          if file_line_number >= source_line_number && file_line_number < source_line_number + source_line_count
+            source_lines << file_line
+          end
         end
+      rescue EOFError
+        # Done
       end
       source_line = source_lines.join(' '*5)
     end
