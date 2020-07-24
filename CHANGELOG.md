@@ -3,6 +3,7 @@
 ## 0.9.0
 
 - Provide partial support for Opal Ruby (missing display of file name, line number, and source code)
+- `source_line_count` option
 
 ## 0.8.2
 

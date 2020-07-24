@@ -38,4 +38,9 @@ module PutsDebuggererInvoker
   def self.dynamic_greeting_run_at(name, run_at=nil)
     pd "Hello #{name}", run_at: run_at
   end
+  # intentional empty line
+  def self.multi_line_dynamic_greeting_source_line_count(name)
+    pd "Hello " +
+      name.to_s, source_line_count: 2
+  end
 end

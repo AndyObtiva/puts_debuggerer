@@ -6,7 +6,8 @@ Here are tasks considered for future versions. Once done, they are moved to the 
 
 ### 0.9.0
 
-- Support specifying number of lines printed from code instead of code block
+- `wrap` option for including both `header` and `footer`
+- Special handling of exceptions (using full_message not to_s)
 
 ### Version TBD
 

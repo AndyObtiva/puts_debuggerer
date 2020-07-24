@@ -11,6 +11,7 @@ end
 require 'stringio'
 
 module PutsDebuggerer
+  SOURCE_LINE_COUNT_DEFAULT = 1
   HEADER_DEFAULT = '*'*80
   FOOTER_DEFAULT = '*'*80
   PRINTER_DEFAULT = :puts
@@ -52,6 +53,28 @@ module PutsDebuggerer
 
     def app_path=(path)
       @app_path = (path || Rails.root.to_s) rescue nil
+    end
+
+    # Source Line Count.
+    # * Default value is `1`
+    #
+    # Example:
+    #
+    #   PutsDebuggerer.source_line_count = 2
+    #   pd (true ||
+    #     false), source_line_count: 2
+    #
+    # Prints out:
+    #
+    #   ********************************************************************************
+    #   [PD] /Users/User/example.rb:2
+    #      > pd (true ||
+    #          false), source_line_count: 2
+    #     => "true"
+    attr_reader :source_line_count
+
+    def source_line_count=(value)
+      @source_line_count = value.to_i || SOURCE_LINE_COUNT_DEFAULT
     end
 
     # Header to include at the top of every print out.
@@ -300,6 +323,7 @@ module PutsDebuggerer
         footer: footer,
         printer: printer,
         print_engine: print_engine,
+        source_line_count: source_line_count,
         app_path: app_path,
         announcer: announcer,
         formatter: formatter,
@@ -425,6 +449,7 @@ PutsDebuggerer.formatter = nil
 PutsDebuggerer.app_path = nil
 PutsDebuggerer.caller = nil
 PutsDebuggerer.run_at = nil
+PutsDebuggerer.source_line_count = nil
 
 # Prints object with bonus info such as file name, line number and source
 # expression. Optionally prints out header and footer.
@@ -460,7 +485,7 @@ def pd(object, options=nil)
 
   if __run_pd__(object, run_at)
     __with_pd_options__(options) do |print_engine_options|
-      formatter_pd_data = __build_pd_data__(object, print_engine_options) #depth adds build method
+      formatter_pd_data = __build_pd_data__(object, print_engine_options, PutsDebuggerer.source_line_count) #depth adds build method
       stdout = $stdout
       $stdout = sio = StringIO.new
       PutsDebuggerer.formatter.call(formatter_pd_data)
@@ -543,23 +568,25 @@ end
 #   puts __caller_source_line__
 #
 # prints out `puts __caller_source_line__`
-def __caller_source_line__(caller_depth=0, source_file=nil, source_line_number=nil)
+def __caller_source_line__(caller_depth=0, source_line_count=nil, source_file=nil, source_line_number=nil)
   source_line_number ||= __caller_line_number__(caller_depth+1)
   source_file ||= __caller_file__(caller_depth+1)
-  source_line = nil
+  source_line = ''
   if source_file == '(irb)'
     source_line = conf.io.line(source_line_number)
   else
     f = File.new(source_file)
-    source_line = ''
-    done = false    
-    f.each_line do |line|
-      if !done && f.lineno == source_line_number
-        source_line << line
-        done = true if Ripper.sexp_raw(source_line) || source_line.include?('%>') #the last condition is for erb support (unofficial)
-        source_line_number+=1
+    if f.respond_to?(:readline) # Opal Ruby Compatibility
+      source_lines = []
+      while f.lineno < source_line_number - 1 + source_line_count
+        file_line_number = f.lineno
+        file_line = f.readline
+        if file_line_number >= source_line_number - 1 && file_line_number < source_line_number - 1 + source_line_count
+          source_lines << file_line
+        end
       end
-    end if f.respond_to?(:each_line)
+      source_line = source_lines.join(' '*5)
+    end
   end
   source_line
 end
@@ -575,13 +602,13 @@ def __with_pd_options__(options=nil)
   PutsDebuggerer.options = permanent_options
 end
 
-def __build_pd_data__(object, print_engine_options=nil)
+def __build_pd_data__(object, print_engine_options=nil, source_line_count=nil)
   depth = PutsDebuggerer::CALLER_DEPTH_ZERO
   pd_data = {
     announcer: PutsDebuggerer.announcer,
     file: __caller_file__(depth)&.sub(PutsDebuggerer.app_path.to_s, ''),
     line_number: __caller_line_number__(depth),
-    pd_expression: __caller_pd_expression__(depth),
+    pd_expression: __caller_pd_expression__(depth, source_line_count),
     object: object,
     object_printer: lambda do
       if PutsDebuggerer.print_engine.is_a?(Proc)
@@ -609,9 +636,9 @@ def __format_pd_expression__(expression, object)
   "\n   > #{expression}\n  =>"
 end
 
-def __caller_pd_expression__(depth=0)
+def __caller_pd_expression__(depth=0, source_line_count=nil)
   # Caller Source Line Depth 2 = 1 to pd method + 1 to caller
-  source_line = __caller_source_line__(depth+1)
+  source_line = __caller_source_line__(depth+1, source_line_count)
   source_line = __extract_pd_expression__(source_line)
   source_line = source_line.gsub(/(^'|'$)/, '"') if source_line.start_with?("'") && source_line.end_with?("'")
   source_line = source_line.gsub(/(^\(|\)$)/, '') if source_line.start_with?("(") && source_line.end_with?(")")
@@ -626,5 +653,5 @@ end
 #
 # outputs `(x=1)`
 def __extract_pd_expression__(source_line)
-  source_line.strip
+  source_line.to_s.strip
 end

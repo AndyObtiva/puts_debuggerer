@@ -331,6 +331,42 @@ Prints out:
 ********************************************************************************
 ```
 
+#### `PutsDebuggerer.source_line_count`
+(default = `1`)
+
+Example:
+
+```ruby
+pd (true ||
+  false), source_line_count: 2
+```
+
+Prints out:
+
+```
+[PD] /Users/User/example.rb:2
+   > pd (true ||
+       false), source_line_count: 2
+  => "true"
+```
+
+Example:
+
+```ruby
+PutsDebuggerer.source_line_count = 2
+pd (true ||
+  false)
+```
+
+Prints out:
+
+```
+[PD] /Users/User/example.rb:2
+   > pd (true ||
+       false), source_line_count: 2
+  => "true"
+```
+
 #### `PutsDebuggerer.printer`
 (default = `:puts`)
 

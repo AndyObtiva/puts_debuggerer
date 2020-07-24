@@ -17,7 +17,14 @@ describe 'PutsDebuggerer' do
       name = 'Robert'
       PutsDebuggererInvoker.multi_line_dynamic_greeting(name)
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:30\n   > pd \"Hello \" +\n      name.to_s\n  => \"Hello Robert\"\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:30\n   > pd \"Hello \" +\n  => \"Hello Robert\"\n")
+    end
+
+    it 'handles multi line ruby expressions correctly printing source line count of 2' do
+      name = 'Robert'
+      PutsDebuggererInvoker.multi_line_dynamic_greeting_source_line_count(name)
+      output = $stdout.string
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:43\n   > pd \"Hello \" +\n      name.to_s, source_line_count: 2\n  => \"Hello Robert\"\n")
     end
   end
 end
