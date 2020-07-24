@@ -6,6 +6,7 @@
 - `source_line_count` option
 - `wraper` option for including both `header` and `footer`
 - Special handling of exceptions (prints using full_message)
+- Change :ap printer default to :p when unavailable
 
 ## 0.8.2
 

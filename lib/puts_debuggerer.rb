@@ -1,13 +1,4 @@
-begin
-  require 'ripper'
-rescue LoadError => e
-  # No Op to be semi-compatible with Opal
-end
-begin
-  require 'awesome_print'
-rescue LoadError => e
-  # No Op to be semi-compatible with Opal
-end
+require 'awesome_print' unless RUBY_PLATFORM == 'opal'
 require 'stringio'
 
 module PutsDebuggerer
@@ -241,7 +232,7 @@ module PutsDebuggerer
 
     def print_engine=(engine)
       if engine.nil?
-        @print_engine = PRINT_ENGINE_DEFAULT
+        @print_engine = Object.const_defined?(:AwesomePrint) ? PRINT_ENGINE_DEFAULT : :p
       elsif engine.is_a?(Proc)
         @print_engine = engine
       else
