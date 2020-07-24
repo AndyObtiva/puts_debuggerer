@@ -331,6 +331,32 @@ Prints out:
 ********************************************************************************
 ```
 
+#### `PutsDebuggerer.wrapper`
+(default = `'*'*80`)
+
+Wrapper to include at the top and bottom of every print out (both header and footer).
+* Default value is `nil`
+* Value `true` enables wrapper as `'*'*80`
+* Value `false`, `nil`, or empty string disables wrapper
+* Any other string value gets set as a custom wrapper
+
+Example:
+
+```ruby
+PutsDebuggerer.wrapper = true
+pd (x=1)
+```
+
+Prints out:
+
+```bash
+********************************************************************************
+[PD] /Users/User/example.rb:2
+   > pd x=1
+  => "1"
+********************************************************************************
+```
+
 #### `PutsDebuggerer.source_line_count`
 (default = `1`)
 
@@ -353,7 +379,7 @@ Prints out:
 Example:
 
 ```ruby
-PutsDebuggerer.source_line_count = 2
+PutsDebuggerer.source_line_count = 2 # setting via global option
 pd (true ||
   false)
 ```
@@ -644,6 +670,19 @@ puts __caller_source_line__
 
 Prints out `puts __caller_source_line__`
 
+## Compatibility
+
+[puts_debuggerer](https://rubygems.org/gems/puts_debuggerer) is fully compatible with: 
+- [Ruby](https://www.ruby-lang.org/en/)
+- [JRuby](https://www.jruby.org/)
+- IRB
+- Rails Console.
+
+It has partial-compatibility with [Opal Ruby](https://opalrb.com/) with everything working except these features:
+- File name display
+- Line number display
+- Source code call display
+
 ## Change Log
 
 [CHANGELOG.md](CHANGELOG.md)
@@ -666,5 +705,6 @@ Prints out `puts __caller_source_line__`
 
 ## Copyright
 
-Copyright (c) 2017 Andy Maleh. See LICENSE.txt for
-further details.
+[MIT](LICENSE.txt)
+
+Copyright (c) 2017-2020 - Andy Maleh.
