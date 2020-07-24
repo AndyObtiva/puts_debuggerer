@@ -501,8 +501,33 @@ Prints out:
 ********************************************************************************
 ```
 
+Global Option Example:
+
+```ruby
+PutsDebuggerer.wrapper = true
+pd (x=1)
+pd (x=2)
+```
+
+Prints out:
+
+```bash
+********************************************************************************
+[PD] /Users/User/example.rb:2
+   > pd (x=1)
+  => "1"
+********************************************************************************
+********************************************************************************
+[PD] /Users/User/example.rb:3
+   > pd (x=2)
+  => "2"
+********************************************************************************
+```
+
 #### `PutsDebuggerer.source_line_count`
 (default = `1`)
+
+Prints multiple source code lines as per count specified. Useful when a statement is broken down on multiple lines or when there is a need to get more context around the line printed. 
 
 Example:
 
