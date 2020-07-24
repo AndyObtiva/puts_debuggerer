@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 # Example:
 #   gem 'activesupport', '>= 2.3.5'
 
-gem 'awesome_print', '~> 1.8.0'
+gem 'awesome_print', '~> 1.8.0', require: false
 
 # Add dependencies to develop your gem here.
 # Include everything needed to run rake, tests, features, etc.

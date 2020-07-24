@@ -1,5 +1,13 @@
-require 'ripper'
-require 'awesome_print'
+begin
+  require 'ripper'
+rescue LoadError => e
+  # No Op to be semi-compatible with Opal
+end
+begin
+  require 'awesome_print'
+rescue LoadError => e
+  # No Op to be semi-compatible with Opal
+end
 require 'stringio'
 
 module PutsDebuggerer
@@ -510,7 +518,7 @@ end
 #
 # prints out `3`
 def __caller_line_number__(caller_depth=0)
-  caller[caller_depth][PutsDebuggerer::STACK_TRACE_CALL_LINE_NUMBER_REGEX, 1].to_i
+  caller[caller_depth] && caller[caller_depth][PutsDebuggerer::STACK_TRACE_CALL_LINE_NUMBER_REGEX, 1].to_i
 end
 
 # Provides caller file starting 1 level above caller of
@@ -523,7 +531,7 @@ end
 #
 # prints out `lib/example.rb`
 def __caller_file__(caller_depth=0)
-  caller[caller_depth][PutsDebuggerer::STACK_TRACE_CALL_SOURCE_FILE_REGEX, 1]
+  caller[caller_depth] && caller[caller_depth][PutsDebuggerer::STACK_TRACE_CALL_SOURCE_FILE_REGEX, 1]
 end
 
 
@@ -544,14 +552,14 @@ def __caller_source_line__(caller_depth=0, source_file=nil, source_line_number=n
   else
     f = File.new(source_file)
     source_line = ''
-    done = false
+    done = false    
     f.each_line do |line|
       if !done && f.lineno == source_line_number
         source_line << line
         done = true if Ripper.sexp_raw(source_line) || source_line.include?('%>') #the last condition is for erb support (unofficial)
         source_line_number+=1
       end
-    end
+    end if f.respond_to?(:each_line)
   end
   source_line
 end
@@ -571,7 +579,7 @@ def __build_pd_data__(object, print_engine_options=nil)
   depth = PutsDebuggerer::CALLER_DEPTH_ZERO
   pd_data = {
     announcer: PutsDebuggerer.announcer,
-    file: __caller_file__(depth).sub(PutsDebuggerer.app_path.to_s, ''),
+    file: __caller_file__(depth)&.sub(PutsDebuggerer.app_path.to_s, ''),
     line_number: __caller_line_number__(depth),
     pd_expression: __caller_pd_expression__(depth),
     object: object,
