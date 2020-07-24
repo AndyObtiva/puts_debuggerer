@@ -189,10 +189,10 @@ Output:
  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ```
 
-Need a quick stack trace? Just use the `caller` option (you may surround with header and footer too).
+Need a quick stack trace? Just use the `caller` option (you may surround with header and footer too via `wrapper`).
 
 ```ruby
-pd order_total, caller: true, header: true, footer: true
+pd order_total, caller: true, wrapper: true
 pd order_summary
 pd order_details
 ```
