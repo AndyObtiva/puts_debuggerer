@@ -7,7 +7,7 @@ Debuggers are great! They help us troubleshoot complicated programming problems 
 
 In day-to-day test-driven development and simple app debugging though, a puts statement can be a lot quicker in revealing what is going on than halting execution completely just to inspect a single value or a few. This is certainly true when writing the simplest possible code that could possibly work, and running a test every few seconds or minutes. Still, there are a number of problems with puts debugging, like difficulty in locating puts statements in a large output log, knowing which methods and line numbers were invoked, identifying which variables were printed, and seeing the content of structured hashes and arrays in an understandable format.
 
-Enter puts_debuggerer! A guilt-free puts debugging Ruby gem FTW that prints file names, line numbers, code statements, headers, footers, stack traces, and formats output nicely courtesy of [awesome_print](https://rubygems.org/gems/awesome_print).
+Enter [puts_debuggerer](https://rubygems.org/gems/puts_debuggerer)! A guilt-free puts debugging Ruby gem FTW that prints file names, line numbers, code statements, headers, footers, stack traces, and formats output nicely courtesy of [awesome_print](https://rubygems.org/gems/awesome_print).
 
 Basic Example:
 
