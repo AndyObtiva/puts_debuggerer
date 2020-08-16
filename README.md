@@ -141,7 +141,7 @@ Output:
   ActiveRecord::InternalMetadata Load (0.4ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
 ********************************************************************************
 [PD] /Users/User/ordering/order.rb:39
-  > pd order_total  
+  > pd order_total, header: true
  => 195.50
    (0.2ms)  BEGIN
   SQL (0.3ms)  INSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"  [["key", "environment"], ["value", "development"], ["created_at", 2017-08-24 22:56:52 UTC], ["updated_at", 2017-08-24 22:56:52 UTC]]
@@ -172,7 +172,7 @@ Output:
   ActiveRecord::InternalMetadata Load (0.4ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 [PD] /Users/User/ordering/order.rb:39
-  > pd order_total  
+  > pd order_total, header: '>'*80
  => 195.50
    (0.2ms)  BEGIN
   SQL (0.3ms)  INSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"  [["key", "environment"], ["value", "development"], ["created_at", 2017-08-24 22:56:52 UTC], ["updated_at", 2017-08-24 22:56:52 UTC]]
@@ -184,7 +184,7 @@ Output:
    (0.2ms)  BEGIN
    (0.2ms)  COMMIT
 [PD] /Users/User/ordering/order.rb:41
-  > pd order_details  
+  > pd order_details, footer: '<'*80  
  => "[Hard Cover] Pragmatic Ruby Book - English Version"
  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ```
@@ -204,13 +204,79 @@ Output:
   ActiveRecord::InternalMetadata Load (0.4ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
 ********************************************************************************
 [PD] /Users/User/ordering/order.rb:39
-  > pd order_total  
+  > pd order_total, caller: true, wrapper: true
  => 195.50
-   /Users/User/sample_app/lib/master_samples.rb:368:in \`block (3 levels) in <top (required)>\'
-   /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in \`eval\'
-   /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in \`evaluate\'
-   /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/context.rb:381:in \`evaluate\'
- ********************************************************************************
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/bootsnap-1.4.6/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:23:in `require'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/bootsnap-1.4.6/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:23:in `block in require_with_bootsnap_lfi'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/bootsnap-1.4.6/lib/bootsnap/load_path_cache/loaded_features_index.rb:92:in `register'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/bootsnap-1.4.6/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:22:in `require_with_bootsnap_lfi'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/bootsnap-1.4.6/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:31:in `require'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/activesupport-5.2.4.3/lib/active_support/dependencies.rb:291:in `block in require'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/activesupport-5.2.4.3/lib/active_support/dependencies.rb:257:in `load_dependency'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/activesupport-5.2.4.3/lib/active_support/dependencies.rb:291:in `require'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/railties-5.2.4.3/lib/rails/commands/server/server_command.rb:145:in `block in perform'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/railties-5.2.4.3/lib/rails/commands/server/server_command.rb:142:in `tap'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/railties-5.2.4.3/lib/rails/commands/server/server_command.rb:142:in `perform'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/thor-1.0.1/lib/thor/command.rb:27:in `run'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/thor-1.0.1/lib/thor/invocation.rb:127:in `invoke_command'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/thor-1.0.1/lib/thor.rb:392:in `dispatch'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/railties-5.2.4.3/lib/rails/command/base.rb:69:in `perform'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/railties-5.2.4.3/lib/rails/command.rb:46:in `invoke'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/railties-5.2.4.3/lib/rails/commands.rb:18:in `<main>'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/bootsnap-1.4.6/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:23:in `require'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/bootsnap-1.4.6/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:23:in `block in require_with_bootsnap_lfi'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/bootsnap-1.4.6/lib/bootsnap/load_path_cache/loaded_features_index.rb:92:in `register'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/bootsnap-1.4.6/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:22:in `require_with_bootsnap_lfi'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/bootsnap-1.4.6/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:31:in `require'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/activesupport-5.2.4.3/lib/active_support/dependencies.rb:291:in `block in require'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/activesupport-5.2.4.3/lib/active_support/dependencies.rb:257:in `load_dependency'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/activesupport-5.2.4.3/lib/active_support/dependencies.rb:291:in `require'
+     /Users/User/code/sample-glimmer-dsl-opal-rails5-app/bin/rails:9:in `<top (required)>'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/spring-2.1.0/lib/spring/client/rails.rb:28:in `load'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/spring-2.1.0/lib/spring/client/rails.rb:28:in `call'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/spring-2.1.0/lib/spring/client/command.rb:7:in `call'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/spring-2.1.0/lib/spring/client.rb:30:in `run'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/spring-2.1.0/bin/spring:49:in `<top (required)>'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/spring-2.1.0/lib/spring/binstub.rb:11:in `load'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/spring-2.1.0/lib/spring/binstub.rb:11:in `<top (required)>'
+     /Users/User/code/sample-glimmer-dsl-opal-rails5-app/bin/spring:15:in `require'
+     /Users/User/code/sample-glimmer-dsl-opal-rails5-app/bin/spring:15:in `<top (required)>'
+     bin/rails:3:in `load'
+     bin/rails:3:in `<main>'
+********************************************************************************
+   (0.2ms)  BEGIN
+  SQL (0.3ms)  INSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"  [["key", "environment"], ["value", "development"], ["created_at", 2017-08-24 22:56:52 UTC], ["updated_at", 2017-08-24 22:56:52 UTC]]
+   (0.3ms)  COMMIT
+[PD] /Users/User/ordering/order.rb:40
+  > pd order_summary  
+ => "Pragmatic Ruby Book"
+  ActiveRecord::InternalMetadata Load (0.3ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
+   (0.2ms)  BEGIN
+   (0.2ms)  COMMIT
+[PD] /Users/User/ordering/order.rb:41
+  > pd order_details  
+ => "[Hard Cover] Pragmatic Ruby Book - English Version"
+```
+
+Is the stack trace too long? Shorten it by passing number of lines to display to `caller` option.
+
+```ruby
+pd order_total, caller: 3, wrapper: true
+pd order_summary
+pd order_details
+```
+
+```
+   (2.7ms)  CREATE TABLE "ar_internal_metadata" ("key" character varying PRIMARY KEY, "value" character varying, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)
+  ActiveRecord::InternalMetadata Load (0.4ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
+********************************************************************************
+[PD] /Users/User/ordering/order.rb:39
+  > pd order_total, caller: 3, wrapper: true 
+ => 195.50
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/bootsnap-1.4.6/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:23:in `require'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/bootsnap-1.4.6/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:23:in `block in require_with_bootsnap_lfi'
+     /Users/User/.rvm/gems/ruby-2.7.1/gems/bootsnap-1.4.6/lib/bootsnap/load_path_cache/loaded_features_index.rb:92:in `register'
+********************************************************************************
    (0.2ms)  BEGIN
   SQL (0.3ms)  INSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"  [["key", "environment"], ["value", "development"], ["created_at", 2017-08-24 22:56:52 UTC], ["updated_at", 2017-08-24 22:56:52 UTC]]
    (0.3ms)  COMMIT
