@@ -9,6 +9,21 @@ module PutsDebuggerer
   HEADER_DEFAULT = '*'*80
   WRAPPER_DEFAULT = '*'*80
   FOOTER_DEFAULT = '*'*80
+  OBJECT_PRINTER_DEFAULT = lambda do |object, print_engine_options=nil, source_line_count=nil, run_number=nil|
+    lambda do
+      if object.is_a?(Exception) && object.respond_to?(:full_message)
+        puts object.full_message
+      elsif PutsDebuggerer.print_engine.is_a?(Proc)
+        PutsDebuggerer.print_engine.call(object)
+      else
+        if print_engine_options.to_h.empty?
+          send(PutsDebuggerer.print_engine, object)
+        else
+          send(PutsDebuggerer.print_engine, object, print_engine_options) rescue send(PutsDebuggerer.print_engine, object)
+        end
+      end    
+    end
+  end
   PRINTER_DEFAULT = :puts
   PRINTER_RAILS = lambda do |output|
     puts output if Rails.env.test?
@@ -540,19 +555,7 @@ def __build_pd_data__(object, print_engine_options=nil, source_line_count=nil, r
     pd_expression: __caller_pd_expression__(depth, source_line_count),
     run_number: run_number,
     object: object,
-    object_printer: lambda do
-      if object.is_a?(Exception) && object.respond_to?(:full_message)
-        puts object.full_message
-      elsif PutsDebuggerer.print_engine.is_a?(Proc)
-        PutsDebuggerer.print_engine.call(object)
-      else
-        if print_engine_options.to_h.empty?
-          send(PutsDebuggerer.print_engine, object)
-        else
-          send(PutsDebuggerer.print_engine, object, print_engine_options) rescue send(PutsDebuggerer.print_engine, object)
-        end
-      end
-    end
+    object_printer: PutsDebuggerer::OBJECT_PRINTER_DEFAULT.call(object, print_engine_options, source_line_count, run_number)
   }
   if PutsDebuggerer.caller?
     start_depth = depth.to_i
