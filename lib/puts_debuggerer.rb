@@ -91,20 +91,6 @@ module PutsDebuggerer
     #     => "1"
     attr_reader :header
 
-    def header=(value)
-      if value.equal?(true)
-        @header = HEADER_DEFAULT
-      elsif value == ''
-        @header = nil
-      else
-        @header = value
-      end
-    end
-
-    def header?
-      !!@header
-    end
-
     # Wrapper to include at the top and bottom of every print out (both header and footer).
     # * Default value is `nil`
     # * Value `true` enables wrapper as `'*'*80`
@@ -124,20 +110,6 @@ module PutsDebuggerer
     #   ********************************************************************************
     attr_reader :wrapper
 
-    def wrapper=(value)
-      if value.equal?(true)
-        @wrapper = WRAPPER_DEFAULT
-      elsif value == ''
-        @wrapper = nil
-      else
-        @wrapper = value
-      end
-    end
-
-    def wrapper?
-      !!@wrapper
-    end
-    
     # Footer to include at the bottom of every print out.
     # * Default value is `nil`
     # * Value `true` enables footer as `'*'*80`
@@ -156,19 +128,21 @@ module PutsDebuggerer
     #     => "1"
     #   ********************************************************************************
     attr_reader :footer
-
-    def footer=(value)
-      if value.equal?(true)
-        @footer = FOOTER_DEFAULT
-      elsif value == ''
-        @footer = nil
-      else
-        @footer = value
+    
+    ['header', 'footer', 'wrapper'].each do |boundary_option|
+      define_method("#{boundary_option}=") do |value|
+        if value.equal?(true)
+          instance_variable_set(:"@#{boundary_option}", const_get(:"#{boundary_option.upcase}_DEFAULT"))
+        elsif value == ''
+          instance_variable_set(:"@#{boundary_option}", nil)
+        else
+          instance_variable_set(:"@#{boundary_option}", value)
+        end      
       end
-    end
-
-    def footer?
-      !!@footer
+      
+      define_method("#{boundary_option}?") do
+        !!instance_variable_get(:"@#{boundary_option}")
+      end
     end
 
     # Printer is a global method symbol or lambda expression to use in printing to the user.

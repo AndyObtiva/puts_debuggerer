@@ -80,13 +80,26 @@ module PutsDebuggerer
       
       def determine_run_pd(run_at, run_number)
         if run_at.is_a?(Integer)
-          run_pd = true if run_at == run_number
+          determine_run_pd_integer(run_at, run_number)
         elsif run_at.is_a?(Array)
-          run_pd = true if run_at.include?(run_number)
+          determine_run_pd_array(run_at, run_number)
         elsif run_at.is_a?(Range)
-          run_pd = true if run_at.cover?(run_number) || (run_at.end == -1 && run_number >= run_at.begin)
+          determine_run_pd_range(run_at, run_number)
         end      
       end
+      
+      def determine_run_pd_integer(run_at, run_number)
+        run_pd = true if run_at == run_number      
+      end
+      
+      def determine_run_pd_array(run_at, run_number)
+        run_pd = true if run_at.include?(run_number)
+      end
+      
+      def determine_run_pd_range(run_at, run_number)
+        run_pd = true if run_at.cover?(run_number) || (run_at.end == -1 && run_number >= run_at.begin)
+      end
+      
     end
   end
 end
