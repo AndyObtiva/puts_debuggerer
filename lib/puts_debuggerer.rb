@@ -223,12 +223,16 @@ module PutsDebuggerer
 
     def print_engine=(engine)
       if engine.nil?
-        @print_engine = Object.const_defined?(:AwesomePrint) ? PRINT_ENGINE_DEFAULT : :p
+        @print_engine = print_engine_default
       elsif engine.is_a?(Proc)
         @print_engine = engine
       else
         @print_engine = method(engine).name rescue raise(PRINT_ENGINE_MESSAGE_INVALID)
       end
+    end
+    
+    def print_engine_default
+      Object.const_defined?(:AwesomePrint) ? PRINT_ENGINE_DEFAULT : :p    
     end
 
     # Announcer (e.g. [PD]) to announce every print out with (default: "[PD]")
