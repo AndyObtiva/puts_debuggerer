@@ -301,7 +301,7 @@ There are many more options and powerful features in [puts_debuggerer](https://r
 Add the following to bundler's `Gemfile`.
 
 ```ruby
-gem 'puts_debuggerer', '~> 0.10.0'
+gem 'puts_debuggerer', '~> 0.9.0'
 ```
 
 This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you may create an initializer under `config/initializers` named `puts_debuggerer_options.rb` to enable further customizations as per the [Options](#options) section below.
@@ -311,7 +311,7 @@ This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you m
 Or manually install and require library.
 
 ```bash
-gem install puts_debuggerer -v0.10.0
+gem install puts_debuggerer -v0.9.0
 ```
 
 ```ruby
