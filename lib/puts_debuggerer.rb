@@ -184,16 +184,16 @@ module PutsDebuggerer
 
     def printer=(printer)
       if printer.nil?
-        if Object.const_defined?(:Rails)
-          @printer = PRINTER_RAILS
-        else
-          @printer = PRINTER_DEFAULT
-        end
+        @printer = printer_default
       elsif printer.is_a?(Proc)
         @printer = printer
       else
         @printer = method(printer).name rescue raise(PRINTER_MESSAGE_INVALID)
       end
+    end
+    
+    def printer_default
+      Object.const_defined?(:Rails) ? PRINTER_RAILS : PRINTER_DEFAULT    
     end
 
     # Print engine is similar to `printer`, except it is focused on the scope of formatting
