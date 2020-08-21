@@ -39,7 +39,54 @@ module PutsDebuggerer
   
       def reset_run_at_numbers
         OBJECT_RUN_AT.clear
-      end    
+      end
+            
+      def run_pd?(object, run_at)
+        run_pd = false
+        if run_at.nil?
+          run_pd = true
+        else
+          run_number = determine_run_number(object, run_at) 
+          run_pd = determine_run_pd(run_at, run_number)
+        end
+        run_pd
+      end
+      
+      def determine_run_number(object, run_at)
+        if PutsDebuggerer.run_at? # check if global option is set
+          determine_global_run_number
+        else
+          determine_local_run_number(object, run_at)
+        end
+      end
+      
+      def determine_global_run_number
+        if PutsDebuggerer::RunDeterminer.run_at_global_number.nil?
+          PutsDebuggerer::RunDeterminer.init_run_at_global_number
+        else
+          PutsDebuggerer::RunDeterminer.increment_run_at_global_number
+        end
+        PutsDebuggerer::RunDeterminer.run_at_global_number      
+      end
+      
+      def determine_local_run_number(object, run_at)
+        if PutsDebuggerer::RunDeterminer.run_at_number(object, run_at).nil?
+          PutsDebuggerer::RunDeterminer.init_run_at_number(object, run_at)
+        else
+          PutsDebuggerer::RunDeterminer.increment_run_at_number(object, run_at)
+        end
+        PutsDebuggerer::RunDeterminer.run_at_number(object, run_at)
+      end
+      
+      def determine_run_pd(run_at, run_number)
+        if run_at.is_a?(Integer)
+          run_pd = true if run_at == run_number
+        elsif run_at.is_a?(Array)
+          run_pd = true if run_at.include?(run_number)
+        elsif run_at.is_a?(Range)
+          run_pd = true if run_at.cover?(run_number) || (run_at.end == -1 && run_number >= run_at.begin)
+        end      
+      end
     end
   end
 end

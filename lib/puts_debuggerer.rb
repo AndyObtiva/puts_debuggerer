@@ -478,7 +478,7 @@ def pd(*objects)
   object = objects.compact.size > 1 ? objects : objects.first
   run_at = ((options && options[:run_at]) || PutsDebuggerer.run_at)
 
-  if __run_pd__(object, run_at)
+  if PutsDebuggerer::RunDeterminer.run_pd?(object, run_at)
     __with_pd_options__(options) do |print_engine_options|
       run_number = PutsDebuggerer::RunDeterminer.run_at_global_number || PutsDebuggerer::RunDeterminer.run_at_number(object, run_at)
       formatter_pd_data = __build_pd_data__(object, print_engine_options, PutsDebuggerer.source_line_count, run_number) #depth adds build method
@@ -495,37 +495,6 @@ def pd(*objects)
   end
 
   object
-end
-
-def __run_pd__(object, run_at)
-  run_pd = false
-  if run_at.nil?
-    run_pd = true
-  else
-    if PutsDebuggerer.run_at?
-      if PutsDebuggerer::RunDeterminer.run_at_global_number.nil?
-        PutsDebuggerer::RunDeterminer.init_run_at_global_number
-      else
-        PutsDebuggerer::RunDeterminer.increment_run_at_global_number
-      end
-      run_number = PutsDebuggerer::RunDeterminer.run_at_global_number
-    else
-      if PutsDebuggerer::RunDeterminer.run_at_number(object, run_at).nil?
-        PutsDebuggerer::RunDeterminer.init_run_at_number(object, run_at)
-      else
-        PutsDebuggerer::RunDeterminer.increment_run_at_number(object, run_at)
-      end
-      run_number = PutsDebuggerer::RunDeterminer.run_at_number(object, run_at)
-    end
-    if run_at.is_a?(Integer)
-      run_pd = true if run_at == run_number
-    elsif run_at.is_a?(Array)
-      run_pd = true if run_at.include?(run_number)
-    elsif run_at.is_a?(Range)
-      run_pd = true if run_at.cover?(run_number) || (run_at.end == -1 && run_number >= run_at.begin)
-    end
-  end
-  run_pd
 end
 
 # Provides caller line number starting 1 level above caller of
