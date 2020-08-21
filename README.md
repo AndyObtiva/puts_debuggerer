@@ -324,7 +324,7 @@ You may disable when needed by not requiring in Ruby or by adding an explicit re
 
 ```ruby
 gem "awesome_print", require: false
-gem "puts_debugger"
+gem "puts_debuggerer"
 ```
 
 ### Usage
@@ -469,7 +469,7 @@ Prints out:
 
 ```bash
 ********************************************************************************
-[PD] /Users/User/example.rb:2
+[PD] /Users/User/example.rb:1
    > pd (x=1), header: true
   => "1"
 ```
@@ -513,7 +513,7 @@ pd (x=1), footer: true
 Prints out:
 
 ```bash
-[PD] /Users/User/example.rb:2
+[PD] /Users/User/example.rb:1
    > pd (x=1), footer: true
   => "1"
 ********************************************************************************
@@ -552,16 +552,15 @@ Wrapper to include at the top and bottom of every print out (both header and foo
 Example:
 
 ```ruby
-PutsDebuggerer.wrapper = true
-pd (x=1)
+pd (x=1), wrapper: true
 ```
 
 Prints out:
 
 ```bash
 ********************************************************************************
-[PD] /Users/User/example.rb:2
-   > pd x=1
+[PD] /Users/User/example.rb:1
+   > pd x=1, wrapper: true
   => "1"
 ********************************************************************************
 ```
@@ -604,7 +603,7 @@ pd (true ||
 Prints out:
 
 ```
-[PD] /Users/User/example.rb:2
+[PD] /Users/User/example.rb:1
    > pd (true ||
        false), source_line_count: 2
   => "true"
@@ -684,7 +683,7 @@ pd array
 Prints out:
 
 ```bash
-[PD] /Users/User/example.rb:5
+[PD] /Users/User/example.rb:4
    > pd array
   => [1, [2, 3]]
 ```
