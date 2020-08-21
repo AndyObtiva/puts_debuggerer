@@ -421,6 +421,17 @@ module PutsDebuggerer
       !!@run_at
     end
 
+    def determine_options(objects)
+      objects.delete_at(-1) if objects.size > 1 && objects.last.is_a?(Hash)
+    end
+
+    def determine_object(objects)
+      objects.compact.size > 1 ? objects : objects.first
+    end
+
+    def determine_run_at(options)
+      ((options && options[:run_at]) || PutsDebuggerer.run_at)
+    end
   end
 end
 
@@ -464,13 +475,13 @@ PutsDebuggerer.source_line_count = nil
 #     => "Show me the source of the bug: beattle"
 #   [PD] /Users/User/finance_calculator_app/pd_test.rb:4 "What line number am I?"
 def pd(*objects)
-  options = objects.delete_at(-1) if objects.size > 1 && objects.last.is_a?(Hash)
-  object = objects.compact.size > 1 ? objects : objects.first
-  run_at = ((options && options[:run_at]) || PutsDebuggerer.run_at)
+  options = PutsDebuggerer.determine_options(objects)
+  object = PutsDebuggerer.determine_object(objects)
+  run_at = PutsDebuggerer.determine_run_at(options)
 
   if PutsDebuggerer::RunDeterminer.run_pd?(object, run_at)
     __with_pd_options__(options) do |print_engine_options|
-      run_number = PutsDebuggerer::RunDeterminer.run_at_global_number || PutsDebuggerer::RunDeterminer.run_at_number(object, run_at)
+      run_number = PutsDebuggerer::RunDeterminer.run_number(object, run_at)
       formatter_pd_data = __build_pd_data__(object, print_engine_options, PutsDebuggerer.source_line_count, run_number) #depth adds build method
       stdout = $stdout
       $stdout = sio = StringIO.new

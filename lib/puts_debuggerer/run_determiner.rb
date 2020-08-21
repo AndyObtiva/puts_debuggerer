@@ -40,6 +40,10 @@ module PutsDebuggerer
       def reset_run_at_numbers
         OBJECT_RUN_AT.clear
       end
+      
+      def run_number(object, run_at)
+        run_at_global_number || run_at_number(object, run_at)      
+      end            
             
       def run_pd?(object, run_at)
         run_pd = false
@@ -50,7 +54,7 @@ module PutsDebuggerer
           run_pd = determine_run_pd(run_at, run_number)
         end
         run_pd
-      end
+      end      
       
       def determine_run_number(object, run_at)
         if PutsDebuggerer.run_at? # check if global option is set
