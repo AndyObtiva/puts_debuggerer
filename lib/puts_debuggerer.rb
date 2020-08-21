@@ -572,15 +572,19 @@ def __build_pd_data__(object, print_engine_options=nil, source_line_count=nil, r
     object: object,
     object_printer: PutsDebuggerer::OBJECT_PRINTER_DEFAULT.call(object, print_engine_options, source_line_count, run_number)
   }
-  if PutsDebuggerer.caller?
-    start_depth = depth.to_i
-    caller_depth = PutsDebuggerer.caller == -1 ? -1 : (start_depth + PutsDebuggerer.caller)
-    pd_data[:caller] = caller[start_depth..caller_depth].to_a
+  pd_data[:caller] = __caller_caller__(depth)
+  ['header', 'wrapper', 'footer'].each do |boundary_option| 
+    pd_data[boundary_option.to_sym] = PutsDebuggerer.send(boundary_option) if PutsDebuggerer.send("#{boundary_option}?")
   end
-  pd_data[:header] = PutsDebuggerer.header if PutsDebuggerer.header?
-  pd_data[:wrapper] = PutsDebuggerer.wrapper if PutsDebuggerer.wrapper?
-  pd_data[:footer] = PutsDebuggerer.footer if PutsDebuggerer.footer?
   pd_data
+end
+
+# Returns the caller stack trace of the caller of pd
+def __caller_caller__(depth)
+  return unless PutsDebuggerer.caller?
+  start_depth = depth.to_i + 1
+  caller_depth = PutsDebuggerer.caller == -1 ? -1 : (start_depth + PutsDebuggerer.caller)
+  caller[start_depth..caller_depth].to_a
 end
 
 def __format_pd_expression__(expression, object)
