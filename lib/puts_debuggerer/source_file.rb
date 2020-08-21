@@ -13,19 +13,19 @@ module PutsDebuggerer
     end
     
     def source_lines(source_line_count, source_line_number)
-      [].tap do |lines|
-        begin
-          while @file.lineno < source_line_number + source_line_count
-            file_line_number = @file.lineno + 1
-            file_line = @file.readline
-            if file_line_number >= source_line_number && file_line_number < source_line_number + source_line_count
-              lines << file_line
-            end
+      lines = []
+      begin
+        while @file.lineno < source_line_number + source_line_count
+          file_line_number = @file.lineno + 1
+          file_line = @file.readline
+          if file_line_number >= source_line_number && file_line_number < source_line_number + source_line_count
+            lines << file_line
           end
-        rescue EOFError
-          # Done
         end
+      rescue EOFError
+        # Done
       end
+      lines
     end
   end
 end
