@@ -13,16 +13,16 @@ describe 'PutsDebuggerer' do
     PutsDebuggerer.wrapper = nil
     PutsDebuggerer.caller = nil
     PutsDebuggerer.run_at = nil
-    PutsDebuggerer.run_at_global_number = nil
+    PutsDebuggerer::RunDeterminer.run_at_global_number = nil
+    PutsDebuggerer::RunDeterminer::OBJECT_RUN_AT.clear
     PutsDebuggerer.app_path = nil
-    PutsDebuggerer::OBJECT_RUN_AT.clear
   end
   
   context 'with run_at specified' do
     after do
       PutsDebuggerer.run_at = nil
-      PutsDebuggerer.run_at_global_number = nil
-      PutsDebuggerer::OBJECT_RUN_AT.clear
+      PutsDebuggerer::RunDeterminer.run_at_global_number = nil
+      PutsDebuggerer::RunDeterminer::OBJECT_RUN_AT.clear
     end
     
     context 'as an index' do
@@ -279,7 +279,7 @@ describe 'PutsDebuggerer' do
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 1..2)
           expect(output).to be_empty
 
-          PutsDebuggerer.reset_run_at_number("Hello Robert", 1..2)
+          PutsDebuggerer::RunDeterminer.reset_run_at_number("Hello Robert", 1..2)
 
         
           $stdout = StringIO.new
@@ -314,7 +314,7 @@ describe 'PutsDebuggerer' do
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 1..2)
           expect(output).to be_empty
 
-          PutsDebuggerer.reset_run_at_numbers
+          PutsDebuggerer::RunDeterminer.reset_run_at_numbers
 
         
           $stdout = StringIO.new
@@ -350,7 +350,7 @@ describe 'PutsDebuggerer' do
           PutsDebuggererInvoker.dynamic_greeting(name)
           expect(output).to be_empty
 
-          PutsDebuggerer.reset_run_at_global_number
+          PutsDebuggerer::RunDeterminer.reset_run_at_global_number
 
         
           $stdout = StringIO.new

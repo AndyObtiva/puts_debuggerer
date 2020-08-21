@@ -1,6 +1,8 @@
 require 'awesome_print' unless RUBY_PLATFORM == 'opal'
 require 'stringio'
 
+require 'puts_debuggerer/run_determiner'
+
 module PutsDebuggerer
   SOURCE_LINE_COUNT_DEFAULT = 1
   HEADER_DEFAULT = '*'*80
@@ -25,7 +27,6 @@ module PutsDebuggerer
       puts data[:wrapper] if data[:wrapper]
     }
   CALLER_DEPTH_ZERO = 4 #depth includes pd + with_options method + nested block + build_pd_data method
-  OBJECT_RUN_AT = {}
   STACK_TRACE_CALL_LINE_NUMBER_REGEX = /\:(\d+)\:in /
   STACK_TRACE_CALL_SOURCE_FILE_REGEX = /[ ]*([^:]+)\:\d+\:in /
 
@@ -430,44 +431,6 @@ module PutsDebuggerer
       !!@run_at
     end
 
-    attr_reader :run_at_global_number
-
-    def run_at_global_number=(value)
-      @run_at_global_number = value
-    end
-
-    def init_run_at_global_number
-      @run_at_global_number = 1
-    end
-
-    def increment_run_at_global_number
-      @run_at_global_number += 1
-    end
-
-    def reset_run_at_global_number
-      @run_at_global_number = nil
-    end
-
-    def run_at_number(object, run_at)
-      PutsDebuggerer::OBJECT_RUN_AT[[object,run_at]]
-    end
-
-    def init_run_at_number(object, run_at)
-      PutsDebuggerer::OBJECT_RUN_AT[[object,run_at]] = 1
-    end
-
-    def increment_run_at_number(object, run_at)
-      PutsDebuggerer::OBJECT_RUN_AT[[object,run_at]] += 1
-    end
-
-    def reset_run_at_number(object, run_at)
-      PutsDebuggerer::OBJECT_RUN_AT.delete([object, run_at])
-    end
-
-    def reset_run_at_numbers
-      PutsDebuggerer::OBJECT_RUN_AT.clear
-    end
-
   end
 end
 
@@ -517,7 +480,7 @@ def pd(*objects)
 
   if __run_pd__(object, run_at)
     __with_pd_options__(options) do |print_engine_options|
-      run_number = PutsDebuggerer.run_at_global_number || PutsDebuggerer.run_at_number(object, run_at)
+      run_number = PutsDebuggerer::RunDeterminer.run_at_global_number || PutsDebuggerer::RunDeterminer.run_at_number(object, run_at)
       formatter_pd_data = __build_pd_data__(object, print_engine_options, PutsDebuggerer.source_line_count, run_number) #depth adds build method
       stdout = $stdout
       $stdout = sio = StringIO.new
@@ -540,19 +503,19 @@ def __run_pd__(object, run_at)
     run_pd = true
   else
     if PutsDebuggerer.run_at?
-      if PutsDebuggerer.run_at_global_number.nil?
-        PutsDebuggerer.init_run_at_global_number
+      if PutsDebuggerer::RunDeterminer.run_at_global_number.nil?
+        PutsDebuggerer::RunDeterminer.init_run_at_global_number
       else
-        PutsDebuggerer.increment_run_at_global_number
+        PutsDebuggerer::RunDeterminer.increment_run_at_global_number
       end
-      run_number = PutsDebuggerer.run_at_global_number
+      run_number = PutsDebuggerer::RunDeterminer.run_at_global_number
     else
-      if PutsDebuggerer.run_at_number(object, run_at).nil?
-        PutsDebuggerer.init_run_at_number(object, run_at)
+      if PutsDebuggerer::RunDeterminer.run_at_number(object, run_at).nil?
+        PutsDebuggerer::RunDeterminer.init_run_at_number(object, run_at)
       else
-        PutsDebuggerer.increment_run_at_number(object, run_at)
+        PutsDebuggerer::RunDeterminer.increment_run_at_number(object, run_at)
       end
-      run_number = PutsDebuggerer.run_at_number(object, run_at)
+      run_number = PutsDebuggerer::RunDeterminer.run_at_number(object, run_at)
     end
     if run_at.is_a?(Integer)
       run_pd = true if run_at == run_number
