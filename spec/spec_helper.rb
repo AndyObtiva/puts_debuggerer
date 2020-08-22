@@ -25,4 +25,4 @@ RSpec.configure do |config|
 end
 
 require 'awesome_print'
-require 'puts_debuggerer'
+require 'pd' # tests both `require 'pd'` and `require 'puts_debuggerer'`

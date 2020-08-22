@@ -9,6 +9,7 @@
 - Change :ap printer default to :p when unavailable
 - Support varargs printing (example: `pd arg1, arg2, arg3`)
 - Display `run_at` run number in printout
+- Support `require 'pd`' as a shorter alternative to `require 'puts_debuggerer'`
 
 ## 0.8.2
 

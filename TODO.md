@@ -6,7 +6,6 @@ Here are tasks considered for future versions. Once done, they are moved to the 
 
 ### 0.10.0
 
-- Add require 'pd' alternative to require 'puts_debuggerer'
 - `return: false` option to return printed String instead of returning printed object
 - Support `printer` as a Logger object or Logging::Logger (from "logging" gem). Perhaps discover via ducktyping.
 - Provide as logging device and/or formatter for Ruby logger API and/or logging gem
