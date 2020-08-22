@@ -9,12 +9,7 @@ describe 'PutsDebuggerer' do
     AwesomePrint.defaults = {
       plain: true
     }
-    $stdout = StringIO.new
     PutsDebuggerer.print_engine = :ap
-    PutsDebuggerer.formatter = nil
-    PutsDebuggerer.header = nil
-    PutsDebuggerer.footer = nil
-    PutsDebuggerer.caller = nil
   end
 
   context 'with custom printer engine' do
@@ -31,8 +26,6 @@ describe 'PutsDebuggerer' do
     end
     after do
       Object.send(:remove_const, :Rails) rescue nil
-      PutsDebuggerer.app_path = nil
-      PutsDebuggerer.printer = nil
     end
     it 'prints using passed in custom lambda print engine' do
       PutsDebuggerer.printer = lambda {|text| puts "\n#{text}\n"} #intentionally set as :p

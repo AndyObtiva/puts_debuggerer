@@ -3,28 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 describe 'PutsDebuggerer' do
   let(:puts_debuggerer_invoker_file) {File.expand_path(File.join(__FILE__, '..', '..', 'support', 'puts_debuggerer_invoker.rb'))}
   
-  before do
-    $stdout = StringIO.new
-    PutsDebuggerer.printer = :puts
-    PutsDebuggerer.print_engine = :p
-    PutsDebuggerer.formatter = nil
-    PutsDebuggerer.header = nil
-    PutsDebuggerer.footer = nil
-    PutsDebuggerer.wrapper = nil
-    PutsDebuggerer.caller = nil
-    PutsDebuggerer.run_at = nil
-    PutsDebuggerer::RunDeterminer.run_at_global_number = nil
-    PutsDebuggerer::RunDeterminer::OBJECT_RUN_AT.clear
-    PutsDebuggerer.app_path = nil
-  end
-  
   context 'with run_at specified' do
-    after do
-      PutsDebuggerer.run_at = nil
-      PutsDebuggerer::RunDeterminer.run_at_global_number = nil
-      PutsDebuggerer::RunDeterminer::OBJECT_RUN_AT.clear
-    end
-    
     context 'as an index' do
       it 'skips first 4 runs, prints on the 5th run, skips 6th and 7th runs' do
         name = 'Robert'

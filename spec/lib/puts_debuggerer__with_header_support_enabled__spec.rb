@@ -2,23 +2,10 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe 'PutsDebuggerer' do
   let(:puts_debuggerer_invoker_file) {File.expand_path(File.join(__FILE__, '..', '..', 'support', 'puts_debuggerer_invoker.rb'))}
-  before do
-    $stdout = StringIO.new
-    PutsDebuggerer.printer = :puts
-    PutsDebuggerer.print_engine = :p
-    PutsDebuggerer.formatter = nil
-    PutsDebuggerer.header = nil
-    PutsDebuggerer.footer = nil
-    PutsDebuggerer.caller = nil
-    PutsDebuggerer.app_path = nil
-  end
   context 'with header support enabled' do
     context 'as default header' do
       before do
         PutsDebuggerer.header = true
-      end
-      after do
-        PutsDebuggerer.header = nil
       end
       it 'prints asterisk header 80 times by default before dynamic PD print out' do
         name = 'Robert'
@@ -52,9 +39,6 @@ describe 'PutsDebuggerer' do
       let(:custom_header) {'>>>PRINT OUT<<<'}
       before do
         PutsDebuggerer.header = custom_header
-      end
-      after do
-        PutsDebuggerer.header = nil
       end
       it 'prints asterisk header 80 times by default before dynamic PD print out' do
         name = 'Robert'

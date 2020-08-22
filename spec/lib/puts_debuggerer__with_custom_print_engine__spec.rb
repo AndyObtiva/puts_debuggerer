@@ -2,16 +2,6 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe 'PutsDebuggerer' do
   let(:puts_debuggerer_invoker_file) {File.expand_path(File.join(__FILE__, '..', '..', 'support', 'puts_debuggerer_invoker.rb'))}
-  before do
-    $stdout = StringIO.new
-    PutsDebuggerer.printer = :puts
-    PutsDebuggerer.print_engine = :p
-    PutsDebuggerer.formatter = nil
-    PutsDebuggerer.header = nil
-    PutsDebuggerer.footer = nil
-    PutsDebuggerer.caller = nil
-    PutsDebuggerer.app_path = nil
-  end
 
   context 'with custom print engine' do
     let(:expected_object_printout) {
@@ -34,7 +24,6 @@ describe 'PutsDebuggerer' do
       PutsDebuggerer.print_engine = nil #auto detect awesome_print
     end
     after do
-      PutsDebuggerer.print_engine = :p
       AwesomePrint.defaults = @awesome_print_defaults
       Kernel.send(:remove_method, :print_meh) rescue nil
       Kernel.send(:remove_method, :ap) rescue nil

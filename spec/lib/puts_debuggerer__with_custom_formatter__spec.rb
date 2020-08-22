@@ -2,16 +2,6 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe 'PutsDebuggerer' do
   let(:puts_debuggerer_invoker_file) {File.expand_path(File.join(__FILE__, '..', '..', 'support', 'puts_debuggerer_invoker.rb'))}
-  before do
-    $stdout = StringIO.new
-    PutsDebuggerer.printer = :puts
-    PutsDebuggerer.print_engine = :p
-    PutsDebuggerer.formatter = nil
-    PutsDebuggerer.header = nil
-    PutsDebuggerer.footer = nil
-    PutsDebuggerer.caller = nil
-    PutsDebuggerer.app_path = nil
-  end
   context 'with custom formatter' do
     before do
       PutsDebuggerer.header = true
@@ -28,12 +18,6 @@ describe 'PutsDebuggerer' do
         puts "CALLER: #{data[:caller].to_a.first}"
         puts "FOOTER: #{data[:footer]}"
       }
-    end
-    after do
-      PutsDebuggerer.formatter = nil
-      PutsDebuggerer.header = nil
-      PutsDebuggerer.footer = nil
-      PutsDebuggerer.caller = nil
     end
     it 'prints custom format' do
       name = 'Robert'

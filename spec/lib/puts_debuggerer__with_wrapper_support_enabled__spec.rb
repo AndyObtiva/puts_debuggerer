@@ -2,24 +2,10 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe 'PutsDebuggerer' do
   let(:puts_debuggerer_invoker_file) {File.expand_path(File.join(__FILE__, '..', '..', 'support', 'puts_debuggerer_invoker.rb'))}
-  before do
-    $stdout = StringIO.new
-    PutsDebuggerer.printer = :puts
-    PutsDebuggerer.print_engine = :p
-    PutsDebuggerer.formatter = nil
-    PutsDebuggerer.header = nil
-    PutsDebuggerer.footer = nil
-    PutsDebuggerer.wrapper = nil
-    PutsDebuggerer.caller = nil
-    PutsDebuggerer.app_path = nil
-  end
   context 'with wrapper support enabled' do
     context 'as default wrapper' do
       before do
         PutsDebuggerer.wrapper = true
-      end
-      after do
-        PutsDebuggerer.wrapper = nil
       end
       it 'prints asterisk wrapper 80 times by default before dynamic PD print out' do
         name = 'Robert'
