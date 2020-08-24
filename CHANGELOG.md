@@ -11,6 +11,7 @@
 - Display `run_at` run number in printout
 - Support `require 'pd`' as a shorter alternative to `require 'puts_debuggerer'`
 - Support `return: false` option to return printed String instead of returning printed object
+- Support `printer` as a Logger object or Logging::Logger (from "logging" gem). Basically any object that responds to :debug method.
 
 ## 0.8.2
 

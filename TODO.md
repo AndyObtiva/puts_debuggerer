@@ -6,7 +6,6 @@ Here are tasks considered for future versions. Once done, they are moved to the 
 
 ### 0.10.0
 
-- Support `printer` as a Logger object or Logging::Logger (from "logging" gem). Perhaps discover via ducktyping.
 - Provide as logging device and/or formatter for Ruby logger API and/or logging gem
 - Refactor internals to avoid global method pollution
 

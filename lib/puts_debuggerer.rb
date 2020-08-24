@@ -27,7 +27,7 @@ module PutsDebuggerer
     Rails.logger.debug(output)
   end
   PRINT_ENGINE_DEFAULT = :ap
-  PRINTER_MESSAGE_INVALID = 'printer must be a valid global method symbol (e.g. :puts) or lambda/proc receiving a text arg'
+  PRINTER_MESSAGE_INVALID = 'printer must be a valid global method symbol (e.g. :puts), a logger, or a lambda/proc receiving a text arg'
   PRINT_ENGINE_MESSAGE_INVALID = 'print_engine must be a valid global method symbol (e.g. :p, :ap or :pp) or lambda/proc receiving an object arg'
   ANNOUNCER_DEFAULT = '[PD]'
   FORMATTER_DEFAULT = -> (data) {
@@ -182,7 +182,7 @@ module PutsDebuggerer
     def printer=(printer)
       if printer.nil?
         @printer = printer_default
-      elsif printer.is_a?(Proc)
+      elsif printer.is_a?(Proc) || printer.respond_to?(:debug) # a logger
         @printer = printer
       else
         @printer = method(printer).name rescue raise(PRINTER_MESSAGE_INVALID)
@@ -532,6 +532,8 @@ def pd(*objects)
       string = sio.string
       if PutsDebuggerer.printer.is_a?(Proc)
         PutsDebuggerer.printer.call(string)
+      elsif PutsDebuggerer.printer.respond_to?(:debug)
+        PutsDebuggerer.printer.debug(string)
       else
         send(PutsDebuggerer.send(:printer), string)
       end
