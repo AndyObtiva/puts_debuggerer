@@ -10,6 +10,7 @@
 - Support varargs printing (example: `pd arg1, arg2, arg3`)
 - Display `run_at` run number in printout
 - Support `require 'pd`' as a shorter alternative to `require 'puts_debuggerer'`
+- Support `return: false` option to return printed String instead of returning printed object
 
 ## 0.8.2
 

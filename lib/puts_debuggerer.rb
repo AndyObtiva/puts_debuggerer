@@ -9,6 +9,7 @@ module PutsDebuggerer
   HEADER_DEFAULT = '*'*80
   WRAPPER_DEFAULT = '*'*80
   FOOTER_DEFAULT = '*'*80
+  RETURN_DEFAULT = true
   OBJECT_PRINTER_DEFAULT = lambda do |object, print_engine_options=nil, source_line_count=nil, run_number=nil|
     lambda do
       if object.is_a?(Exception) && object.respond_to?(:full_message)
@@ -16,11 +17,7 @@ module PutsDebuggerer
       elsif PutsDebuggerer.print_engine.is_a?(Proc)
         PutsDebuggerer.print_engine.call(object)
       else
-        if print_engine_options.to_h.empty?
-          send(PutsDebuggerer.print_engine, object)
-        else
-          send(PutsDebuggerer.print_engine, object, print_engine_options) rescue send(PutsDebuggerer.print_engine, object)
-        end
+        send(PutsDebuggerer.print_engine, object)
       end    
     end
   end
@@ -235,6 +232,36 @@ module PutsDebuggerer
       Object.const_defined?(:AwesomePrint) ? PRINT_ENGINE_DEFAULT : :p    
     end
 
+    # The `return` option specifies whether to return the object being printed (default) or not (i.e. return
+    # the string being printed instead.)
+    # The purpose of returning object by default is to enable chaining pd statements safely (e.g. `pd x = ([pd(value1), value2])`)
+    # and avoid pd from interrupting the flow of execution or affecting the logic in any way.
+    # Values may be true (return object) or false (do not return object, returning printed string instead)
+    #
+    # Defaults to `true`
+    #
+    # Example:
+    #
+    #   # File Name: /Users/User/example.rb
+    #   array = [1, [2, 3]]
+    #   pd array, return: false
+    #
+    # Prints out:
+    #
+    #   [PD] /Users/User/example.rb:3
+    #      > pd array, return: false
+    #     => [1, [2, 3]]
+    #   ]
+    #
+    # Returns:
+    #
+    # "[1, [2, 3]]"
+    attr_reader :return
+
+    def return=(return_object)
+      @return = return_object.nil? ? RETURN_DEFAULT : return_object
+    end
+    
     # Announcer (e.g. [PD]) to announce every print out with (default: "[PD]")
     #
     # Example:
@@ -425,7 +452,7 @@ module PutsDebuggerer
       !!@run_at
     end
 
-    def determine_options(objects)
+    def determine_options(objects)    
       objects.delete_at(-1) if objects.size > 1 && objects.last.is_a?(Hash)
     end
 
@@ -435,6 +462,14 @@ module PutsDebuggerer
 
     def determine_run_at(options)
       ((options && options[:run_at]) || PutsDebuggerer.run_at)
+    end
+
+    def determine_return(options)
+      if options && options.has_key?(:return)
+        options[:return]
+      else
+        PutsDebuggerer.return
+      end
     end
   end
 end
@@ -446,6 +481,7 @@ PutsDebuggerer.announcer = nil
 PutsDebuggerer.formatter = nil
 PutsDebuggerer.app_path = nil
 PutsDebuggerer.caller = nil
+PutsDebuggerer.return = nil
 PutsDebuggerer.run_at = nil
 PutsDebuggerer.source_line_count = nil
 
@@ -482,7 +518,9 @@ def pd(*objects)
   options = PutsDebuggerer.determine_options(objects)
   object = PutsDebuggerer.determine_object(objects)
   run_at = PutsDebuggerer.determine_run_at(options)
+  return_option = PutsDebuggerer.determine_return(options)
 
+  string = nil
   if PutsDebuggerer::RunDeterminer.run_pd?(object, run_at)
     __with_pd_options__(options) do |print_engine_options|
       run_number = PutsDebuggerer::RunDeterminer.run_number(object, run_at)
@@ -491,15 +529,16 @@ def pd(*objects)
       $stdout = sio = StringIO.new
       PutsDebuggerer.formatter.call(formatter_pd_data)
       $stdout = stdout
+      string = sio.string
       if PutsDebuggerer.printer.is_a?(Proc)
-        PutsDebuggerer.printer.call(sio.string)
+        PutsDebuggerer.printer.call(string)
       else
-        send(PutsDebuggerer.send(:printer), sio.string)
+        send(PutsDebuggerer.send(:printer), string)
       end
     end
   end
 
-  object
+  return_option ? object : string
 end
 
 # Provides caller line number starting 1 level above caller of

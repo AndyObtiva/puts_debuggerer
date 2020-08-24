@@ -21,20 +21,25 @@ require 'rspec'
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 RSpec.configure do |config|
+  config.before do
+    $stdout = StringIO.new  
+  end
+     
   config.after do
-    $stdout = StringIO.new
-    PutsDebuggerer.printer = :puts
-    PutsDebuggerer.print_engine = :p
+    PutsDebuggerer.app_path = nil  
+    PutsDebuggerer.caller = nil
+    PutsDebuggerer.footer = nil
     PutsDebuggerer.formatter = nil
     PutsDebuggerer.header = nil
-    PutsDebuggerer.footer = nil
-    PutsDebuggerer.wrapper = nil
-    PutsDebuggerer.caller = nil
-    PutsDebuggerer.app_path = nil  
+    PutsDebuggerer.printer = :puts
+    PutsDebuggerer.print_engine = :p
+    PutsDebuggerer.return = nil
     PutsDebuggerer.run_at = nil
     PutsDebuggerer::RunDeterminer.run_at_global_number = nil
     PutsDebuggerer::RunDeterminer::OBJECT_RUN_AT.clear
+    PutsDebuggerer.wrapper = nil
   end
+
 end
 
 require 'awesome_print'

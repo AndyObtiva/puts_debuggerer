@@ -8,7 +8,7 @@ describe 'PutsDebuggerer' do
       "[\n    [0] 1,\n    [1] [\n        [0] 2,\n        [1] 3\n    ]\n]"
     }
     let(:expected_object_printout_indent2) {
-      "[\n  [0] 1,\n  [1] [\n    [0] 2,\n    [1] 3\n  ]\n]"
+      "[\n    [0] 1,\n    [1] [\n        [0] 2,\n        [1] 3\n    ]\n]"
     }
     before do
       load "awesome_print/core_ext/kernel.rb"
