@@ -6,7 +6,8 @@ Here are tasks considered for future versions. Once done, they are moved to the 
 
 ### 0.10.0
 
-- Provide as logging device and/or formatter for Ruby logger API and/or logging gem
+- Provide as formatter for Ruby Logger (PutsDebuggerer::LOGGER_FORMATTER_DEFAULT)
+- Provide as logging device for logging gem
 - Refactor internals to avoid global method pollution
 
 ### Version TBD

@@ -66,6 +66,22 @@ describe 'PutsDebuggerer' do
       expect(output).to eq("D, [2000-01-01T01:01:01.000000 ##{Process.pid}] DEBUG -- : [PD] #{puts_debuggerer_invoker_file}:22\n   > pd [1, [2, 3]]\n  => #{expected_object_printout}\n\n")
     end
     
+    it 'does not print with printer globally as false, but returns rendered string instead of object' do
+      PutsDebuggerer.printer = false
+      expect(PutsDebuggerer.printer).to eq(false)
+      return_value = PutsDebuggererInvoker.static_nested_array
+      output = $stdout.string
+      expect(output).to eq('')      
+      expect(return_value).to eq("[PD] #{puts_debuggerer_invoker_file}:22\n   > pd [1, [2, 3]]\n  => #{expected_object_printout}\n")      
+    end
+    
+    it 'does not print with printer as false, but returns rendered string instead of object' do
+      return_value = PutsDebuggererInvoker.call_pd [1, [2, 3]], printer: false
+      output = $stdout.string
+      expect(output).to eq('')      
+      expect(return_value).to eq("[PD] #{puts_debuggerer_invoker_file}:60\n   > pd *args\n  => #{expected_object_printout}\n")      
+    end    
+    
     it 'raises informative error if print_engine was invalid' do
       expect {PutsDebuggerer.printer = :invalid}.to raise_error('printer must be a valid global method symbol (e.g. :puts), a logger, or a lambda/proc receiving a text arg')
     end

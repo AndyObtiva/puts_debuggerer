@@ -56,7 +56,7 @@ module PutsDebuggererInvoker
     pd 'hello', 3, true, options
   end
   # intentional empty line
-  def self.object_with_return_option(object, return_option = nil)
-    pd object, {}.tap {|h| h.merge!(return: return_option) unless return_option.nil?}
+  def self.call_pd(*args)
+    pd *args
   end
 end

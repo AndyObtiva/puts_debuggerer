@@ -18,7 +18,7 @@ module PutsDebuggerer
         PutsDebuggerer.print_engine.call(object)
       else
         send(PutsDebuggerer.print_engine, object)
-      end    
+      end
     end
   end
   PRINTER_DEFAULT = :puts
@@ -182,8 +182,8 @@ module PutsDebuggerer
     def printer=(printer)
       if printer.nil?
         @printer = printer_default
-      elsif printer.is_a?(Proc) || printer.respond_to?(:debug) # a logger
-        @printer = printer
+      elsif printer == false || printer.is_a?(Proc) || printer.respond_to?(:debug) # a logger
+        @printer = printer      
       else
         @printer = method(printer).name rescue raise(PRINTER_MESSAGE_INVALID)
       end
@@ -464,11 +464,11 @@ module PutsDebuggerer
       ((options && options[:run_at]) || PutsDebuggerer.run_at)
     end
 
-    def determine_return(options)
-      if options && options.has_key?(:return)
-        options[:return]
+    def determine_printer(options)
+      if options && options.has_key?(:printer)
+        options[:printer]
       else
-        PutsDebuggerer.return
+        PutsDebuggerer.printer
       end
     end
   end
@@ -518,7 +518,7 @@ def pd(*objects)
   options = PutsDebuggerer.determine_options(objects)
   object = PutsDebuggerer.determine_object(objects)
   run_at = PutsDebuggerer.determine_run_at(options)
-  return_option = PutsDebuggerer.determine_return(options)
+  printer = PutsDebuggerer.determine_printer(options)
 
   string = nil
   if PutsDebuggerer::RunDeterminer.run_pd?(object, run_at)
@@ -534,13 +534,13 @@ def pd(*objects)
         PutsDebuggerer.printer.call(string)
       elsif PutsDebuggerer.printer.respond_to?(:debug)
         PutsDebuggerer.printer.debug(string)
-      else
+      elsif PutsDebuggerer.printer != false
         send(PutsDebuggerer.send(:printer), string)
       end
     end
   end
 
-  return_option ? object : string
+  printer ? object : string
 end
 
 # Provides caller line number starting 1 level above caller of
