@@ -302,7 +302,7 @@ There are many more options and powerful features in [puts_debuggerer](https://r
 Add the following to bundler's `Gemfile`.
 
 ```ruby
-gem 'puts_debuggerer', '~> 0.9.0'
+gem 'puts_debuggerer', '~> 0.10.0'
 ```
 
 This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you may create an initializer under `config/initializers` named `puts_debuggerer_options.rb` to enable further customizations as per the [Options](#options) section below.
@@ -312,7 +312,7 @@ This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you m
 Or manually install and require library.
 
 ```bash
-gem install puts_debuggerer -v0.9.0
+gem install puts_debuggerer -v0.10.0
 ```
 
 ```ruby
@@ -381,7 +381,14 @@ Output:
   => "Hello Robert"
 ```
 
+Alternatively, you may want to use `object.pd_inspect` (or alias `obj.pdi`) to 
+return formatted string without printing.
+
 Happy puts_debuggerering!
+
+#### Ruby Logger and Logging::Logger 
+
+Ruby Logger and Logging::Logger (from [logging gem](https://github.com/TwP/logging)) are supported as [printers](#putsdebuggererprinter) (learn more under [PutsDebuggerer#printer](#putsdebuggererprinter)). 
 
 ### Options
 
@@ -632,9 +639,17 @@ Prints out:
 #### `PutsDebuggerer.printer`
 (default = `:puts`)
 
-Printer is a global method symbol or lambda expression to use in printing to the user.
-Examples of global methods are `:puts` and `:print`.
+Printer is a global method symbol, lambda expression, or logger to use in printing to the user.
+
+Examples of a global method are `:puts` and `:print`.
 An example of a lambda expression is `lambda {|output| Rails.logger.info(output)}`
+Examples of a logger are a Ruby `Logger` instance or `Logging::Logger` instance
+
+When a logger is supplied, it is automatically enhanced with a PutsDebuggerer formatter to use 
+when calling logger methods outside of PutsDebuggerer (e.g. `logger.error('msg')` will use `pd`)
+
+Printer may be set to `false` to avoid printing and only return the formatted string.
+It is equivalent of just calling `.pd_inspect` (or alias `.pdi`) on the object
 
 Defaults to `:puts`
 In Rails, it defaults to:

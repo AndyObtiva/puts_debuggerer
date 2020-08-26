@@ -1,5 +1,15 @@
 # Change Log
 
+## 0.10.0
+
+- Support `require 'pd`' as a shorter alternative to `require 'puts_debuggerer'`
+- Support `printer` as a Logger object or Logging::Logger (from "logging" gem). Basically any object that responds to :debug method.
+- Support `printer: false` option to return rendered String instead of printing and returning object
+- Set logger formatter to PutsDebuggerer::LOGGER_FORMATTER_DECORATOR when passing as printer (keeping format the same, but decorating msg with pd)
+- Add pd_inspect (and pdi alias) Kernel core extension methods
+- Made awesome_print gem require happen only if printer is set to :ap or :awesome_print
+- Support logging gem logger and Decorate logger layout with PutsDebuggerer::LOGGING_LAYOUT_DECORATOR for logging gem
+
 ## 0.9.0
 
 - Provide partial support for Opal Ruby (missing display of file name, line number, and source code)
@@ -9,13 +19,6 @@
 - Change :ap printer default to :p when unavailable
 - Support varargs printing (example: `pd arg1, arg2, arg3`)
 - Display `run_at` run number in printout
-- Support `require 'pd`' as a shorter alternative to `require 'puts_debuggerer'`
-- Support `printer` as a Logger object or Logging::Logger (from "logging" gem). Basically any object that responds to :debug method.
-- Support `printer: false` option to return rendered String instead of printing and returning object
-- Set logger formatter to PutsDebuggerer::LOGGER_FORMATTER_DECORATOR when passing as printer (keeping format the same, but decorating msg with pd)
-- Add pd_inspect (and pdi alias) Kernel core extension methods
-- Made awesome_print gem require happen only if printer is set to :ap or :awesome_print
-- Support logging gem logger and Decorate logger layout with PutsDebuggerer::LOGGING_LAYOUT_DECORATOR for logging gem
 
 ## 0.8.2
 

@@ -186,7 +186,7 @@ module PutsDebuggerer
     # Printer is a global method symbol, lambda expression, or logger to use in printing to the user.
     # Examples of a global method are `:puts` and `:print`.
     # An example of a lambda expression is `lambda {|output| Rails.logger.ap(output)}`
-    # Examples of a logger are a Ruby Logger instance or Logging::Logger instance (anything that responds to `#log`)
+    # Examples of a logger are a Ruby `Logger` instance or `Logging::Logger` instance
     #
     # Defaults to `:puts`
     # In Rails, it defaults to: `lambda {|output| Rails.logger.ap(output)}`
