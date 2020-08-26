@@ -18,7 +18,7 @@ Basic Example:
 
 ```ruby
 # /Users/User/trivia_app.rb      # line 1
-require 'pd'        # line 2
+require 'pd'                     # line 2
 bug_or_band = 'beattle'          # line 3
 pd bug_or_band                   # line 4
 ```
