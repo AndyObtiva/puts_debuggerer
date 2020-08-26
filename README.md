@@ -18,7 +18,7 @@ Basic Example:
 
 ```ruby
 # /Users/User/trivia_app.rb      # line 1
-require 'puts_debuggerer'        # line 2
+require 'pd'        # line 2
 bug_or_band = 'beattle'          # line 3
 pd bug_or_band                   # line 4
 ```
@@ -317,6 +317,12 @@ gem install puts_debuggerer -v0.10.0
 
 ```ruby
 require 'puts_debuggerer'
+```
+
+Or the shorter form (often helpful when added to quickly troubleshoot an app):
+
+```ruby
+require 'pd'
 ```
 
 ### Awesome Print
