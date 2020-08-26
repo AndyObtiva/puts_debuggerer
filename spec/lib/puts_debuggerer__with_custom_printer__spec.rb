@@ -64,6 +64,13 @@ describe 'PutsDebuggerer' do
       PutsDebuggererInvoker.static_nested_array
       output = $stdout.string
       expect(output).to eq("D, [2000-01-01T01:01:01.000000 ##{Process.pid}] DEBUG -- : [PD] #{puts_debuggerer_invoker_file}:22\n   > pd [1, [2, 3]]\n  => #{expected_object_printout}\n\n")
+
+      $stdout = StringIO.new
+      logger = Logger.new($stdout)
+      PutsDebuggerer.printer = logger
+      PutsDebuggererInvoker.logger_debug logger, [1, [2, 3]]
+      output = $stdout.string
+      expect(output).to eq("D, [2000-01-01T01:01:01.000000 ##{Process.pid}] DEBUG -- : [PD] #{puts_debuggerer_invoker_file}:64\n   > logger.debug *args\n  => #{expected_object_printout}\n\n")
     end
     
     it 'does not print with printer globally as false, but returns rendered string instead of object' do

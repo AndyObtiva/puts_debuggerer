@@ -59,4 +59,12 @@ module PutsDebuggererInvoker
   def self.call_pd(*args)
     pd *args
   end
+  # intentional empty line
+  def self.logger_debug(logger, *args)
+    logger.debug *args
+  end
+  # intentional empty line
+  def self.call_pd_inspect(object)
+    object.pd_inspect
+  end
 end

@@ -33,7 +33,6 @@ RSpec.configure do |config|
     PutsDebuggerer.header = nil
     PutsDebuggerer.printer = :puts
     PutsDebuggerer.print_engine = :p
-    PutsDebuggerer.return = nil
     PutsDebuggerer.run_at = nil
     PutsDebuggerer::RunDeterminer.run_at_global_number = nil
     PutsDebuggerer::RunDeterminer::OBJECT_RUN_AT.clear

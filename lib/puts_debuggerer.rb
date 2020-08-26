@@ -1,6 +1,7 @@
 require 'awesome_print' unless RUBY_PLATFORM == 'opal'
 require 'stringio'
 
+require 'puts_debuggerer/core_ext/kernel'
 require 'puts_debuggerer/run_determiner'
 require 'puts_debuggerer/source_file'
 
@@ -9,6 +10,11 @@ module PutsDebuggerer
   HEADER_DEFAULT = '*'*80
   WRAPPER_DEFAULT = '*'*80
   FOOTER_DEFAULT = '*'*80
+  LOGGER_FORMATTER_DECORATOR = proc { |original_formatter|
+    proc { |severity, datetime, progname, msg|
+      original_formatter.call(severity, datetime, progname, msg.pd_inspect)
+    }
+  }
   RETURN_DEFAULT = true
   OBJECT_PRINTER_DEFAULT = lambda do |object, print_engine_options=nil, source_line_count=nil, run_number=nil|
     lambda do
@@ -158,9 +164,10 @@ module PutsDebuggerer
       end
     end
 
-    # Printer is a global method symbol or lambda expression to use in printing to the user.
-    # Examples of global methods are `:puts` and `:print`.
+    # Printer is a global method symbol, lambda expression, or logger to use in printing to the user.
+    # Examples of a global method are `:puts` and `:print`.
     # An example of a lambda expression is `lambda {|output| Rails.logger.ap(output)}`
+    # Examples of a logger are a Ruby Logger instance or Logging::Logger instance (anything that responds to `#log`)
     #
     # Defaults to `:puts`
     # In Rails, it defaults to: `lambda {|output| Rails.logger.ap(output)}`
@@ -182,8 +189,12 @@ module PutsDebuggerer
     def printer=(printer)
       if printer.nil?
         @printer = printer_default
-      elsif printer == false || printer.is_a?(Proc) || printer.respond_to?(:debug) # a logger
-        @printer = printer      
+      elsif printer.is_a?(Logger)
+        @printer = printer
+        @logger_original_formatter = printer.formatter || Logger::Formatter.new
+        printer.formatter = LOGGER_FORMATTER_DECORATOR.call(@logger_original_formatter)
+      elsif printer == false || printer.is_a?(Proc) || printer.respond_to?(:log) # a logger
+        @printer = printer
       else
         @printer = method(printer).name rescue raise(PRINTER_MESSAGE_INVALID)
       end
@@ -192,6 +203,10 @@ module PutsDebuggerer
     def printer_default
       Object.const_defined?(:Rails) ? PRINTER_RAILS : PRINTER_DEFAULT    
     end
+    
+    # Logger original formatter before it was decorated with PutsDebuggerer::LOGGER_FORMATTER_DECORATOR 
+    # upon setting the logger as a printer.
+    attr_reader :logger_original_formatter
 
     # Print engine is similar to `printer`, except it is focused on the scope of formatting
     # the data object being printed (excluding metadata such as file name, line number,
@@ -232,36 +247,6 @@ module PutsDebuggerer
       Object.const_defined?(:AwesomePrint) ? PRINT_ENGINE_DEFAULT : :p    
     end
 
-    # The `return` option specifies whether to return the object being printed (default) or not (i.e. return
-    # the string being printed instead.)
-    # The purpose of returning object by default is to enable chaining pd statements safely (e.g. `pd x = ([pd(value1), value2])`)
-    # and avoid pd from interrupting the flow of execution or affecting the logic in any way.
-    # Values may be true (return object) or false (do not return object, returning printed string instead)
-    #
-    # Defaults to `true`
-    #
-    # Example:
-    #
-    #   # File Name: /Users/User/example.rb
-    #   array = [1, [2, 3]]
-    #   pd array, return: false
-    #
-    # Prints out:
-    #
-    #   [PD] /Users/User/example.rb:3
-    #      > pd array, return: false
-    #     => [1, [2, 3]]
-    #   ]
-    #
-    # Returns:
-    #
-    # "[1, [2, 3]]"
-    attr_reader :return
-
-    def return=(return_object)
-      @return = return_object.nil? ? RETURN_DEFAULT : return_object
-    end
-    
     # Announcer (e.g. [PD]) to announce every print out with (default: "[PD]")
     #
     # Example:
@@ -481,7 +466,6 @@ PutsDebuggerer.announcer = nil
 PutsDebuggerer.formatter = nil
 PutsDebuggerer.app_path = nil
 PutsDebuggerer.caller = nil
-PutsDebuggerer.return = nil
 PutsDebuggerer.run_at = nil
 PutsDebuggerer.source_line_count = nil
 
@@ -515,16 +499,17 @@ PutsDebuggerer.source_line_count = nil
 #     => "Show me the source of the bug: beattle"
 #   [PD] /Users/User/finance_calculator_app/pd_test.rb:4 "What line number am I?"
 def pd(*objects)
-  options = PutsDebuggerer.determine_options(objects)
+  options = PutsDebuggerer.determine_options(objects) || {}
   object = PutsDebuggerer.determine_object(objects)
   run_at = PutsDebuggerer.determine_run_at(options)
   printer = PutsDebuggerer.determine_printer(options)
+  pd_inspect = options.delete(:pd_inspect) || options.delete('pd_inspect')
 
   string = nil
   if PutsDebuggerer::RunDeterminer.run_pd?(object, run_at)
     __with_pd_options__(options) do |print_engine_options|
       run_number = PutsDebuggerer::RunDeterminer.run_number(object, run_at)
-      formatter_pd_data = __build_pd_data__(object, print_engine_options, PutsDebuggerer.source_line_count, run_number) #depth adds build method
+      formatter_pd_data = __build_pd_data__(object, print_engine_options, PutsDebuggerer.source_line_count, run_number, pd_inspect) #depth adds build method
       stdout = $stdout
       $stdout = sio = StringIO.new
       PutsDebuggerer.formatter.call(formatter_pd_data)
@@ -532,8 +517,14 @@ def pd(*objects)
       string = sio.string
       if PutsDebuggerer.printer.is_a?(Proc)
         PutsDebuggerer.printer.call(string)
-      elsif PutsDebuggerer.printer.respond_to?(:debug)
-        PutsDebuggerer.printer.debug(string)
+      elsif PutsDebuggerer.printer.is_a?(Logger)
+        logger_formatter = PutsDebuggerer.printer.formatter
+        begin
+          PutsDebuggerer.printer.formatter = PutsDebuggerer.logger_original_formatter
+          PutsDebuggerer.printer.debug(string)
+        ensure
+          PutsDebuggerer.printer.formatter = logger_formatter
+        end
       elsif PutsDebuggerer.printer != false
         send(PutsDebuggerer.send(:printer), string)
       end
@@ -567,7 +558,7 @@ end
 #
 # prints out `lib/example.rb`
 def __caller_file__(caller_depth=0)
-  caller[caller_depth] && caller[caller_depth][PutsDebuggerer::STACK_TRACE_CALL_SOURCE_FILE_REGEX, 1]
+  result = caller[caller_depth] && caller[caller_depth][PutsDebuggerer::STACK_TRACE_CALL_SOURCE_FILE_REGEX, 1]  
 end
 
 
@@ -602,8 +593,9 @@ def __with_pd_options__(options=nil)
   PutsDebuggerer.options = permanent_options
 end
 
-def __build_pd_data__(object, print_engine_options=nil, source_line_count=nil, run_number=nil)
+def __build_pd_data__(object, print_engine_options=nil, source_line_count=nil, run_number=nil, pd_inspect=false)
   depth = PutsDebuggerer::CALLER_DEPTH_ZERO
+  depth += 5 if pd_inspect
   pd_data = {
     announcer: PutsDebuggerer.announcer,
     file: __caller_file__(depth)&.sub(PutsDebuggerer.app_path.to_s, ''),
