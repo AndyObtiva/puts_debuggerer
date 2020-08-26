@@ -6,7 +6,6 @@ Here are tasks considered for future versions. Once done, they are moved to the 
 
 ### 0.10.0
 
-- Provide as logging device for logging gem
 - Refactor internals to avoid global method pollution
 
 ### Version TBD

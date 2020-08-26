@@ -43,6 +43,10 @@ GEM
       semver2
     json (1.8.6)
     jwt (2.2.2)
+    little-plugger (1.1.4)
+    logging (2.3.0)
+      little-plugger (~> 1.1)
+      multi_json (~> 1.14)
     mime-types (2.99.3)
     mini_portile2 (2.4.0)
     multi_json (1.15.0)
@@ -106,6 +110,7 @@ DEPENDENCIES
   bundler (~> 2.1.4)
   coveralls (= 0.8.23)
   jeweler (~> 2.3.9)
+  logging (>= 2.3.0)
   rdoc (~> 3.12)
   rspec (~> 3.5.0)
   rspec-mocks (~> 3.5.0)

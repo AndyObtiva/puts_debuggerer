@@ -60,8 +60,8 @@ module PutsDebuggererInvoker
     pd *args
   end
   # intentional empty line
-  def self.logger_debug(logger, *args)
-    logger.debug *args
+  def self.logger_log(logger, severity, *args)
+    logger.send(severity, *args)
   end
   # intentional empty line
   def self.call_pd_inspect(object)

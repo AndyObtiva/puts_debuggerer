@@ -15,6 +15,7 @@
 - Set logger formatter to PutsDebuggerer::LOGGER_FORMATTER_DECORATOR when passing as printer (keeping format the same, but decorating msg with pd)
 - Add pd_inspect (and pdi alias) Kernel core extension methods
 - Made awesome_print gem require happen only if printer is set to :ap or :awesome_print
+- Support logging gem logger and Decorate logger layout with PutsDebuggerer::LOGGING_LAYOUT_DECORATOR for logging gem
 
 ## 0.8.2
 

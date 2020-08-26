@@ -43,4 +43,5 @@ end
 
 require 'awesome_print'
 require 'logger'
+require 'logging'
 require 'pd' # tests both `require 'pd'` and `require 'puts_debuggerer'`

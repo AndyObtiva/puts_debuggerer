@@ -15,7 +15,7 @@ describe 'PutsDebuggerer' do
     PutsDebuggerer.print_engine = :ap
   end
   
-  context 'with custom printer engine' do
+  context 'with custom printer' do
     let(:expected_object_printout) {
       "[\n    [0] 1,\n    [1] [\n        [0] 2,\n        [1] 3\n    ]\n]"
     }
@@ -34,7 +34,7 @@ describe 'PutsDebuggerer' do
       Object.send(:remove_const, :Rails) rescue nil
     end
     
-    it 'prints using passed in custom lambda print engine' do
+    it 'prints using passed in custom lambda printer' do
       PutsDebuggerer.printer = lambda {|text| puts "\n#{text}\n"} #intentionally set as :p
       name = 'Robert'
       PutsDebuggererInvoker.dynamic_greeting(name)
@@ -68,9 +68,24 @@ describe 'PutsDebuggerer' do
       $stdout = StringIO.new
       logger = Logger.new($stdout)
       PutsDebuggerer.printer = logger
-      PutsDebuggererInvoker.logger_debug logger, [1, [2, 3]]
+      PutsDebuggererInvoker.logger_log logger, 'error', [1, [2, 3]]
       output = $stdout.string
-      expect(output).to eq("D, [2000-01-01T01:01:01.000000 ##{Process.pid}] DEBUG -- : [PD] #{puts_debuggerer_invoker_file}:64\n   > logger.debug *args\n  => #{expected_object_printout}\n\n")
+      expect(output).to eq("E, [2000-01-01T01:01:01.000000 ##{Process.pid}] ERROR -- : [PD] #{puts_debuggerer_invoker_file}:64\n   > logger.send(severity, *args)\n  => #{expected_object_printout}\n\n")
+    end
+    
+    it 'prints with specified logging logger object (file relative to app path, line number, ruby expression, and evaluated string object)' do
+      logger = Logging.logger['test']
+      logger.add_appenders(Logging.appenders.string_io(StringIO.new))
+      logger.level = 0
+      PutsDebuggerer.printer = logger
+      expect(PutsDebuggerer.printer).to eq(logger)
+      PutsDebuggererInvoker.static_nested_array
+      expected_output1 = "DEBUG  test : [PD] #{puts_debuggerer_invoker_file}:22\n   > pd [1, [2, 3]]\n  => #{expected_object_printout}\n\n"
+      
+      PutsDebuggererInvoker.logger_log logger, 'error', [1, [2, 3]]
+      output = logger.appenders.first.sio.string
+      expected_output2 = "ERROR  test : [PD] #{puts_debuggerer_invoker_file}:64\n   > logger.send(severity, *args)\n  => #{expected_object_printout}\n\n"
+      expect(output).to eq("#{expected_output1}#{expected_output2}")
     end
     
     it 'does not print with printer globally as false, but returns rendered string instead of object' do
@@ -93,7 +108,7 @@ describe 'PutsDebuggerer' do
       expect {PutsDebuggerer.printer = :invalid}.to raise_error('printer must be a valid global method symbol (e.g. :puts), a logger, or a lambda/proc receiving a text arg')
     end
     
-    it 'prints using Rails non-test env lambda print engine' do
+    it 'prints using Rails non-test env lambda printer' do
       Object.class_eval do
         module Rails
           class Logger
@@ -121,7 +136,7 @@ describe 'PutsDebuggerer' do
       expect(output).to eq("Rails.logger.debug: [PD] /spec/support/puts_debuggerer_invoker.rb:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
     end
     
-    it 'prints using Rails test env lambda print engine' do
+    it 'prints using Rails test env lambda printer' do
       Object.class_eval do
         module Rails
           class Logger

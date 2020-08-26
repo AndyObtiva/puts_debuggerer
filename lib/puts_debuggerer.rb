@@ -4,7 +4,14 @@ require 'puts_debuggerer/core_ext/kernel'
 require 'puts_debuggerer/run_determiner'
 require 'puts_debuggerer/source_file'
 
-class Logger # just in case logger is not required
+# in case 'logger' is not required
+class Logger 
+end
+
+# in case 'logging' is not required
+module Logging
+  class Logger
+  end
 end
 
 module PutsDebuggerer
@@ -16,6 +23,16 @@ module PutsDebuggerer
     proc { |severity, datetime, progname, msg|
       original_formatter.call(severity, datetime, progname, msg.pd_inspect)
     }
+  }
+  LOGGING_LAYOUT_DECORATOR = proc {|original_layout|
+    original_layout.clone.tap do |layout|
+      layout.singleton_class.class_eval do
+        alias original_format_obj format_obj
+        def format_obj(obj)
+          obj.pdi # alias to pd_inspect
+        end
+      end
+    end
   }
   RETURN_DEFAULT = true
   OBJECT_PRINTER_DEFAULT = lambda do |object, print_engine_options=nil, source_line_count=nil, run_number=nil|
@@ -195,6 +212,14 @@ module PutsDebuggerer
         @printer = printer
         @logger_original_formatter = printer.formatter || Logger::Formatter.new
         printer.formatter = LOGGER_FORMATTER_DECORATOR.call(@logger_original_formatter)
+      elsif printer.is_a?(Logging::Logger)
+        @printer = printer
+        @logging_original_layouts = printer.appenders.reduce({}) do |hash, appender|
+          hash.merge(appender => appender.layout)
+        end
+        printer.appenders.each do |appender|
+          appender.layout = LOGGING_LAYOUT_DECORATOR.call(appender.layout)
+        end
       elsif printer == false || printer.is_a?(Proc) || printer.respond_to?(:log) # a logger
         @printer = printer
       else
@@ -209,6 +234,10 @@ module PutsDebuggerer
     # Logger original formatter before it was decorated with PutsDebuggerer::LOGGER_FORMATTER_DECORATOR 
     # upon setting the logger as a printer.
     attr_reader :logger_original_formatter
+    
+    # Logging library original layouts before being decorated with PutsDebuggerer::LOGGING_LAYOUT_DECORATOR
+    # upon setting the Logging library logger as a printer.
+    attr_reader :logging_original_layouts
 
     # Print engine is similar to `printer`, except it is focused on the scope of formatting
     # the data object being printed (excluding metadata such as file name, line number,
@@ -508,12 +537,13 @@ def pd(*objects)
   printer = PutsDebuggerer.determine_printer(options)
   pd_inspect = options.delete(:pd_inspect)
   logger_formatter_decorated = PutsDebuggerer.printer.is_a?(Logger) && PutsDebuggerer.printer.formatter != PutsDebuggerer.logger_original_formatter
+  logging_layouts_decorated = PutsDebuggerer.printer.is_a?(Logging::Logger) && PutsDebuggerer.printer.appenders.map(&:layout) != (PutsDebuggerer.logging_original_layouts.values)
 
   string = nil
   if PutsDebuggerer::RunDeterminer.run_pd?(object, run_at)
     __with_pd_options__(options) do |print_engine_options|
       run_number = PutsDebuggerer::RunDeterminer.run_number(object, run_at)
-      formatter_pd_data = __build_pd_data__(object, print_engine_options, PutsDebuggerer.source_line_count, run_number, pd_inspect, logger_formatter_decorated) #depth adds build method
+      formatter_pd_data = __build_pd_data__(object, print_engine_options, PutsDebuggerer.source_line_count, run_number, pd_inspect, logger_formatter_decorated, logging_layouts_decorated) #depth adds build method
       stdout = $stdout
       $stdout = sio = StringIO.new
       PutsDebuggerer.formatter.call(formatter_pd_data)
@@ -529,6 +559,20 @@ def pd(*objects)
         ensure
           PutsDebuggerer.printer.formatter = logger_formatter
         end
+      elsif PutsDebuggerer.printer.is_a?(Logging::Logger)
+        logging_layouts = PutsDebuggerer.printer.appenders.reduce({}) do |hash, appender|
+          hash.merge(appender => appender.layout)
+        end
+        begin
+          PutsDebuggerer.logging_original_layouts.each do |appender, original_layout|
+            appender.layout = original_layout
+          end
+          PutsDebuggerer.printer.debug(string)
+        ensure
+          PutsDebuggerer.logging_original_layouts.each do |appender, original_layout|
+            appender.layout = logging_layouts[appender]
+          end
+        end        
       elsif PutsDebuggerer.printer != false
         send(PutsDebuggerer.send(:printer), string)
       end
@@ -597,10 +641,11 @@ def __with_pd_options__(options=nil)
   PutsDebuggerer.options = permanent_options
 end
 
-def __build_pd_data__(object, print_engine_options=nil, source_line_count=nil, run_number=nil, pd_inspect=false, logger_formatter_decorated=false)
+def __build_pd_data__(object, print_engine_options=nil, source_line_count=nil, run_number=nil, pd_inspect=false, logger_formatter_decorated=false, logging_layouts_decorated=false)
   depth = PutsDebuggerer::CALLER_DEPTH_ZERO
   depth += 1 if pd_inspect
   depth += 4 if pd_inspect && logger_formatter_decorated
+  depth += 8 if pd_inspect && logging_layouts_decorated
   pd_data = {
     announcer: PutsDebuggerer.announcer,
     file: __caller_file__(depth)&.sub(PutsDebuggerer.app_path.to_s, ''),
