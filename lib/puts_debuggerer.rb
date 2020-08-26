@@ -1,9 +1,11 @@
-require 'awesome_print' unless RUBY_PLATFORM == 'opal'
 require 'stringio'
 
 require 'puts_debuggerer/core_ext/kernel'
 require 'puts_debuggerer/run_determiner'
 require 'puts_debuggerer/source_file'
+
+class Logger # just in case logger is not required
+end
 
 module PutsDebuggerer
   SOURCE_LINE_COUNT_DEFAULT = 1
@@ -499,17 +501,19 @@ PutsDebuggerer.source_line_count = nil
 #     => "Show me the source of the bug: beattle"
 #   [PD] /Users/User/finance_calculator_app/pd_test.rb:4 "What line number am I?"
 def pd(*objects)
+  require 'awesome_print' if ['awesome_print', 'ap'].include?(PutsDebuggerer.print_engine.to_s) && RUBY_PLATFORM != 'opal'
   options = PutsDebuggerer.determine_options(objects) || {}
   object = PutsDebuggerer.determine_object(objects)
   run_at = PutsDebuggerer.determine_run_at(options)
   printer = PutsDebuggerer.determine_printer(options)
-  pd_inspect = options.delete(:pd_inspect) || options.delete('pd_inspect')
+  pd_inspect = options.delete(:pd_inspect)
+  logger_formatter_decorated = PutsDebuggerer.printer.is_a?(Logger) && PutsDebuggerer.printer.formatter != PutsDebuggerer.logger_original_formatter
 
   string = nil
   if PutsDebuggerer::RunDeterminer.run_pd?(object, run_at)
     __with_pd_options__(options) do |print_engine_options|
       run_number = PutsDebuggerer::RunDeterminer.run_number(object, run_at)
-      formatter_pd_data = __build_pd_data__(object, print_engine_options, PutsDebuggerer.source_line_count, run_number, pd_inspect) #depth adds build method
+      formatter_pd_data = __build_pd_data__(object, print_engine_options, PutsDebuggerer.source_line_count, run_number, pd_inspect, logger_formatter_decorated) #depth adds build method
       stdout = $stdout
       $stdout = sio = StringIO.new
       PutsDebuggerer.formatter.call(formatter_pd_data)
@@ -593,9 +597,10 @@ def __with_pd_options__(options=nil)
   PutsDebuggerer.options = permanent_options
 end
 
-def __build_pd_data__(object, print_engine_options=nil, source_line_count=nil, run_number=nil, pd_inspect=false)
+def __build_pd_data__(object, print_engine_options=nil, source_line_count=nil, run_number=nil, pd_inspect=false, logger_formatter_decorated=false)
   depth = PutsDebuggerer::CALLER_DEPTH_ZERO
-  depth += 5 if pd_inspect
+  depth += 1 if pd_inspect
+  depth += 4 if pd_inspect && logger_formatter_decorated
   pd_data = {
     announcer: PutsDebuggerer.announcer,
     file: __caller_file__(depth)&.sub(PutsDebuggerer.app_path.to_s, ''),

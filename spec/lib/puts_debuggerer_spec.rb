@@ -56,11 +56,11 @@ describe 'PutsDebuggerer' do
     expect(output).to eq("********************************************************************************\n[PD] #{puts_debuggerer_invoker_file}:56\n   > pd 'hello', 3, true, options\n  => [\"hello\", 3, true]\n********************************************************************************\n")
   end
 
-  xit 'prints using pd_inspect' do
+  it 'prints using pd_inspect' do
     result = PutsDebuggererInvoker.call_pd_inspect([1, [2, [3]]])
-    expect(result).to eq([1, [2, [3]]])
+    expect(result).to eq("[PD] #{puts_debuggerer_invoker_file}:68\n   > object.pd_inspect\n  => [1, [2, [3]]]\n")
     output = $stdout.string
-    expect(output).to eq("********************************************************************************\n[PD] #{puts_debuggerer_invoker_file}:56\n   > pd 'hello', 3, true, options\n  => [\"hello\", 3, true]\n********************************************************************************\n")
+    expect(output).to eq("")
   end
 
   context 'look into puts debuggerer blog post by tenderlove for other goodies to add'

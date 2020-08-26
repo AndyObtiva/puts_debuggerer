@@ -14,6 +14,7 @@
 - Support `printer: false` option to return rendered String instead of printing and returning object
 - Set logger formatter to PutsDebuggerer::LOGGER_FORMATTER_DECORATOR when passing as printer (keeping format the same, but decorating msg with pd)
 - Add pd_inspect (and pdi alias) Kernel core extension methods
+- Made awesome_print gem require happen only if printer is set to :ap or :awesome_print
 
 ## 0.8.2
 

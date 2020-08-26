@@ -23,6 +23,8 @@ Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 RSpec.configure do |config|
   config.before do
     $stdout = StringIO.new  
+    PutsDebuggerer.printer = :puts
+    PutsDebuggerer.print_engine = :p
   end
      
   config.after do
@@ -31,8 +33,6 @@ RSpec.configure do |config|
     PutsDebuggerer.footer = nil
     PutsDebuggerer.formatter = nil
     PutsDebuggerer.header = nil
-    PutsDebuggerer.printer = :puts
-    PutsDebuggerer.print_engine = :p
     PutsDebuggerer.run_at = nil
     PutsDebuggerer::RunDeterminer.run_at_global_number = nil
     PutsDebuggerer::RunDeterminer::OBJECT_RUN_AT.clear
