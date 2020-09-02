@@ -309,19 +309,21 @@ This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you m
 
 ### Option 2: Manual
 
-Or manually install and require library.
+Or manually install and require library (after requiring AwesomePrint).
 
 ```bash
 gem install puts_debuggerer -v0.10.0
 ```
 
 ```ruby
+require 'ap'
 require 'puts_debuggerer'
 ```
 
 Or the shorter form (often helpful when added to quickly troubleshoot an app):
 
 ```ruby
+require 'ap'
 require 'pd'
 ```
 
