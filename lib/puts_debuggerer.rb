@@ -262,19 +262,23 @@ module PutsDebuggerer
     #      > pd array
     #     => [1, [2, 3]]
     #   ]
-    attr_reader :print_engine
+    def print_engine
+      if @print_engine.nil?
+        require 'awesome_print' if RUBY_PLATFORM != 'opal'
+        @print_engine = print_engine_default    
+      end
+      @print_engine
+    end
 
     def print_engine=(engine)
-      if engine.nil?
-        @print_engine = print_engine_default
-      elsif engine.is_a?(Proc)
+      if engine.is_a?(Proc) || engine.nil?
         @print_engine = engine
       else
         @print_engine = method(engine).name rescue raise(PRINT_ENGINE_MESSAGE_INVALID)
       end
     end
     
-    def print_engine_default
+    def print_engine_default    
       Object.const_defined?(:AwesomePrint) ? PRINT_ENGINE_DEFAULT : :p    
     end
 
@@ -530,7 +534,6 @@ PutsDebuggerer.source_line_count = nil
 #     => "Show me the source of the bug: beattle"
 #   [PD] /Users/User/finance_calculator_app/pd_test.rb:4 "What line number am I?"
 def pd(*objects)
-  require 'awesome_print' if ['awesome_print', 'ap'].include?(PutsDebuggerer.print_engine.to_s) && RUBY_PLATFORM != 'opal'
   options = PutsDebuggerer.determine_options(objects) || {}
   object = PutsDebuggerer.determine_object(objects)
   run_at = PutsDebuggerer.determine_run_at(options)

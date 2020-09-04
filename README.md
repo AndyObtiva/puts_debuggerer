@@ -302,36 +302,45 @@ There are many more options and powerful features in [puts_debuggerer](https://r
 Add the following to bundler's `Gemfile`.
 
 ```ruby
-gem 'puts_debuggerer', '~> 0.10.0'
+gem 'puts_debuggerer', '~> 0.10.1'
 ```
 
 This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you may create an initializer under `config/initializers` named `puts_debuggerer_options.rb` to enable further customizations as per the [Options](#options) section below.
 
 ### Option 2: Manual
 
-Or manually install and require library (after requiring AwesomePrint).
+Or manually install and require library.
 
 ```bash
-gem install puts_debuggerer -v0.10.0
+gem install puts_debuggerer -v0.10.1
 ```
 
 ```ruby
-require 'ap'
 require 'puts_debuggerer'
 ```
 
-Or the shorter form (often helpful when added to quickly troubleshoot an app):
+Or the shorter form (often helpful to quickly troubleshoot an app):
 
 ```ruby
-require 'ap'
 require 'pd'
 ```
 
+
 ### Awesome Print
 
-puts_debuggerer comes with [awesome_print](https://github.com/awesome-print/awesome_print).
+[puts_debuggerer](https://rubygems.org/gems/puts_debuggerer) comes with [awesome_print](https://github.com/awesome-print/awesome_print).
 
-You may disable when needed by not requiring in Ruby or by adding an explicit reference to awesome_print with `require: false` in bundler:
+It is the default `PutsDebuggerer.print_engine`
+
+Still, if you do not need it, you may disable by setting `PutsDebuggerer.print_engine` to another value. Example:
+
+```ruby
+PutsDebuggerer.print_engine = :puts
+```
+
+If you also avoid requiring 'awesome_print', PutsDebuggerer won't require it either if it sees that you have a different `print_engine`
+
+You may also avoid requiring in Bundler `Gemfile` with `require: false`:
 
 ```ruby
 gem "awesome_print", require: false
@@ -389,10 +398,17 @@ Output:
   => "Hello Robert"
 ```
 
-Alternatively, you may want to use `object.pd_inspect` (or alias `obj.pdi`) to 
-return formatted string without printing.
-
 Happy puts_debuggerering!
+
+#### `pd_inspect` kernel method
+
+You may want to just return the string produced by the `pd` method without printing it.
+
+In that case, you may use the `pd` alternative to `object.inspect`:
+- `object.pd_inspect` 
+- `obj.pdi` (shorter alias)
+
+This returns the `pd` formatted string without printing to the terminal or log files.
 
 #### Ruby Logger and Logging::Logger 
 
@@ -965,7 +981,7 @@ Prints out `puts __caller_source_line__`
 - IRB
 - Rails Console.
 
-It provides partial-compatibility for [Opal Ruby](https://opalrb.com/), with everything working except these features:
+It provides partial-compatibility for [Opal Ruby](https://opalrb.com/) by excluding AwesomePrint (opting for `:p` printer instead), with everything working except these features:
 - File name display
 - Line number display
 - Source code call display
