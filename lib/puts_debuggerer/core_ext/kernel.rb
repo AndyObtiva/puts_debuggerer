@@ -88,7 +88,7 @@ module Kernel
       begin
         raise 'error'
       rescue => e
-        e.backtrace[3..-1]
+        e.backtrace[2..-1]
       end
     end
   end
