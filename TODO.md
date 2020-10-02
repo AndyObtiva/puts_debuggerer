@@ -4,15 +4,14 @@ Here are tasks considered for future versions. Once done, they are moved to the 
 
 ## Next
 
-### 0.10.1
-
 - Fix pd_inspect and pdi in IRB as they seem broken when used in Glimmer GIRB for example
 - Provide option to set a logger as printer without hooking formatter unto logger
 - Provide an option to control what log level is used when printing to logger
 - Look into [Maintainability](https://codeclimate.com/github/AndyObtiva/puts_debuggerer/issues) issues
 - Special treatment for string objects since AwesomePrint seems does not print multiline
+- Add a hyperlink to file showing up (linking to GitHub repo using something like tty-markdown)
 
-### Version TBD
+## Version TBD
 
 - Add method_name to what shows up as part of pd call
 - Support auto puts_debuggering of all method names and arguments upon invokation

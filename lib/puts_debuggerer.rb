@@ -58,15 +58,18 @@ module PutsDebuggerer
   FORMATTER_DEFAULT = -> (data) {
       puts data[:wrapper] if data[:wrapper]
       puts data[:header] if data[:header]
-      print "#{data[:announcer]} #{data[:file]}:#{data[:line_number]}#{" (run:#{data[:run_number]})" if data[:run_number]}#{__format_pd_expression__(data[:pd_expression], data[:object])} "
+      print "#{data[:announcer]} #{data[:file]}#{':' if data[:line_number]}#{data[:line_number]}#{" (run:#{data[:run_number]})" if data[:run_number]}#{__format_pd_expression__(data[:pd_expression], data[:object])} "
       data[:object_printer].call
       puts data[:caller].map {|l| '     ' + l} unless data[:caller].to_a.empty?
       puts data[:footer] if data[:footer]
       puts data[:wrapper] if data[:wrapper]
     }
   CALLER_DEPTH_ZERO = 4 #depth includes pd + with_options method + nested block + build_pd_data method
+  CALLER_DEPTH_ZERO_OPAL = -1 #depth includes pd + with_options method + nested block + build_pd_data method
   STACK_TRACE_CALL_LINE_NUMBER_REGEX = /\:(\d+)\:in /
   STACK_TRACE_CALL_SOURCE_FILE_REGEX = /[ ]*([^:]+)\:\d+\:in /
+#   STACK_TRACE_CALL_SOURCE_FILE_REGEX_OPAL = /https?\:\/\/[^\/]+\/assets\/([^-]+)\.self-/
+  STACK_TRACE_CALL_SOURCE_FILE_REGEX_OPAL = /\((http[^\)]+)\)/
 
   class << self
     # Application root path to exclude when printing out file path
@@ -278,7 +281,7 @@ module PutsDebuggerer
       end
     end
     
-    def print_engine_default    
+    def print_engine_default
       Object.const_defined?(:AwesomePrint) ? PRINT_ENGINE_DEFAULT : :p    
     end
 
@@ -596,6 +599,7 @@ end
 #
 # prints out `3`
 def __caller_line_number__(caller_depth=0)
+  return if RUBY_PLATFORM == 'opal'
   caller[caller_depth] && caller[caller_depth][PutsDebuggerer::STACK_TRACE_CALL_LINE_NUMBER_REGEX, 1].to_i
 end
 
@@ -609,7 +613,8 @@ end
 #
 # prints out `lib/example.rb`
 def __caller_file__(caller_depth=0)
-  result = caller[caller_depth] && caller[caller_depth][PutsDebuggerer::STACK_TRACE_CALL_SOURCE_FILE_REGEX, 1]  
+  regex = RUBY_PLATFORM == 'opal' ? PutsDebuggerer::STACK_TRACE_CALL_SOURCE_FILE_REGEX_OPAL : PutsDebuggerer::STACK_TRACE_CALL_SOURCE_FILE_REGEX
+  caller[caller_depth] && caller[caller_depth][regex, 1]  
 end
 
 
@@ -645,10 +650,11 @@ def __with_pd_options__(options=nil)
 end
 
 def __build_pd_data__(object, print_engine_options=nil, source_line_count=nil, run_number=nil, pd_inspect=false, logger_formatter_decorated=false, logging_layouts_decorated=false)
-  depth = PutsDebuggerer::CALLER_DEPTH_ZERO
+  depth = RUBY_PLATFORM == 'opal' ? PutsDebuggerer::CALLER_DEPTH_ZERO_OPAL : PutsDebuggerer::CALLER_DEPTH_ZERO
   depth += 1 if pd_inspect
   depth += 4 if pd_inspect && logger_formatter_decorated
   depth += 8 if pd_inspect && logging_layouts_decorated
+
   pd_data = {
     announcer: PutsDebuggerer.announcer,
     file: __caller_file__(depth)&.sub(PutsDebuggerer.app_path.to_s, ''),

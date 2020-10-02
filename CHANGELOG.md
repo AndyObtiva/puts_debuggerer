@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.10.2
+
+- Improve Opal Ruby compatibility by displaying source file/line
+
 ## 0.10.1
 
 - Remove the need for specifying `require 'ap'` before `require 'pd'`
