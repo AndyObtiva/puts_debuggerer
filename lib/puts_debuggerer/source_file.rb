@@ -15,7 +15,6 @@ module PutsDebuggerer
     
     def source_lines(source_line_count, source_line_number)
       lines = []
-      return lines if RUBY_PLATFORM == 'opal'
       begin
         while @file.lineno < source_line_number + source_line_count
           file_line_number = @file.lineno + 1

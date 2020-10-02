@@ -302,7 +302,7 @@ There are many more options and powerful features in [puts_debuggerer](https://r
 Add the following to bundler's `Gemfile`.
 
 ```ruby
-gem 'puts_debuggerer', '~> 0.10.1'
+gem 'puts_debuggerer', '~> 0.10.2'
 ```
 
 This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you may create an initializer under `config/initializers` named `puts_debuggerer_options.rb` to enable further customizations as per the [Options](#options) section below.
@@ -312,7 +312,7 @@ This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you m
 Or manually install and require library.
 
 ```bash
-gem install puts_debuggerer -v0.10.1
+gem install puts_debuggerer -v0.10.2
 ```
 
 ```ruby
@@ -981,10 +981,15 @@ Prints out `puts __caller_source_line__`
 - IRB
 - Rails Console.
 
-It provides partial-compatibility for [Opal Ruby](https://opalrb.com/) by excluding AwesomePrint (opting for `:p` printer instead), with everything working except these features:
-- Source code call display
+### Opal Ruby
 
-Here is example output in Opal (the link is clickable and takes you to the source code in the browser):
+[puts_debuggerer](https://rubygems.org/gems/puts_debuggerer) provides partial-compatibility in [Opal Ruby](https://opalrb.com/) with everything working except:
+- AwesomePrint (using the `:p` printer instead)
+- Source code display
+
+[puts_debuggerer](https://rubygems.org/gems/puts_debuggerer) renders clickable source file/line links in Opal Ruby that take you to the source code in the web browser.
+
+Here is an example of `pd` output in Opal:
 
 ```
 [PD] http://localhost:3000/assets/views/garderie_rainbow_daily_agenda/app_view.self-72626d75e0f68a619b1c8ad139535d799d45ab6c730d083820b790d71338e983.js?body=1:72:12
