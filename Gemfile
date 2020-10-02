@@ -18,4 +18,5 @@ group :development do
   gem 'simplecov-lcov', '~> 0.7.0', require: nil
   gem 'undercover', '~> 0.3.4', require: false  
   gem 'logging', '>= 2.3.0'
+  gem 'rake-tui'
 end

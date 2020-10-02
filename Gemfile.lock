@@ -62,10 +62,14 @@ GEM
       rack (>= 1.2, < 3)
     parser (2.7.1.4)
       ast (~> 2.4.1)
+    pastel (0.8.0)
+      tty-color (~> 0.5)
     psych (3.2.0)
     rack (2.2.3)
     rainbow (3.0.0)
     rake (13.0.1)
+    rake-tui (0.2.3)
+      tty-prompt
     rchardet (1.8.0)
     rdoc (3.12.2)
       json (~> 1.4)
@@ -97,10 +101,21 @@ GEM
     thread_safe (0.3.6)
     tins (1.25.0)
       sync
+    tty-color (0.5.2)
+    tty-cursor (0.7.1)
+    tty-prompt (0.22.0)
+      pastel (~> 0.8)
+      tty-reader (~> 0.8)
+    tty-reader (0.8.0)
+      tty-cursor (~> 0.7)
+      tty-screen (~> 0.8)
+      wisper (~> 2.0)
+    tty-screen (0.8.1)
     undercover (0.3.4)
       imagen (>= 0.1.8)
       rainbow (>= 2.1, < 4.0)
       rugged (>= 0.27, < 1.1)
+    wisper (2.0.1)
 
 PLATFORMS
   ruby
@@ -111,6 +126,7 @@ DEPENDENCIES
   coveralls (= 0.8.23)
   jeweler (~> 2.3.9)
   logging (>= 2.3.0)
+  rake-tui
   rdoc (~> 3.12)
   rspec (~> 3.5.0)
   rspec-mocks (~> 3.5.0)
