@@ -33,16 +33,20 @@ describe 'PutsDebuggerer' do
   it 'prints exception stack trace' do
     class FakeException < Exception
       def full_message
-        'StackTrace'
+        <<~MULTI_LINE_STRING
+          stack trace line 1
+          stack trace line 2
+          stack trace line 3
+        MULTI_LINE_STRING
       end
     end
     e = FakeException.new
     PutsDebuggererInvoker.exception_stack_trace(e)
     output = $stdout.string
-    expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:48\n   > pd error\n  => StackTrace\n")
+    expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:48\n   > pd error\n  => stack trace line 1\nstack trace line 2\nstack trace line 3\n")
   end
   
-  it 'prints *args array' do    
+  it 'prints *args array' do
     result = PutsDebuggererInvoker.vararg_array
     expect(result).to eq(['hello', 3, true])
     output = $stdout.string

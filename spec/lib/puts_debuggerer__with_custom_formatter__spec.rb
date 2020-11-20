@@ -4,8 +4,8 @@ describe 'PutsDebuggerer' do
   let(:puts_debuggerer_invoker_file) {File.expand_path(File.join(__FILE__, '..', '..', 'support', 'puts_debuggerer_invoker.rb'))}
   context 'with custom formatter' do
     before do
-      PutsDebuggerer.header = true
-      PutsDebuggerer.footer = true
+      PutsDebuggerer.header = true # keep the default
+      PutsDebuggerer.footer = true # keep the default
       PutsDebuggerer.caller = 0
       PutsDebuggerer.formatter = -> (data) {
         puts "-<#{data[:announcer]}>-"
@@ -25,13 +25,13 @@ describe 'PutsDebuggerer' do
       output = $stdout.string
       expected_output = <<-MULTI
 -<[PD]>-
-HEADER: #{'*'*80}
+HEADER: #{'>'*80}
 FILE: #{puts_debuggerer_invoker_file}
 LINE: 10
 EXPRESSION: pd "Hello \#{name}"
 PRINT OUT: "Hello Robert"
 CALLER: #{__FILE__}:#{__LINE__-9}:in `block (3 levels) in <top (required)>'
-FOOTER: #{'*'*80}
+FOOTER: #{'<'*80}
       MULTI
       expect(output).to eq(expected_output)
     end

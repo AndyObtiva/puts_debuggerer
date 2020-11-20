@@ -4,7 +4,13 @@ Here are tasks considered for future versions. Once done, they are moved to the 
 
 ## Next
 
-- Fix pd_inspect and pdi in IRB as they seem broken when used in Glimmer GIRB for example
+- Improve design regarding passing pd options as part of a hash to print requiring parens (e.g. pd({path: path}, header: true) )
+- Support empty use of pd statement that accepts options hash, which doesn't get treated like output (e.g. pd header: true)
+- Have `caller` printing in Glimmer DSL for Opal print one statement per line
+- Change header to '>'*80 and footer to '<'*80 to distinguish them from each other in printout
+- Support header: 30 to customize the length of the header (and do the same for footer and wrapper)
+- Support header: '#' to customize the character of the header (and do the same for footer and wrapper)
+- Consider making header use >>> and footer <<< instead of * for better findability.
 - Provide option to set a logger as printer without hooking formatter unto logger
 - Provide an option to control what log level is used when printing to logger
 - Look into [Maintainability](https://codeclimate.com/github/AndyObtiva/puts_debuggerer/issues) issues
@@ -14,10 +20,11 @@ Here are tasks considered for future versions. Once done, they are moved to the 
 ## Version TBD
 
 - Add method_name to what shows up as part of pd call
+- Add performance monitoring support
 - Support auto puts_debuggering of all method names and arguments upon invokation
 - Refactor internals to avoid global method pollution
 - fix issue with printing in rspec inside a Rails project without having to do extra configuration
 - fix issue with erb support
-- pry support: implement fallback in irb for when line number cannot be discovered (issue happens in pry, perhaps this just means support pry)
 - Consider the idea of customizing print stream (e.g. stderr instead of stdout). Currently possible through setting `printer`
 - Highlight the pd being printed if multiple pds exist in the same line (perhaps by calling .red on its string reusing that from ap)
+- Have pd support running from JAR files in JRuby

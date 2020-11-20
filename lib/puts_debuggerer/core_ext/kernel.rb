@@ -49,32 +49,36 @@ module Kernel
         PutsDebuggerer.formatter.call(formatter_pd_data)
         $stdout = stdout
         string = sio.string
-        if PutsDebuggerer.printer.is_a?(Proc)
-          PutsDebuggerer.printer.call(string)
-        elsif PutsDebuggerer.printer.is_a?(Logger)
-          logger_formatter = PutsDebuggerer.printer.formatter
-          begin
-            PutsDebuggerer.printer.formatter = PutsDebuggerer.logger_original_formatter
-            PutsDebuggerer.printer.debug(string)
-          ensure
-            PutsDebuggerer.printer.formatter = logger_formatter
-          end
-        elsif PutsDebuggerer.printer.is_a?(Logging::Logger)
-          logging_layouts = PutsDebuggerer.printer.appenders.reduce({}) do |hash, appender|
-            hash.merge(appender => appender.layout)
-          end
-          begin
-            PutsDebuggerer.logging_original_layouts.each do |appender, original_layout|
-              appender.layout = original_layout
+        if RUBY_ENGINE == 'opal' && object.is_a?(Exception)
+          $stderr.puts(string)
+        else
+          if PutsDebuggerer.printer.is_a?(Proc)
+            PutsDebuggerer.printer.call(string)
+          elsif PutsDebuggerer.printer.is_a?(Logger)
+            logger_formatter = PutsDebuggerer.printer.formatter
+            begin
+              PutsDebuggerer.printer.formatter = PutsDebuggerer.logger_original_formatter
+              PutsDebuggerer.printer.debug(string)
+            ensure
+              PutsDebuggerer.printer.formatter = logger_formatter
             end
-            PutsDebuggerer.printer.debug(string)
-          ensure
-            PutsDebuggerer.logging_original_layouts.each do |appender, original_layout|
-              appender.layout = logging_layouts[appender]
+          elsif PutsDebuggerer.printer.is_a?(Logging::Logger)
+            logging_layouts = PutsDebuggerer.printer.appenders.reduce({}) do |hash, appender|
+              hash.merge(appender => appender.layout)
             end
-          end        
-        elsif PutsDebuggerer.printer != false
-          send(PutsDebuggerer.send(:printer), string)
+            begin
+              PutsDebuggerer.logging_original_layouts.each do |appender, original_layout|
+                appender.layout = original_layout
+              end
+              PutsDebuggerer.printer.debug(string)
+            ensure
+              PutsDebuggerer.logging_original_layouts.each do |appender, original_layout|
+                appender.layout = logging_layouts[appender]
+              end
+            end
+          elsif PutsDebuggerer.printer != false
+            send(PutsDebuggerer.send(:printer), string)
+          end
         end
       end
     end
@@ -83,7 +87,7 @@ module Kernel
   end
 
   # Implement caller backtrace method in Opal since it returns an empty array in Opal v1
-  if RUBY_PLATFORM == 'opal'
+  if RUBY_ENGINE == 'opal'
     def caller
       begin
         raise 'error'
@@ -109,7 +113,7 @@ module Kernel
   #
   # prints out `3`
   def __caller_line_number__(caller_depth=0)
-    return if RUBY_PLATFORM == 'opal'
+    return if RUBY_ENGINE == 'opal'
     caller[caller_depth] && caller[caller_depth][PutsDebuggerer::STACK_TRACE_CALL_LINE_NUMBER_REGEX, 1].to_i
   end
   
@@ -123,8 +127,8 @@ module Kernel
   #
   # prints out `lib/example.rb`
   def __caller_file__(caller_depth=0)
-    regex = RUBY_PLATFORM == 'opal' ? PutsDebuggerer::STACK_TRACE_CALL_SOURCE_FILE_REGEX_OPAL : PutsDebuggerer::STACK_TRACE_CALL_SOURCE_FILE_REGEX
-    caller[caller_depth] && caller[caller_depth][regex, 1]  
+    regex = RUBY_ENGINE == 'opal' ? PutsDebuggerer::STACK_TRACE_CALL_SOURCE_FILE_REGEX_OPAL : PutsDebuggerer::STACK_TRACE_CALL_SOURCE_FILE_REGEX
+    caller[caller_depth] && caller[caller_depth][regex, 1]
   end
   
   
@@ -140,8 +144,11 @@ module Kernel
     source_line_number ||= __caller_line_number__(caller_depth+1)
     source_file ||= __caller_file__(caller_depth+1)
     source_line = ''
-    if source_file == '(irb)'
-      source_line = conf.io.line(source_line_number) # TODO handle multi-lines in source_line_count
+    if defined?(Pry)
+      @pry_instance ||= Pry.new
+      source_line = Pry::Command::Hist.new(pry_instance: @pry_instance).call.instance_variable_get(:@buffer).split("\n")[source_line_number - 1] # TODO handle multi-lines in source_line_count
+    elsif defined?(IRB)
+      source_line = TOPLEVEL_BINDING.receiver.conf.io.line(source_line_number) # TODO handle multi-lines in source_line_count
     else
       source_line = PutsDebuggerer::SourceFile.new(source_file).source(source_line_count, source_line_number)
     end
@@ -160,7 +167,7 @@ module Kernel
   end
   
   def __build_pd_data__(object, print_engine_options:nil, source_line_count:nil, run_number:nil, pd_inspect:false, logger_formatter_decorated:false, logging_layouts_decorated:false)
-    depth = RUBY_PLATFORM == 'opal' ? PutsDebuggerer::CALLER_DEPTH_ZERO_OPAL : PutsDebuggerer::CALLER_DEPTH_ZERO
+    depth = RUBY_ENGINE == 'opal' ? PutsDebuggerer::CALLER_DEPTH_ZERO_OPAL : PutsDebuggerer::CALLER_DEPTH_ZERO
     if pd_inspect
       depth += 1
       depth += 4 if logger_formatter_decorated
@@ -177,7 +184,7 @@ module Kernel
       object_printer: PutsDebuggerer::OBJECT_PRINTER_DEFAULT.call(object, print_engine_options, source_line_count, run_number)
     }
     pd_data[:caller] = __caller_caller__(depth)
-    ['header', 'wrapper', 'footer'].each do |boundary_option| 
+    ['header', 'wrapper', 'footer'].each do |boundary_option|
       pd_data[boundary_option.to_sym] = PutsDebuggerer.send(boundary_option) if PutsDebuggerer.send("#{boundary_option}?")
     end
     pd_data
@@ -213,5 +220,5 @@ module Kernel
   # outputs `(x=1)`
   def __extract_pd_expression__(source_line)
     source_line.to_s.strip
-  end  
+  end
 end

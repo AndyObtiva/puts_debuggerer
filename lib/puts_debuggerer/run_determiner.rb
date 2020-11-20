@@ -42,19 +42,19 @@ module PutsDebuggerer
       end
       
       def run_number(object, run_at)
-        run_at_global_number || run_at_number(object, run_at)      
-      end            
+        run_at_global_number || run_at_number(object, run_at)
+      end
             
       def run_pd?(object, run_at)
         run_pd = false
         if run_at.nil?
           run_pd = true
         else
-          run_number = determine_run_number(object, run_at) 
+          run_number = determine_run_number(object, run_at)
           run_pd = determine_run_pd(run_at, run_number)
         end
         run_pd
-      end      
+      end
       
       def determine_run_number(object, run_at)
         if PutsDebuggerer.run_at? # check if global option is set
@@ -70,7 +70,7 @@ module PutsDebuggerer
         else
           PutsDebuggerer::RunDeterminer.increment_run_at_global_number
         end
-        PutsDebuggerer::RunDeterminer.run_at_global_number      
+        PutsDebuggerer::RunDeterminer.run_at_global_number
       end
       
       def determine_local_run_number(object, run_at)
@@ -89,11 +89,11 @@ module PutsDebuggerer
           determine_run_pd_array(run_at, run_number)
         elsif run_at.is_a?(Range)
           determine_run_pd_range(run_at, run_number)
-        end      
+        end
       end
       
       def determine_run_pd_integer(run_at, run_number)
-        run_pd = true if run_at == run_number      
+        run_pd = true if run_at == run_number
       end
       
       def determine_run_pd_array(run_at, run_number)

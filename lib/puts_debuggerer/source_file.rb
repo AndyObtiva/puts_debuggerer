@@ -1,16 +1,16 @@
 module PutsDebuggerer
-  class SourceFile  
+  class SourceFile
     def initialize(file_path)
       @file = File.new(file_path) if file_path
     end
     
     def source(source_line_count, source_line_number)
-      @source = ''      
-      return @source if RUBY_PLATFORM == 'opal'
+      @source = ''
+      return @source if RUBY_ENGINE == 'opal'
       # For Opal Ruby compatibility, skip source lines if file does not respond to readline (as in Opal)
       lines = source_lines(source_line_count, source_line_number)
       @source = lines.join(' '*5) if @file.respond_to?(:readline)
-      @source    
+      @source
     end
     
     def source_lines(source_line_count, source_line_number)

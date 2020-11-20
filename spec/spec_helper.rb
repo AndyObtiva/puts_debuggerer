@@ -22,13 +22,13 @@ Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 RSpec.configure do |config|
   config.before do
-    $stdout = StringIO.new  
+    $stdout = StringIO.new
     PutsDebuggerer.printer = :puts
     PutsDebuggerer.print_engine = :p
   end
      
   config.after do
-    PutsDebuggerer.app_path = nil  
+    PutsDebuggerer.app_path = nil
     PutsDebuggerer.caller = nil
     PutsDebuggerer.footer = nil
     PutsDebuggerer.formatter = nil

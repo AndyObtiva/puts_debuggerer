@@ -6,9 +6,9 @@ require 'puts_debuggerer/source_file'
 
 module PutsDebuggerer
   SOURCE_LINE_COUNT_DEFAULT = 1
-  HEADER_DEFAULT = '*'*80
+  HEADER_DEFAULT = '>'*80
   WRAPPER_DEFAULT = '*'*80
-  FOOTER_DEFAULT = '*'*80
+  FOOTER_DEFAULT = '<'*80
   LOGGER_FORMATTER_DECORATOR = proc { |original_formatter|
     proc { |severity, datetime, progname, msg|
       original_formatter.call(severity, datetime, progname, msg.pd_inspect)
@@ -27,8 +27,12 @@ module PutsDebuggerer
   RETURN_DEFAULT = true
   OBJECT_PRINTER_DEFAULT = lambda do |object, print_engine_options=nil, source_line_count=nil, run_number=nil|
     lambda do
-      if object.is_a?(Exception) && object.respond_to?(:full_message)
-        puts object.full_message
+      if object.is_a?(Exception)
+        if RUBY_ENGINE == 'opal'
+          object.backtrace.each { |line| puts line }
+        else
+          puts object.full_message
+        end
       elsif PutsDebuggerer.print_engine.is_a?(Proc)
         PutsDebuggerer.print_engine.call(object)
       else
@@ -167,7 +171,7 @@ module PutsDebuggerer
           instance_variable_set(:"@#{boundary_option}", nil)
         else
           instance_variable_set(:"@#{boundary_option}", value)
-        end      
+        end
       end
       
       define_method("#{boundary_option}?") do
@@ -220,10 +224,10 @@ module PutsDebuggerer
     end
     
     def printer_default
-      Object.const_defined?(:Rails) ? PRINTER_RAILS : PRINTER_DEFAULT    
+      Object.const_defined?(:Rails) ? PRINTER_RAILS : PRINTER_DEFAULT
     end
     
-    # Logger original formatter before it was decorated with PutsDebuggerer::LOGGER_FORMATTER_DECORATOR 
+    # Logger original formatter before it was decorated with PutsDebuggerer::LOGGER_FORMATTER_DECORATOR
     # upon setting the logger as a printer.
     attr_reader :logger_original_formatter
     
@@ -256,8 +260,8 @@ module PutsDebuggerer
     #   ]
     def print_engine
       if @print_engine.nil?
-        require 'awesome_print' if RUBY_PLATFORM != 'opal'
-        @print_engine = print_engine_default    
+        require 'awesome_print' if RUBY_ENGINE != 'opal'
+        @print_engine = print_engine_default
       end
       @print_engine
     end
@@ -271,7 +275,7 @@ module PutsDebuggerer
     end
     
     def print_engine_default
-      Object.const_defined?(:AwesomePrint) ? PRINT_ENGINE_DEFAULT : :p    
+      Object.const_defined?(:AwesomePrint) ? PRINT_ENGINE_DEFAULT : :p
     end
 
     # Announcer (e.g. [PD]) to announce every print out with (default: "[PD]")
@@ -464,7 +468,7 @@ module PutsDebuggerer
       !!@run_at
     end
 
-    def determine_options(objects)    
+    def determine_options(objects)
       objects.delete_at(-1) if objects.size > 1 && objects.last.is_a?(Hash)
     end
 

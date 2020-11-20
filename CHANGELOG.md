@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.11.0
+
+- Pry support
+- In Opal, print exceptions as errors in the web console using an alternative to full_message since it's not implemented in Opal yet
+- Fix `pd_inspect` and `pdi` in IRB
+
 ## 0.10.2
 
 - Improve Opal Ruby compatibility by displaying source file/line

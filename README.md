@@ -12,7 +12,7 @@ In day-to-day test-driven development and simple app debugging though, a puts st
 
 Enter [puts_debuggerer](https://rubygems.org/gems/puts_debuggerer)! A guilt-free puts debugging Ruby gem FTW that prints file names, line numbers, code statements, headers, footers, stack traces, and formats output nicely courtesy of [awesome_print](https://rubygems.org/gems/awesome_print).
 
-[puts_debuggerer](https://rubygems.org/gems/puts_debuggerer) automates tips mentioned in [this blog post](https://tenderlovemaking.com/2016/02/05/i-am-a-puts-debuggerer.html) by Aaron Patterson.
+[puts_debuggerer](https://rubygems.org/gems/puts_debuggerer) automates tips mentioned in [this blog post](https://tenderlovemaking.com/2016/02/05/i-am-a-puts-debuggerer.html) by Aaron Patterson using the `pd` method available everywhere after requiring the [gem](https://rubygems.org/gems/puts_debuggerer).
 
 Basic Example:
 
@@ -62,28 +62,6 @@ Which gets lost in a logging stream such as:
    (0.2ms)  COMMIT
 ```
 
-Problem can be mitigated by adding a few more puts statements:
-
-```ruby
-puts "*"*40
-puts "order_total"
-puts order_total
-```
-
-But those add up pretty quickly when inspecting multiple variables:
-
-```ruby
-puts "*"*40
-puts "order_total"
-puts order_total
-puts "*"*40
-puts "order_summary"
-puts order_summary
-puts "*"*40
-puts "order_details"
-puts order_details
-```
-
 Here is a simple example using `pd` instead, which provides everything the puts statements above provide in addition to deducing the file name and line number automatically for dead easy debugging:
 
 ```ruby
@@ -93,9 +71,17 @@ pd order_total
 Output:
 
 ```
+    (2.7ms)  CREATE TABLE "ar_internal_metadata" ("key" character varying PRIMARY KEY, "value" character varying, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)
+  ActiveRecord::InternalMetadata Load (0.4ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
+   (0.2ms)  BEGIN
+  SQL (0.3ms)  INSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"  [["key", "environment"], ["value", "development"], ["created_at", 2017-08-24 22:56:52 UTC], ["updated_at", 2017-08-24 22:56:52 UTC]]
+   (0.3ms)  COMMIT
 [PD] /Users/User/ordering/order.rb:39
-  > pd order_total  
+  > pd order_total
  => 195.50
+  ActiveRecord::InternalMetadata Load (0.3ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
+   (0.2ms)  BEGIN
+   (0.2ms)  COMMIT
 ```
 
 This is not only easy to locate in a logging stream such as the one below, but also announces the `order_total` variable with `[PD]` for easy findability among other pd statements (you may always enter `[PD]` or variable name `order_total` using the CMD+F Quick Find to instantly jump to that line in the log):
@@ -112,23 +98,23 @@ Output:
    (2.7ms)  CREATE TABLE "ar_internal_metadata" ("key" character varying PRIMARY KEY, "value" character varying, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)
   ActiveRecord::InternalMetadata Load (0.4ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
 [PD] /Users/User/ordering/order.rb:39
-  > pd order_total  
+  > pd order_total
  => 195.50
    (0.2ms)  BEGIN
   SQL (0.3ms)  INSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"  [["key", "environment"], ["value", "development"], ["created_at", 2017-08-24 22:56:52 UTC], ["updated_at", 2017-08-24 22:56:52 UTC]]
    (0.3ms)  COMMIT
 [PD] /Users/User/ordering/order.rb:40
-  > pd order_summary  
+  > pd order_summary
  => "Pragmatic Ruby Book"
   ActiveRecord::InternalMetadata Load (0.3ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
    (0.2ms)  BEGIN
    (0.2ms)  COMMIT
 [PD] /Users/User/ordering/order.rb:41
-  > pd order_details  
+  > pd order_details
  => "[Hard Cover] Pragmatic Ruby Book - English Version"
 ```
 
-What if you would like to add a header for faster findability? Just use the `header` option:
+What if you would like to add a header for faster findability of groups of related pd statements? Just use the `header` option:
 
 ```ruby
 pd order_total, header: true
@@ -141,7 +127,7 @@ Output:
 ```
    (2.7ms)  CREATE TABLE "ar_internal_metadata" ("key" character varying PRIMARY KEY, "value" character varying, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)
   ActiveRecord::InternalMetadata Load (0.4ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
-********************************************************************************
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 [PD] /Users/User/ordering/order.rb:39
   > pd order_total, header: true
  => 195.50
@@ -149,13 +135,13 @@ Output:
   SQL (0.3ms)  INSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"  [["key", "environment"], ["value", "development"], ["created_at", 2017-08-24 22:56:52 UTC], ["updated_at", 2017-08-24 22:56:52 UTC]]
    (0.3ms)  COMMIT
 [PD] /Users/User/ordering/order.rb:40
-  > pd order_summary  
+  > pd order_summary
  => "Pragmatic Ruby Book"
   ActiveRecord::InternalMetadata Load (0.3ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
    (0.2ms)  BEGIN
    (0.2ms)  COMMIT
 [PD] /Users/User/ordering/order.rb:41
-  > pd order_details  
+  > pd order_details
  => "[Hard Cover] Pragmatic Ruby Book - English Version"
 ```
 
@@ -180,13 +166,13 @@ Output:
   SQL (0.3ms)  INSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"  [["key", "environment"], ["value", "development"], ["created_at", 2017-08-24 22:56:52 UTC], ["updated_at", 2017-08-24 22:56:52 UTC]]
    (0.3ms)  COMMIT
 [PD] /Users/User/ordering/order.rb:40
-  > pd order_summary  
+  > pd order_summary
  => "Pragmatic Ruby Book"
   ActiveRecord::InternalMetadata Load (0.3ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
    (0.2ms)  BEGIN
    (0.2ms)  COMMIT
 [PD] /Users/User/ordering/order.rb:41
-  > pd order_details, footer: '<'*80  
+  > pd order_details, footer: '<'*80
  => "[Hard Cover] Pragmatic Ruby Book - English Version"
  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ```
@@ -250,13 +236,13 @@ Output:
   SQL (0.3ms)  INSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"  [["key", "environment"], ["value", "development"], ["created_at", 2017-08-24 22:56:52 UTC], ["updated_at", 2017-08-24 22:56:52 UTC]]
    (0.3ms)  COMMIT
 [PD] /Users/User/ordering/order.rb:40
-  > pd order_summary  
+  > pd order_summary
  => "Pragmatic Ruby Book"
   ActiveRecord::InternalMetadata Load (0.3ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
    (0.2ms)  BEGIN
    (0.2ms)  COMMIT
 [PD] /Users/User/ordering/order.rb:41
-  > pd order_details  
+  > pd order_details
  => "[Hard Cover] Pragmatic Ruby Book - English Version"
 ```
 
@@ -273,7 +259,7 @@ pd order_details
   ActiveRecord::InternalMetadata Load (0.4ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
 ********************************************************************************
 [PD] /Users/User/ordering/order.rb:39
-  > pd order_total, caller: 3, wrapper: true 
+  > pd order_total, caller: 3, wrapper: true
  => 195.50
      /Users/User/.rvm/gems/ruby-2.7.1/gems/bootsnap-1.4.6/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:23:in `require'
      /Users/User/.rvm/gems/ruby-2.7.1/gems/bootsnap-1.4.6/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:23:in `block in require_with_bootsnap_lfi'
@@ -283,13 +269,13 @@ pd order_details
   SQL (0.3ms)  INSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"  [["key", "environment"], ["value", "development"], ["created_at", 2017-08-24 22:56:52 UTC], ["updated_at", 2017-08-24 22:56:52 UTC]]
    (0.3ms)  COMMIT
 [PD] /Users/User/ordering/order.rb:40
-  > pd order_summary  
+  > pd order_summary
  => "Pragmatic Ruby Book"
   ActiveRecord::InternalMetadata Load (0.3ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
    (0.2ms)  BEGIN
    (0.2ms)  COMMIT
 [PD] /Users/User/ordering/order.rb:41
-  > pd order_details  
+  > pd order_details
  => "[Hard Cover] Pragmatic Ruby Book - English Version"
 ```
 
@@ -302,7 +288,7 @@ There are many more options and powerful features in [puts_debuggerer](https://r
 Add the following to bundler's `Gemfile`.
 
 ```ruby
-gem 'puts_debuggerer', '~> 0.10.2'
+gem 'puts_debuggerer', '~> 0.10.3'
 ```
 
 This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you may create an initializer under `config/initializers` named `puts_debuggerer_options.rb` to enable further customizations as per the [Options](#options) section below.
@@ -312,7 +298,7 @@ This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you m
 Or manually install and require library.
 
 ```bash
-gem install puts_debuggerer -v0.10.2
+gem install puts_debuggerer -v0.10.3
 ```
 
 ```ruby
@@ -371,7 +357,7 @@ Output:
   => "Show me the result of the calculation: 4.0"
 ```
 
-In addition to the main object/expression output, you get to see the source file name, line number, and source code to help you debug and troubleshoot problems quicker (it even works in IRB).
+In addition to the main object/expression output, you get to see the source file name, line number, and source code to help you debug and troubleshoot problems quicker (it even works in IRB and Pry).
 
 Second, quickly locate printed lines using the Find feature (e.g. CTRL+F) by looking for:
 * [PD]
@@ -405,14 +391,14 @@ Happy puts_debuggerering!
 You may want to just return the string produced by the `pd` method without printing it.
 
 In that case, you may use the `pd` alternative to `object.inspect`:
-- `object.pd_inspect` 
+- `object.pd_inspect`
 - `obj.pdi` (shorter alias)
 
 This returns the `pd` formatted string without printing to the terminal or log files.
 
-#### Ruby Logger and Logging::Logger 
+#### Ruby Logger and Logging::Logger
 
-Ruby Logger and Logging::Logger (from [logging gem](https://github.com/TwP/logging)) are supported as [printers](#putsdebuggererprinter) (learn more under [PutsDebuggerer#printer](#putsdebuggererprinter)). 
+Ruby Logger and Logging::Logger (from [logging gem](https://github.com/TwP/logging)) are supported as [printers](#putsdebuggererprinter) (learn more under [PutsDebuggerer#printer](#putsdebuggererprinter)).
 
 ### Options
 
@@ -436,7 +422,7 @@ pd data, header: true
 Prints out:
 
 ```bash
-********************************************************************************
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 [PD] /Users/User/project/piecemeal.rb:3
    > pd data, header: true
   => [1, [2, 3]]
@@ -502,7 +488,7 @@ pd (x=1), header: true
 Prints out:
 
 ```bash
-********************************************************************************
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 [PD] /Users/User/example.rb:1
    > pd (x=1), header: true
   => "1"
@@ -519,11 +505,11 @@ pd (x=2)
 Prints out:
 
 ```bash
-********************************************************************************
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 [PD] /Users/User/example.rb:2
    > pd (x=1)
   => "1"
-********************************************************************************
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 [PD] /Users/User/example.rb:3
    > pd (x=2)
   => "2"
@@ -550,7 +536,7 @@ Prints out:
 [PD] /Users/User/example.rb:1
    > pd (x=1), footer: true
   => "1"
-********************************************************************************
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ```
 
 Global Option Example:
@@ -567,11 +553,11 @@ Prints out:
 [PD] /Users/User/example.rb:2
    > pd (x=1)
   => "1"
-********************************************************************************
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 [PD] /Users/User/example.rb:3
    > pd (x=2)
   => "2"
-********************************************************************************
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ```
 
 #### `PutsDebuggerer.wrapper`
@@ -625,7 +611,7 @@ Prints out:
 #### `PutsDebuggerer.source_line_count`
 (default = `1`)
 
-Prints multiple source code lines as per count specified. Useful when a statement is broken down on multiple lines or when there is a need to get more context around the line printed. 
+Prints multiple source code lines as per count specified. Useful when a statement is broken down on multiple lines or when there is a need to get more context around the line printed.
 
 Example:
 
@@ -669,7 +655,7 @@ Examples of a global method are `:puts` and `:print`.
 An example of a lambda expression is `lambda {|output| Rails.logger.info(output)}`
 Examples of a logger are a Ruby `Logger` instance or `Logging::Logger` instance
 
-When a logger is supplied, it is automatically enhanced with a PutsDebuggerer formatter to use 
+When a logger is supplied, it is automatically enhanced with a PutsDebuggerer formatter to use
 when calling logger methods outside of PutsDebuggerer (e.g. `logger.error('msg')` will use `pd`)
 
 Printer may be set to `false` to avoid printing and only return the formatted string.
@@ -975,11 +961,11 @@ Prints out `puts __caller_source_line__`
 
 ## Compatibility
 
-[puts_debuggerer](https://rubygems.org/gems/puts_debuggerer) is fully compatible with: 
+[puts_debuggerer](https://rubygems.org/gems/puts_debuggerer) is fully compatible with:
 - [Ruby](https://www.ruby-lang.org/en/)
 - [JRuby](https://www.jruby.org/)
-- IRB
-- Rails Console.
+- IRB (including Rails Console)
+- Pry
 
 ### Opal Ruby
 
@@ -993,9 +979,11 @@ Here is an example of `pd` output in Opal:
 
 ```
 [PD] http://localhost:3000/assets/views/garderie_rainbow_daily_agenda/app_view.self-72626d75e0f68a619b1c8ad139535d799d45ab6c730d083820b790d71338e983.js?body=1:72:12
-   > 
+   >
   => "body"
 ```
+
+Note that it ignores the configured printer when printing exceptions as it relies on Opal's `$stderr.puts` instead to show the stack trace in the web console.
 
 ## Change Log
 
