@@ -15,70 +15,86 @@ describe 'PutsDebuggerer' do
       Kernel.send(:remove_method, :ap)
     end
     it 'supports enabling header per single puts' do
+      PutsDebuggererInvoker.dynamic_nested_array(header: true) # support options alone
+      output = $stdout.string
+      expect(output).to eq("#{PutsDebuggerer::HEADER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => {}\n")
+      $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], header: true)
       output = $stdout.string
-      expect(output).to eq("#{PutsDebuggerer::HEADER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => [1, [2, 3]]\n")
+      expect(output).to eq("#{PutsDebuggerer::HEADER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n")
+      $stdout = StringIO.new
+      PutsDebuggererInvoker.dynamic_nested_array(name: 'Sean', header: true) # support hash including options
+      output = $stdout.string
+      expect(output).to eq("#{PutsDebuggerer::HEADER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => {:name=>\"Sean\"}\n")
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => [1, [2, 3]]\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n")
     end
     it 'supports enabling footer per single puts' do
+      PutsDebuggererInvoker.dynamic_nested_array(footer: true) # support options alone
+      output = $stdout.string
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => {}\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
+      $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], footer: true)
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => [1, [2, 3]]\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
+      $stdout = StringIO.new
+      PutsDebuggererInvoker.dynamic_nested_array(name: 'Sean', footer: true) # support hash including options
+      output = $stdout.string
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => {:name=>\"Sean\"}\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => [1, [2, 3]]\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n")
     end
     it 'supports enabling both header and footer per single puts' do
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], header: '#'*80, footer: true)
       output = $stdout.string
-      expect(output).to eq("#{'#'*80}\n[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => [1, [2, 3]]\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
+      expect(output).to eq("#{'#'*80}\n[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => [1, [2, 3]]\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n")
     end
     it 'supports switching printer per single puts' do
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], printer: lambda {|output| puts output.upcase})
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file.upcase}:26\n   > PD ARRAY, OPTIONS\n  => [1, [2, 3]]\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file.upcase}:26\n   > PD *ARRAY_INCLUDING_OPTIONS\n  => [1, [2, 3]]\n")
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => [1, [2, 3]]\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n")
     end
     it 'supports switching print engine per single puts' do
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], print_engine: :ap)
       output = $stdout.string
       expected_object_printout = "[\n    [0] 1,\n    [1] [\n        [0] 2,\n        [1] 3\n    ]\n]"
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => #{expected_object_printout}\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => #{expected_object_printout}\n")
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => [1, [2, 3]]\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n")
     end
     it 'supports switching app path per single puts' do
       app_path = File.expand_path(File.join(__FILE__, '..'))
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], app_path: app_path)
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file.sub(app_path, '')}:26\n   > pd array, options\n  => [1, [2, 3]]\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file.sub(app_path, '')}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n")
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => [1, [2, 3]]\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n")
     end
     it 'supports switching announcer per single puts' do
       app_path = File.expand_path(File.join(__FILE__, '..'))
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], announcer: "!!!!!HELLO!!!!!")
       output = $stdout.string
-      expect(output).to eq("!!!!!HELLO!!!!! #{puts_debuggerer_invoker_file.sub(app_path, '')}:26\n   > pd array, options\n  => [1, [2, 3]]\n")
+      expect(output).to eq("!!!!!HELLO!!!!! #{puts_debuggerer_invoker_file.sub(app_path, '')}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n")
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => [1, [2, 3]]\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n")
     end
     it 'supports switching formatter per single puts' do
       app_path = File.expand_path(File.join(__FILE__, '..'))
@@ -91,18 +107,18 @@ describe 'PutsDebuggerer' do
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => [1, [2, 3]]\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n")
     end
     it 'supports enabling caller per single puts' do
       app_path = File.expand_path(File.join(__FILE__, '..'))
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], caller: 0)
       output = $stdout.string
       expected_caller = ["     #{__FILE__}:#{__LINE__-2}:in `block (3 levels) in <top (required)>'"]
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => [1, [2, 3]]\n#{expected_caller.join("\n")}\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n#{expected_caller.join("\n")}\n")
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd array, options\n  => [1, [2, 3]]\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n")
     end
   end
 end

@@ -54,7 +54,7 @@ describe 'PutsDebuggerer' do
       expect(PutsDebuggerer.printer).to eq(:ap)
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
       output = $stdout.string
-      expect(output).to eq("\"[PD] #{puts_debuggerer_invoker_file}:26\\n   > pd array, options\\n  => #{expected_object_printout_awesome_print}\\n\"\n")
+      expect(output).to eq("\"[PD] #{puts_debuggerer_invoker_file}:26\\n   > pd *array_including_options\\n  => #{expected_object_printout_awesome_print}\\n\"\n")
     end
     
     it 'prints with specified logger object (file relative to app path, line number, ruby expression, and evaluated string object)' do
@@ -93,16 +93,16 @@ describe 'PutsDebuggerer' do
       expect(PutsDebuggerer.printer).to eq(false)
       return_value = PutsDebuggererInvoker.static_nested_array
       output = $stdout.string
-      expect(output).to eq('')      
-      expect(return_value).to eq("[PD] #{puts_debuggerer_invoker_file}:22\n   > pd [1, [2, 3]]\n  => #{expected_object_printout}\n")      
+      expect(output).to eq('')
+      expect(return_value).to eq("[PD] #{puts_debuggerer_invoker_file}:22\n   > pd [1, [2, 3]]\n  => #{expected_object_printout}\n")
     end
     
     it 'does not print with printer as false, but returns rendered string instead of object' do
       return_value = PutsDebuggererInvoker.call_pd [1, [2, 3]], printer: false
       output = $stdout.string
-      expect(output).to eq('')      
-      expect(return_value).to eq("[PD] #{puts_debuggerer_invoker_file}:60\n   > pd *args\n  => #{expected_object_printout}\n")      
-    end    
+      expect(output).to eq('')
+      expect(return_value).to eq("[PD] #{puts_debuggerer_invoker_file}:60\n   > pd *args\n  => #{expected_object_printout}\n")
+    end
     
     it 'raises informative error if print_engine was invalid' do
       expect {PutsDebuggerer.printer = :invalid}.to raise_error('printer must be a valid global method symbol (e.g. :puts), a logger, or a lambda/proc receiving a text arg')

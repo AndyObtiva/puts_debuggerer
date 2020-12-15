@@ -1,9 +1,9 @@
 language: ruby
 rvm:
+  - 3.0.0
   - 2.7.1
   - 2.6.6
   - 2.5.3
-  - 2.4.10
 after_script:
   ruby -e "$(curl -s https://undercover-ci.com/uploader.rb)" -- --repo AndyObtiva/puts_debuggerer --commit $TRAVIS_COMMIT --lcov coverage/lcov/puts_debuggerer.lcov
 

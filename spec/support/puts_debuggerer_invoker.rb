@@ -22,8 +22,8 @@ module PutsDebuggererInvoker
     pd [1, [2, 3]]
   end
   # intentional empty line
-  def self.dynamic_nested_array(array, options = nil)
-    pd array, options
+  def self.dynamic_nested_array(*array_including_options)
+    pd *array_including_options
   end
   # intentional empty line
   def self.multi_line_dynamic_greeting(name)

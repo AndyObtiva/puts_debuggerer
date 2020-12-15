@@ -33,7 +33,7 @@ Output:
 
 ## Background
 
-It can be quite frustrating to lose puts statements in a large output or log file. One way to help find them is add an announcer (e.g. `puts "The Order Total"`) or a header (e.g. `puts '*'*80`) before every puts statement. Unfortunately, that leads to repetitive wasteful effort that adds up quickly over many work sessions and interrupts thinking flow while solving problems.
+It can be quite frustrating to lose puts statements in a large output or log file. One way to help find them is add an announcer (e.g. `puts "The Order Total"`) or a header (e.g. `puts '>'*80`) before every puts statement. Unfortunately, that leads to repetitive wasteful effort that adds up quickly over many work sessions and interrupts thinking flow while solving problems.
 
 puts_debuggerer automates that work via the short and simple `pd` command, automatically printing meaningful headers for output and accelerating problem solving work due to ease of typing.
 
@@ -288,7 +288,7 @@ There are many more options and powerful features in [puts_debuggerer](https://r
 Add the following to bundler's `Gemfile`.
 
 ```ruby
-gem 'puts_debuggerer', '~> 0.10.3'
+gem 'puts_debuggerer', '~> 0.12.0'
 ```
 
 This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you may create an initializer under `config/initializers` named `puts_debuggerer_options.rb` to enable further customizations as per the [Options](#options) section below.
@@ -298,7 +298,7 @@ This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you m
 Or manually install and require library.
 
 ```bash
-gem install puts_debuggerer -v0.10.3
+gem install puts_debuggerer -v0.12.0
 ```
 
 ```ruby
@@ -310,7 +310,6 @@ Or the shorter form (often helpful to quickly troubleshoot an app):
 ```ruby
 require 'pd'
 ```
-
 
 ### Awesome Print
 
@@ -471,11 +470,11 @@ Example Printout:
 ```
 
 #### `PutsDebuggerer.header`
-(default = `'*'*80`)
+(default = `'>'*80`)
 
 Header to include at the top of every print out.
 * Default value is `nil`
-* Value `true` enables header as `'*'*80`
+* Value `true` enables header as `'>'*80`
 * Value `false`, `nil`, or empty string disables header
 * Any other string value gets set as a custom header
 
@@ -516,11 +515,11 @@ Prints out:
 ```
 
 #### `PutsDebuggerer.footer`
-(default = `'*'*80`)
+(default = `'<'*80`)
 
 Footer to include at the bottom of every print out.
 * Default value is `nil`
-* Value `true` enables footer as `'*'*80`
+* Value `true` enables footer as `'<'*80`
 * Value `false`, `nil`, or empty string disables footer
 * Any other string value gets set as a custom footer
 

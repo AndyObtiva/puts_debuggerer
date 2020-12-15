@@ -4,10 +4,8 @@ Here are tasks considered for future versions. Once done, they are moved to the 
 
 ## Next
 
-- Improve design regarding passing pd options as part of a hash to print requiring parens (e.g. pd({path: path}, header: true) )
-- Support empty use of pd statement that accepts options hash, which doesn't get treated like output (e.g. pd header: true)
+- Add the ability to disable all pd statement with a switch for convenience when going back and forth with printing/not-printing (e.g. troubleshooting while testing performance)
 - Have `caller` printing in Glimmer DSL for Opal print one statement per line
-- Change header to '>'*80 and footer to '<'*80 to distinguish them from each other in printout
 - Support header: 30 to customize the length of the header (and do the same for footer and wrapper)
 - Support header: '#' to customize the character of the header (and do the same for footer and wrapper)
 - Consider making header use >>> and footer <<< instead of * for better findability.

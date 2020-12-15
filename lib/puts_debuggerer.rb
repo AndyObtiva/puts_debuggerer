@@ -63,6 +63,7 @@ module PutsDebuggerer
   STACK_TRACE_CALL_LINE_NUMBER_REGEX = /\:(\d+)\:in /
   STACK_TRACE_CALL_SOURCE_FILE_REGEX = /[ ]*([^:]+)\:\d+\:in /
   STACK_TRACE_CALL_SOURCE_FILE_REGEX_OPAL = /(http[^\)]+)/
+  OPTIONS = [:app_path, :source_line_count, :header, :wrapper, :footer, :printer, :print_engine, :announcer, :formatter, :caller, :run_at]
 
   class << self
     # Application root path to exclude when printing out file path
@@ -469,7 +470,14 @@ module PutsDebuggerer
     end
 
     def determine_options(objects)
-      objects.delete_at(-1) if objects.size > 1 && objects.last.is_a?(Hash)
+      if objects.size > 1 && objects.last.is_a?(Hash)
+        objects.delete_at(-1)
+      elsif objects.size == 1 && objects.first.is_a?(Hash)
+        hash = objects.first
+        hash.slice(*OPTIONS).tap do
+          hash.delete_if {|option| OPTIONS.include?(option)}
+        end
+      end
     end
 
     def determine_object(objects)

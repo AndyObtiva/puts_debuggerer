@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.12.0
+
+- Upgrade `awesome_print` to `~> 0.9.2`
+- Support passing pd options as part of a printed hash instead of requiring a separate hash (e.g. `pd(path: path, header: true)` instead of `pd({path: path}, header: true)` )
+- Support empty use of pd statement + options (e.g. `pd` or `pd header: true`)
+
 ## 0.11.0
 
 - Pry support
