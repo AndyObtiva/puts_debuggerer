@@ -8,6 +8,8 @@ Here are tasks considered for future versions. Once done, they are moved to the 
 - Have `caller` printing in Glimmer DSL for Opal print one statement per line
 - Support header: 30 to customize the length of the header (and do the same for footer and wrapper)
 - Support header: '#' to customize the character of the header (and do the same for footer and wrapper)
+- h: true and f: true alternatives for header and footer (as well as other ideas to shorten)
+- Support `methods: true` to print unique methods not on Object or `methods: :all`, automatically sorted
 - Consider making header use >>> and footer <<< instead of * for better findability.
 - Provide option to set a logger as printer without hooking formatter unto logger
 - Provide an option to control what log level is used when printing to logger
