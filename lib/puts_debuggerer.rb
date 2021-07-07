@@ -63,7 +63,12 @@ module PutsDebuggerer
   STACK_TRACE_CALL_LINE_NUMBER_REGEX = /\:(\d+)\:in /
   STACK_TRACE_CALL_SOURCE_FILE_REGEX = /[ ]*([^:]+)\:\d+\:in /
   STACK_TRACE_CALL_SOURCE_FILE_REGEX_OPAL = /(http[^\)]+)/
-  OPTIONS = [:app_path, :source_line_count, :header, :wrapper, :footer, :printer, :print_engine, :announcer, :formatter, :caller, :run_at]
+  OPTIONS = [:app_path, :source_line_count, :header, :h, :wrapper, :w, :footer, :f, :printer, :print_engine, :announcer, :formatter, :caller, :run_at]
+  OPTION_ALIASES = {
+    h: :header,
+    f: :footer,
+    w: :wrapper
+  }
 
   class << self
     # Application root path to exclude when printing out file path
@@ -471,13 +476,17 @@ module PutsDebuggerer
 
     def determine_options(objects)
       if objects.size > 1 && objects.last.is_a?(Hash)
-        objects.delete_at(-1)
+        convert_options(objects.delete_at(-1))
       elsif objects.size == 1 && objects.first.is_a?(Hash)
         hash = objects.first
-        hash.slice(*OPTIONS).tap do
+        convert_options(hash.slice(*OPTIONS).tap do
           hash.delete_if {|option| OPTIONS.include?(option)}
-        end
+        end)
       end
+    end
+    
+    def convert_options(hash)
+      Hash[hash.map { |key, value| OPTION_ALIASES[key] ? ( value == :t ?  [OPTION_ALIASES[key], true] : [OPTION_ALIASES[key], value] ) : [key, value]}]
     end
 
     def determine_object(objects)

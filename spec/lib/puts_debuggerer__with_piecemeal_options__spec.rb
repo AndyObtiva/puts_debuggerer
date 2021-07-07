@@ -31,6 +31,23 @@ describe 'PutsDebuggerer' do
       output = $stdout.string
       expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n")
     end
+    it 'supports enabling header per single puts using shortcut syntax' do
+      PutsDebuggererInvoker.dynamic_nested_array(h: :t) # support options alone
+      output = $stdout.string
+      expect(output).to eq("#{PutsDebuggerer::HEADER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => {}\n")
+      $stdout = StringIO.new
+      PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], h: :t)
+      output = $stdout.string
+      expect(output).to eq("#{PutsDebuggerer::HEADER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n")
+      $stdout = StringIO.new
+      PutsDebuggererInvoker.dynamic_nested_array(name: 'Sean', h: :t) # support hash including options
+      output = $stdout.string
+      expect(output).to eq("#{PutsDebuggerer::HEADER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => {:name=>\"Sean\"}\n")
+      $stdout = StringIO.new
+      PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
+      output = $stdout.string
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n")
+    end
     it 'supports enabling footer per single puts' do
       PutsDebuggererInvoker.dynamic_nested_array(footer: true) # support options alone
       output = $stdout.string
@@ -48,10 +65,36 @@ describe 'PutsDebuggerer' do
       output = $stdout.string
       expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n")
     end
+    it 'supports enabling footer per single puts using shortcut syntax' do
+      PutsDebuggererInvoker.dynamic_nested_array(f: :t) # support options alone
+      output = $stdout.string
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => {}\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
+      $stdout = StringIO.new
+      PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], f: :t)
+      output = $stdout.string
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
+      $stdout = StringIO.new
+      PutsDebuggererInvoker.dynamic_nested_array(name: 'Sean', f: :t) # support hash including options
+      output = $stdout.string
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => {:name=>\"Sean\"}\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
+      $stdout = StringIO.new
+      PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
+      output = $stdout.string
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n")
+    end
     it 'supports enabling both header and footer per single puts' do
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], header: '#'*80, footer: true)
       output = $stdout.string
       expect(output).to eq("#{'#'*80}\n[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
+      $stdout = StringIO.new
+      PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
+      output = $stdout.string
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n")
+    end
+    it 'supports enabling wrapper per single puts using shortcut syntax' do
+      PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], w: :t)
+      output = $stdout.string
+      expect(output).to eq("#{PutsDebuggerer::WRAPPER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n#{PutsDebuggerer::WRAPPER_DEFAULT}\n")
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
       output = $stdout.string
