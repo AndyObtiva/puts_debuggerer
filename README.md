@@ -114,7 +114,7 @@ Output:
  => "[Hard Cover] Pragmatic Ruby Book - English Version"
 ```
 
-What if you would like to add a header for faster findability of groups of related pd statements? Just use the `header` option:
+What if you would like to add a header for faster findability of groups of related pd statements? Just use the `header` option (or `h`):
 
 ```ruby
 pd order_total, header: true
@@ -177,7 +177,7 @@ Output:
  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ```
 
-Need a quick stack trace? Just use the `caller` option (you may surround with header and footer too via `wrapper`).
+Need a quick stack trace? Just use the `caller` option (you may surround with header and footer too via `wrapper` or `w`).
 
 ```ruby
 pd order_total, caller: true, wrapper: true
@@ -279,7 +279,7 @@ pd order_details
  => "[Hard Cover] Pragmatic Ruby Book - English Version"
 ```
 
-There are many more options and powerful features in [puts_debuggerer](https://rubygems.org/gems/puts_debuggerer) as detailed below.
+There are many more options and features in [puts_debuggerer](https://rubygems.org/gems/puts_debuggerer) as detailed below.
 
 ## Instructions
 
@@ -288,7 +288,7 @@ There are many more options and powerful features in [puts_debuggerer](https://r
 Add the following to bundler's `Gemfile`.
 
 ```ruby
-gem 'puts_debuggerer', '~> 0.12.0'
+gem 'puts_debuggerer', '~> 0.13.0'
 ```
 
 This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you may create an initializer under `config/initializers` named `puts_debuggerer_options.rb` to enable further customizations as per the [Options](#options) section below.
@@ -298,7 +298,7 @@ This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you m
 Or manually install and require library.
 
 ```bash
-gem install puts_debuggerer -v0.12.0
+gem install puts_debuggerer -v0.13.0
 ```
 
 ```ruby
@@ -493,6 +493,21 @@ Prints out:
   => "1"
 ```
 
+Shortcut Example:
+
+```ruby
+pd (x=1), h: :t
+```
+
+Prints out:
+
+```bash
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[PD] /Users/User/example.rb:1
+   > pd (x=1), h: :t
+  => "1"
+```
+
 Global Option Example:
 
 ```ruby
@@ -534,6 +549,21 @@ Prints out:
 ```bash
 [PD] /Users/User/example.rb:1
    > pd (x=1), footer: true
+  => "1"
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+```
+
+Shortcut Example:
+
+```ruby
+pd (x=1), f: :t
+```
+
+Prints out:
+
+```bash
+[PD] /Users/User/example.rb:1
+   > pd (x=1), f: :t
   => "1"
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ```
@@ -580,6 +610,22 @@ Prints out:
 ********************************************************************************
 [PD] /Users/User/example.rb:1
    > pd x=1, wrapper: true
+  => "1"
+********************************************************************************
+```
+
+Shortcut Example:
+
+```ruby
+pd (x=1), w: :t
+```
+
+Prints out:
+
+```bash
+********************************************************************************
+[PD] /Users/User/example.rb:1
+   > pd x=1, w: :t
   => "1"
 ********************************************************************************
 ```
