@@ -1,5 +1,14 @@
 # Change Log
 
+## 0.13.2
+
+- Fix issue caused by MiniTest Rails having `IRB` constant declared despite being outside of IRB
+
+## 0.13.1
+
+- Support `a: '[PD]'` shortcut to passing `announcer: '[PD]'`
+- Support `c: :t` shortcut to passing `caller: true`
+
 ## 0.13.0
 
 - Support `h: :t` shortcut to passing `header: true`

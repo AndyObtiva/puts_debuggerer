@@ -114,10 +114,18 @@ Output:
  => "[Hard Cover] Pragmatic Ruby Book - English Version"
 ```
 
-What if you would like to add a header for faster findability of groups of related pd statements? Just use the `header` option (or `h`):
+What if you would like to add a header for faster findability of groups of related pd statements? Just use the `header` option:
 
 ```ruby
 pd order_total, header: true
+pd order_summary
+pd order_details
+```
+
+Or the `h` shortcut:
+
+```ruby
+pd order_total, h: :t
 pd order_summary
 pd order_details
 ```
@@ -145,12 +153,20 @@ Output:
  => "[Hard Cover] Pragmatic Ruby Book - English Version"
 ```
 
-Wanna customize the header and add a footer too? No problem:
+Wanna add a footer too? No problem!
 
 ```ruby
-pd order_total, header: '>'*80
+pd order_total, header: true
 pd order_summary
-pd order_details, footer: '<'*80
+pd order_details, footer: true
+```
+
+Or use the `f` shortcut:
+
+```ruby
+pd order_total, h: :t
+pd order_summary
+pd order_details, f: :t
 ```
 
 Output:
@@ -158,7 +174,7 @@ Output:
 ```
    (2.7ms)  CREATE TABLE "ar_internal_metadata" ("key" character varying PRIMARY KEY, "value" character varying, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)
   ActiveRecord::InternalMetadata Load (0.4ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+################################################################################
 [PD] /Users/User/ordering/order.rb:39
   > pd order_total, header: '>'*80
  => 195.50
@@ -174,13 +190,21 @@ Output:
 [PD] /Users/User/ordering/order.rb:41
   > pd order_details, footer: '<'*80
  => "[Hard Cover] Pragmatic Ruby Book - English Version"
- <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+################################################################################
 ```
 
-Need a quick stack trace? Just use the `caller` option (you may surround with header and footer too via `wrapper` or `w`).
+Need a quick stack trace? Just use the `caller` option (you may surround with header and footer too via `wrapper`).
 
 ```ruby
 pd order_total, caller: true, wrapper: true
+pd order_summary
+pd order_details
+```
+
+Or use the `c` and `w` shortcuts:
+
+```ruby
+pd order_total, c: :t, w: :t
 pd order_summary
 pd order_details
 ```
@@ -254,6 +278,14 @@ pd order_summary
 pd order_details
 ```
 
+Or use shortcut syntax:
+
+```ruby
+pd order_total, c: 3, w: :t
+pd order_summary
+pd order_details
+```
+
 ```
    (2.7ms)  CREATE TABLE "ar_internal_metadata" ("key" character varying PRIMARY KEY, "value" character varying, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)
   ActiveRecord::InternalMetadata Load (0.4ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
@@ -288,7 +320,7 @@ There are many more options and features in [puts_debuggerer](https://rubygems.o
 Add the following to bundler's `Gemfile`.
 
 ```ruby
-gem 'puts_debuggerer', '~> 0.13.1'
+gem 'puts_debuggerer', '~> 0.13.2'
 ```
 
 This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you may create an initializer under `config/initializers` named `puts_debuggerer_options.rb` to enable further customizations as per the [Options](#options) section below.
@@ -298,7 +330,7 @@ This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you m
 Or manually install and require library.
 
 ```bash
-gem install puts_debuggerer -v0.13.1
+gem install puts_debuggerer -v0.13.2
 ```
 
 ```ruby
@@ -470,7 +502,7 @@ Example Printout:
 ```
 
 #### `PutsDebuggerer.header`
-(default = `'>'*80`)
+(default = `'>'*80`) [shortcut: `h`]
 
 Header to include at the top of every print out.
 * Default value is `nil`
@@ -530,7 +562,7 @@ Prints out:
 ```
 
 #### `PutsDebuggerer.footer`
-(default = `'<'*80`)
+(default = `'<'*80`) [shortcut: `f`]
 
 Footer to include at the bottom of every print out.
 * Default value is `nil`
@@ -590,7 +622,7 @@ Prints out:
 ```
 
 #### `PutsDebuggerer.wrapper`
-(default = `'*'*80`)
+(default = `'*'*80`) [shortcut: `w`]
 
 Wrapper to include at the top and bottom of every print out (both header and footer).
 * Default value is `nil`
@@ -762,7 +794,7 @@ Prints out:
 ```
 
 #### `PutsDebuggerer.announcer`
-(default = `"[PD]"`)
+(default = `"[PD]"`) [shortcut: `a`]
 
 Announcer (e.g. `[PD]`) to announce every print out with (default: `"[PD]"`)
 
@@ -833,7 +865,7 @@ FOOTER: ************************************************************************
 ```
 
 #### `PutsDebuggerer.caller`
-(default = nil)
+(default = nil) [shortcut: `c`]
 
 Caller backtrace included at the end of every print out
 Passed an argument of true/false, nil, or depth as an integer.
@@ -845,15 +877,33 @@ Example:
 
 ```ruby
 # File Name: /Users/User/sample_app/lib/sample.rb
-PutsDebuggerer.caller = 3
-pd (x=1)
+pd (x=1), caller: 3
 ```
 
-Prints out:
+Prints out (fictional):
 
 ```bash
-[PD] /Users/User/sample_app/lib/sample.rb:3
-    > pd x=1
+[PD] /Users/User/sample_app/lib/sample.rb:2
+    > pd x=1, caller: 3
+   => "1"
+     /Users/User/sample_app/lib/master_samples.rb:368:in \`block (3 levels) in <top (required)>\'
+     /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in \`eval\'
+     /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in \`evaluate\'
+     /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/context.rb:381:in \`evaluate\'
+```
+
+Shortcut Example:
+
+```ruby
+# File Name: /Users/User/sample_app/lib/sample.rb
+pd (x=1), c: 3
+```
+
+Prints out (fictional):
+
+```bash
+[PD] /Users/User/sample_app/lib/sample.rb:2
+    > pd x=1, caller: 3
    => "1"
      /Users/User/sample_app/lib/master_samples.rb:368:in \`block (3 levels) in <top (required)>\'
      /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in \`eval\'
@@ -1054,4 +1104,4 @@ Note that it ignores the configured printer when printing exceptions as it relie
 
 [MIT](LICENSE.txt)
 
-Copyright (c) 2017-2020 - Andy Maleh.
+Copyright (c) 2017-2021 - Andy Maleh.

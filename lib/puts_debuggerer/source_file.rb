@@ -1,7 +1,7 @@
 module PutsDebuggerer
   class SourceFile
     def initialize(file_path)
-      @file = File.new(file_path) if file_path
+      @file = File.new(file_path) if file_path && File.exist?(file_path)
     end
     
     def source(source_line_count, source_line_number)
@@ -16,7 +16,7 @@ module PutsDebuggerer
     def source_lines(source_line_count, source_line_number)
       lines = []
       begin
-        while @file.lineno < source_line_number + source_line_count
+        while @file && @file.lineno < source_line_number + source_line_count
           file_line_number = @file.lineno + 1
           file_line = @file.readline
           if file_line_number >= source_line_number && file_line_number < source_line_number + source_line_count

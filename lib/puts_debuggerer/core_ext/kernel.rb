@@ -147,7 +147,7 @@ module Kernel
     if defined?(Pry)
       @pry_instance ||= Pry.new
       source_line = Pry::Command::Hist.new(pry_instance: @pry_instance).call.instance_variable_get(:@buffer).split("\n")[source_line_number - 1] # TODO handle multi-lines in source_line_count
-    elsif defined?(IRB)
+    elsif defined?(IRB) && TOPLEVEL_BINDING.receiver.respond_to?(:conf)
       source_line = TOPLEVEL_BINDING.receiver.conf.io.line(source_line_number) # TODO handle multi-lines in source_line_count
     else
       source_line = PutsDebuggerer::SourceFile.new(source_file).source(source_line_count, source_line_number)
