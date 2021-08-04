@@ -114,7 +114,7 @@ Output:
  => "[Hard Cover] Pragmatic Ruby Book - English Version"
 ```
 
-What if you would like to add a header for faster findability of groups of related pd statements? Just use the `header` option (or `h`):
+What if you would like to add a header for faster findability of groups of related pd statements? Just use the `header` option [shortcut: `h`]:
 
 ```ruby
 pd order_total, header: true
@@ -145,7 +145,7 @@ Output:
  => "[Hard Cover] Pragmatic Ruby Book - English Version"
 ```
 
-Wanna customize the header and add a footer too? No problem:
+Wanna customize the header and add a footer too (`footer` option [shortcut: `f`])? No problem!
 
 ```ruby
 pd order_total, header: '>'*80
@@ -177,7 +177,7 @@ Output:
  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ```
 
-Need a quick stack trace? Just use the `caller` option (you may surround with header and footer too via `wrapper` or `w`).
+Need a quick stack trace? Just use the `caller` option [shortcut: `c`] (you may surround with header and footer too via `wrapper` [shortcut: `w`]).
 
 ```ruby
 pd order_total, caller: true, wrapper: true
@@ -845,15 +845,33 @@ Example:
 
 ```ruby
 # File Name: /Users/User/sample_app/lib/sample.rb
-PutsDebuggerer.caller = 3
-pd (x=1)
+pd (x=1), caller: 3
 ```
 
-Prints out:
+Prints out (fictional):
 
 ```bash
-[PD] /Users/User/sample_app/lib/sample.rb:3
-    > pd x=1
+[PD] /Users/User/sample_app/lib/sample.rb:2
+    > pd x=1, caller: 3
+   => "1"
+     /Users/User/sample_app/lib/master_samples.rb:368:in \`block (3 levels) in <top (required)>\'
+     /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in \`eval\'
+     /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in \`evaluate\'
+     /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/context.rb:381:in \`evaluate\'
+```
+
+Shortcut Example:
+
+```ruby
+# File Name: /Users/User/sample_app/lib/sample.rb
+pd (x=1), c: 3
+```
+
+Prints out (fictional):
+
+```bash
+[PD] /Users/User/sample_app/lib/sample.rb:2
+    > pd x=1, caller: 3
    => "1"
      /Users/User/sample_app/lib/master_samples.rb:368:in \`block (3 levels) in <top (required)>\'
      /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in \`eval\'
