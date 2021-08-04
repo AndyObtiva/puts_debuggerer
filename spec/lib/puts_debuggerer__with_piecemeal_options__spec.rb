@@ -139,6 +139,16 @@ describe 'PutsDebuggerer' do
       output = $stdout.string
       expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n")
     end
+    it 'supports switching announcer per single puts with shortcut syntax' do
+      app_path = File.expand_path(File.join(__FILE__, '..'))
+      PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], a: "!!!!!HELLO!!!!!")
+      output = $stdout.string
+      expect(output).to eq("!!!!!HELLO!!!!! #{puts_debuggerer_invoker_file.sub(app_path, '')}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n")
+      $stdout = StringIO.new
+      PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
+      output = $stdout.string
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n")
+    end
     it 'supports switching formatter per single puts' do
       app_path = File.expand_path(File.join(__FILE__, '..'))
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], formatter: -> (data) {
@@ -155,6 +165,17 @@ describe 'PutsDebuggerer' do
     it 'supports enabling caller per single puts' do
       app_path = File.expand_path(File.join(__FILE__, '..'))
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], caller: 0)
+      output = $stdout.string
+      expected_caller = ["     #{__FILE__}:#{__LINE__-2}:in `block (3 levels) in <top (required)>'"]
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n#{expected_caller.join("\n")}\n")
+      $stdout = StringIO.new
+      PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
+      output = $stdout.string
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n")
+    end
+    it 'supports enabling caller per single puts with shortcut syntax' do
+      app_path = File.expand_path(File.join(__FILE__, '..'))
+      PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], c: 0)
       output = $stdout.string
       expected_caller = ["     #{__FILE__}:#{__LINE__-2}:in `block (3 levels) in <top (required)>'"]
       expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => [1, [2, 3]]\n#{expected_caller.join("\n")}\n")

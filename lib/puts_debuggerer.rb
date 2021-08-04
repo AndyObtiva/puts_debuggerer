@@ -65,9 +65,11 @@ module PutsDebuggerer
   STACK_TRACE_CALL_SOURCE_FILE_REGEX_OPAL = /(http[^\)]+)/
   OPTIONS = [:app_path, :source_line_count, :header, :h, :wrapper, :w, :footer, :f, :printer, :print_engine, :announcer, :formatter, :caller, :run_at]
   OPTION_ALIASES = {
+    a: :announcer,
+    c: :caller,
     h: :header,
     f: :footer,
-    w: :wrapper
+    w: :wrapper,
   }
 
   class << self
