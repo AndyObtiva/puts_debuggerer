@@ -470,7 +470,7 @@ Example Printout:
 ```
 
 #### `PutsDebuggerer.header`
-(default = `'>'*80`)
+(default = `'>'*80`) [shortcut: `h`]
 
 Header to include at the top of every print out.
 * Default value is `nil`
@@ -530,7 +530,7 @@ Prints out:
 ```
 
 #### `PutsDebuggerer.footer`
-(default = `'<'*80`)
+(default = `'<'*80`) [shortcut: `f`]
 
 Footer to include at the bottom of every print out.
 * Default value is `nil`
@@ -590,7 +590,7 @@ Prints out:
 ```
 
 #### `PutsDebuggerer.wrapper`
-(default = `'*'*80`)
+(default = `'*'*80`) [shortcut: `w`]
 
 Wrapper to include at the top and bottom of every print out (both header and footer).
 * Default value is `nil`
@@ -762,7 +762,7 @@ Prints out:
 ```
 
 #### `PutsDebuggerer.announcer`
-(default = `"[PD]"`)
+(default = `"[PD]"`) [shortcut: `a`]
 
 Announcer (e.g. `[PD]`) to announce every print out with (default: `"[PD]"`)
 
@@ -833,7 +833,7 @@ FOOTER: ************************************************************************
 ```
 
 #### `PutsDebuggerer.caller`
-(default = nil)
+(default = nil) [shortcut: `c`]
 
 Caller backtrace included at the end of every print out
 Passed an argument of true/false, nil, or depth as an integer.
@@ -1072,4 +1072,4 @@ Note that it ignores the configured printer when printing exceptions as it relie
 
 [MIT](LICENSE.txt)
 
-Copyright (c) 2017-2020 - Andy Maleh.
+Copyright (c) 2017-2021 - Andy Maleh.
