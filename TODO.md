@@ -4,6 +4,7 @@ Here are tasks considered for future versions. Once done, they are moved to the 
 
 ## Next
 
+- Consider adding performance profiling to pd methods automatically, with some customization options too
 - Support passing options directly without an object (e.g. pd caller: true)
 - When using last arg as hash for options, leave out options that are not puts_debuggerer-specific for printing out
 - Add the ability to disable all pd statement with a switch for convenience when going back and forth with printing/not-printing (e.g. troubleshooting while testing performance)

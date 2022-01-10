@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.13.3
+
+- Update default `printer` behavior for Rails to always output via `puts` (not just in tests) in addition to `Rails.logger.debug`
+- Update custom implementation of `caller` for Opal to accept args (optional `start` and `length` or alternatively `range`) just like the Ruby API
+
 ## 0.13.2
 
 - Fix issue caused by MiniTest Rails having `IRB` constant declared despite being outside of IRB

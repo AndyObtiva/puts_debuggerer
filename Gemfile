@@ -8,8 +8,8 @@ gem 'awesome_print', '~> 1.9.2', require: false
 # Add dependencies to develop your gem here.
 # Include everything needed to run rake, tests, features, etc.
 group :development do
-  gem 'rspec', '~> 3.5.0'
-  gem 'rspec-mocks', '~> 3.5.0'
+  gem 'rspec', '~> 3.5'
+  gem 'rspec-mocks', '~> 3.5'
   gem 'rdoc', '~> 3.12'
   gem 'jeweler', '~> 2.3.9'
   gem 'bundler', '>= 2.1.4'

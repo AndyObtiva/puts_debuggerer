@@ -88,11 +88,23 @@ module Kernel
 
   # Implement caller backtrace method in Opal since it returns an empty array in Opal v1
   if RUBY_ENGINE == 'opal'
-    def caller
+    def caller(*args)
+      dup_args = args.dup
+      start = args.shift if args.first.is_a?(Integer)
+      length = args.shift if args.first.is_a?(Integer)
+      range = args.shift if args.first.is_a?(Range)
+      if range
+        start = range.begin
+        length = range.end - start
+      end
       begin
         raise 'error'
       rescue => e
-        e.backtrace[2..-1]
+        the_backtrace = e.backtrace
+        start ||= 0
+        start = 2 + start
+        length ||= the_backtrace.size - start
+        the_backtrace[start, length]
       end
     end
   end
