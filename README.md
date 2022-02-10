@@ -1,5 +1,5 @@
 # Puts Debuggerer (debugger-less debugging FTW)
-## [State of the Art Rails 2021](https://github.com/DanielVartanov/state-of-the-art-rails)
+## [Featured in State of the Art Rails 2021 Edition](https://github.com/DanielVartanov/state-of-the-art-rails/tree/3d538fc6ba5287ce6c1ed15ced598ce19bbe81b5)
 [![Gem Version](https://badge.fury.io/rb/puts_debuggerer.svg)](http://badge.fury.io/rb/puts_debuggerer)
 [![Build Status](https://travis-ci.org/AndyObtiva/puts_debuggerer.svg?branch=master)](https://travis-ci.org/AndyObtiva/puts_debuggerer)
 [![Coverage Status](https://coveralls.io/repos/github/AndyObtiva/puts_debuggerer/badge.svg?branch=master)](https://coveralls.io/github/AndyObtiva/puts_debuggerer?branch=master)
@@ -318,20 +318,28 @@ There are many more options and features in [puts_debuggerer](https://rubygems.o
 
 ### Option 1: Bundler
 
+This is the recommended way for installing in [Rails](rubyonrails.org) apps in addition to configuring the [`app_path` option](#putsdebuggererapp_path).
+
 Add the following to bundler's `Gemfile`.
 
 ```ruby
-gem 'puts_debuggerer', '~> 0.13.3'
+gem 'puts_debuggerer', '~> 0.13.4'
 ```
 
-This is the recommended way for [Rails](rubyonrails.org) apps. Optionally, you may create an initializer under `config/initializers` named `puts_debuggerer_options.rb` to enable further customizations as per the [Options](#options) section below.
+Run:
+
+```
+bundle
+```
+
+Optionally, you may configure the [Rails](rubyonrails.org) initializer `config/initializers/puts_debuggerer_options.rb` with further customizations as per the [Options](#options) section below.
 
 ### Option 2: Manual
 
 Or manually install and require library.
 
 ```bash
-gem install puts_debuggerer -v0.13.3
+gem install puts_debuggerer -v0.13.4
 ```
 
 ```ruby
@@ -484,8 +492,15 @@ Details about all the available options are included below.
 #### `PutsDebuggerer.app_path`
 (default = `nil`)
 
-Sets absolute application path. Makes `pd` file output relative to it.
-If [Rails](rubyonrails.org) was detected, it is automatically defaulted to `Rails.root.to_s`
+Sets absolute application path. Makes `pd` file path output relative to it.
+
+In [Rails](rubyonrails.org), you can add the following code to a `config/initializers/puts_debuggerer_options.rb` file to make all output relative to [Rails](rubyonrails.org) application path:
+
+```ruby
+PutsDebuggerer.app_path = Rails.root.to_s
+```
+
+Example:
 
 ```ruby
 # /Users/User/finance_calculator_app/pd_test.rb                                 # line 1
@@ -748,19 +763,21 @@ lambda do |output|
 end
 ```
 
-Example:
+Example of adding the following code to `config/initializers/puts_debuggerer_options.rb`:
 
 ```ruby
-# File Name: /Users/User/example.rb
-PutsDebuggerer.printer = lambda {|output| Rails.logger.error(output)}
+# File Name: /Users/user/railsapp/config/initializers/puts_debuggerer_options.rb
+PutsDebuggerer.printer = lambda do |output|
+  puts output
+end
 str = "Hello"
 pd str
 ```
 
-Prints out in the Rails app log as error lines:
+Prints out the following in standard out stream only (not in log files):
 
 ```bash
-[PD] /Users/User/example.rb:5
+[PD] /Users/user/railsapp/config/initializers/puts_debuggerer_options.rb:6
    > pd str
   => Hello
 ```

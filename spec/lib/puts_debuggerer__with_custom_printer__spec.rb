@@ -108,7 +108,35 @@ describe 'PutsDebuggerer' do
       expect {PutsDebuggerer.printer = :invalid}.to raise_error('printer must be a valid global method symbol (e.g. :puts), a logger, or a lambda/proc receiving a text arg')
     end
     
-    it 'prints using Rails lambda printer' do
+    it 'prints using Rails non-test env lambda printer' do
+      Object.class_eval do
+        module Rails
+          class Logger
+            def debug(object)
+              # simulate a Rails logger. Adding extra prefix to ease testing.
+              puts "Rails.logger.debug: #{object}"
+            end
+          end
+          def self.root
+            File.expand_path(File.join(__FILE__, '..', '..', '..'))
+          end
+          def self.logger
+            @logger ||= Logger.new
+          end
+          def self.env
+            OpenStruct.new(:test? => false)
+          end
+        end
+      end
+      PutsDebuggerer.app_path = nil #defaults to Rails logger debug printing
+      PutsDebuggerer.printer = nil #defaults to Rails logger debug printing
+      name = 'Robert'
+      PutsDebuggererInvoker.dynamic_greeting(name)
+      output = $stdout.string
+      expect(output).to eq("Rails.logger.debug: [PD] /spec/support/puts_debuggerer_invoker.rb:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
+    end
+    
+    it 'prints using Rails test env lambda printer' do
       Object.class_eval do
         module Rails
           class Logger

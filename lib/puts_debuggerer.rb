@@ -42,7 +42,7 @@ module PutsDebuggerer
   end
   PRINTER_DEFAULT = :puts
   PRINTER_RAILS = lambda do |output|
-    puts output
+    puts output if Rails.env.test?
     Rails.logger.debug(output)
   end
   PRINT_ENGINE_DEFAULT = :ap

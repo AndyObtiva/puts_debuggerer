@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.13.4
+
+- Reverted change to default `printer` behavior from 0.13.3 to avoid causing a double-print to stdout as it turns out `puts` is not always needed since Rails redirects to standard out by default in `Rails.logger.debug` calls
+
 ## 0.13.3
 
 - Update default `printer` behavior for Rails to always output via `puts` (not just in tests) in addition to `Rails.logger.debug`
