@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.13.5
+
+- Fix not printing source line in Rails app w/ Pry
+- Note that Pry's compatibility (inside Pry) is experimental and fragile because Pry's API is not reliable
+
 ## 0.13.4
 
 - Reverted change to default `printer` behavior from 0.13.3 to avoid causing a double-print to stdout as it turns out `puts` is not always needed since Rails redirects to standard out by default in `Rails.logger.debug` calls

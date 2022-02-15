@@ -156,7 +156,7 @@ module Kernel
     source_line_number ||= __caller_line_number__(caller_depth+1)
     source_file ||= __caller_file__(caller_depth+1)
     source_line = ''
-    if defined?(Pry)
+    if defined?(Pry) && source_file.include?('(pry)')
       @pry_instance ||= Pry.new
       source_line = Pry::Command::Hist.new(pry_instance: @pry_instance).call.instance_variable_get(:@buffer).split("\n")[source_line_number - 1] # TODO handle multi-lines in source_line_count
     elsif defined?(IRB) && TOPLEVEL_BINDING.receiver.respond_to?(:conf)

@@ -323,7 +323,7 @@ This is the recommended way for installing in [Rails](rubyonrails.org) apps in a
 Add the following to bundler's `Gemfile`.
 
 ```ruby
-gem 'puts_debuggerer', '~> 0.13.4'
+gem 'puts_debuggerer', '~> 0.13.5'
 ```
 
 Run:
@@ -339,7 +339,7 @@ Optionally, you may configure the [Rails](rubyonrails.org) initializer `config/i
 Or manually install and require library.
 
 ```bash
-gem install puts_debuggerer -v0.13.4
+gem install puts_debuggerer -v0.13.5
 ```
 
 ```ruby
@@ -397,7 +397,7 @@ Output:
   => "Show me the result of the calculation: 4.0"
 ```
 
-In addition to the main object/expression output, you get to see the source file name, line number, and source code to help you debug and troubleshoot problems quicker (it even works in IRB and Pry).
+In addition to the main object/expression output, you get to see the source file name, line number, and source code to help you debug and troubleshoot problems quicker (it even works in IRB).
 
 Second, quickly locate printed lines using the Find feature (e.g. CTRL+F) by looking for:
 * [PD]
@@ -1078,7 +1078,7 @@ Prints out `puts __caller_source_line__`
 - [Ruby](https://www.ruby-lang.org/en/)
 - [JRuby](https://www.jruby.org/)
 - IRB (including Rails Console)
-- Pry
+- Pry (experimental and fragile because Pry's API is not reliable)
 
 ### Opal Ruby
 
