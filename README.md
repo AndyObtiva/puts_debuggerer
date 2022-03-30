@@ -792,7 +792,9 @@ As such, it is also a global method symbol or lambda expression.
 Examples of global methods are `:p`, `:ap`, and `:pp`.
 An example of a lambda expression is `lambda {|object| puts object.to_a.join(" | ")}`
 
-Defaults to [awesome_print](https://github.com/awesome-print/awesome_print).
+Defaults to [awesome_print](https://github.com/awesome-print/awesome_print). It does not load the library however until the first use of the `pd` command.
+
+If you want to avoid loading [awesome_print](https://github.com/awesome-print/awesome_print) to use an alternative instead like [amazing_print](https://github.com/amazing-print/amazing_print), make sure to load [amazing_print](https://github.com/amazing-print/amazing_print) and call `PutsDebuggerer.print_engine = :ap` before the first `pd` call ([amazing_print](https://github.com/amazing-print/amazing_print) works through `ap` just like [awesome_print](https://github.com/awesome-print/awesome_print)).
 
 Example:
 
