@@ -334,7 +334,7 @@ bundle
 
 Optionally, you may configure the [Rails](rubyonrails.org) initializer `config/initializers/puts_debuggerer_options.rb` with further customizations as per the [Options](#options) section below.
 
-Also, you may want to add the following to initializer too if you limited the `puts_debuggerer` gem to the `:development` and `:test` groups:
+Also, you may want to add the following to the initializer too if you limited the `puts_debuggerer` gem to the `:development` and `:test` groups:
 
 ```ruby
 unless Rails.env.development? || Rails.env.test?
