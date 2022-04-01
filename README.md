@@ -320,7 +320,7 @@ There are many more options and features in [puts_debuggerer](https://rubygems.o
 
 This is the recommended way for installing in [Rails](rubyonrails.org) apps in addition to configuring the [`app_path` option](#putsdebuggererapp_path).
 
-Add the following to bundler's `Gemfile`.
+Add the following to bundler's `Gemfile` (in Rails, you can optionally limit to the `:development` and `:test` groups).
 
 ```ruby
 gem 'puts_debuggerer', '~> 0.13.5'
@@ -352,6 +352,20 @@ Or the shorter form (often helpful to quickly troubleshoot an app):
 require 'pd'
 ```
 
+### Rails Setup
+
+In Rails, you may want to setup this initializer too if you limited the `puts_debuggerer` gem to the `:development` and `:test` groups:
+
+```ruby
+# frozen_string_literal: true
+
+unless Rails.env.development? || Rails.env.test?
+  def pd(*args, &block) # `pd(...)` in Ruby 2.7+
+    # No Op (just a stub in case developers forget troubleshooting pd calls in the code and deploy to production)
+  end
+end
+```
+
 ### Awesome Print
 
 [puts_debuggerer](https://rubygems.org/gems/puts_debuggerer) comes with [awesome_print](https://github.com/awesome-print/awesome_print).
@@ -364,7 +378,7 @@ Still, if you do not need it, you may disable by setting `PutsDebuggerer.print_e
 PutsDebuggerer.print_engine = :puts
 ```
 
-If you also avoid requiring 'awesome_print', PutsDebuggerer won't require it either if it sees that you have a different `print_engine`
+If you also avoid requiring 'awesome_print', PutsDebuggerer will NOT require it either if it sees that you have a different `print_engine`. In fact, you may switch to another print engine if you prefer like [amazing_print](https://github.com/amazing-print/amazing_print) as [explained here](https://github.com/AndyObtiva/puts_debuggerer#putsdebuggererprint_engine).
 
 You may also avoid requiring in Bundler `Gemfile` with `require: false`:
 
