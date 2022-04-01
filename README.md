@@ -334,6 +334,16 @@ bundle
 
 Optionally, you may configure the [Rails](rubyonrails.org) initializer `config/initializers/puts_debuggerer_options.rb` with further customizations as per the [Options](#options) section below.
 
+Also, you may want to add the following to initializer too if you limited the `puts_debuggerer` gem to the `:development` and `:test` groups:
+
+```ruby
+unless Rails.env.development? || Rails.env.test?
+  def pd(*args, &block) # `pd(...)` in Ruby 2.7+
+    # No Op (just a stub in case developers forget troubleshooting pd calls in the code and deploy to production)
+  end
+end
+```
+
 ### Option 2: Manual
 
 Or manually install and require library.
@@ -350,20 +360,6 @@ Or the shorter form (often helpful to quickly troubleshoot an app):
 
 ```ruby
 require 'pd'
-```
-
-### Rails Setup
-
-In Rails, you may want to setup this initializer too if you limited the `puts_debuggerer` gem to the `:development` and `:test` groups:
-
-```ruby
-# frozen_string_literal: true
-
-unless Rails.env.development? || Rails.env.test?
-  def pd(*args, &block) # `pd(...)` in Ruby 2.7+
-    # No Op (just a stub in case developers forget troubleshooting pd calls in the code and deploy to production)
-  end
-end
 ```
 
 ### Awesome Print
