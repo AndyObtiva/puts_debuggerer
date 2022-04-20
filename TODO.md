@@ -4,6 +4,7 @@ Here are tasks considered for future versions. Once done, they are moved to the 
 
 ## Next
 
+- Automatically print class and method name as part of the file name and line number printout
 - Consider supporting `header: :method` to print the Class#method name as the header (consider supporting in footer/wrapper too)
 - Consider adding performance profiling to pd methods automatically, with some customization options too
 - Fix issue with no printing code in bigger rails apps filled with other gems (perhaps there is some conflict?)
