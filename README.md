@@ -20,7 +20,7 @@ Basic Example:
 ```ruby
 # /Users/User/trivia_app.rb      # line 1
 require 'pd'                     # line 2
-bug_or_band = 'beattle'          # line 3
+bug_or_band = 'beatles'          # line 3
 pd bug_or_band                   # line 4
 ```
 
@@ -29,7 +29,7 @@ Output:
 ```bash
 [PD] /Users/User/trivia_app.rb:4
    > pd bug_or_band                   # line 4
-  => "beattle"
+  => "beatles"
 ```
 
 ## Background
@@ -391,7 +391,7 @@ Example:
 
 ```ruby
 # /Users/User/finance_calculator_app/pd_test.rb           # line 1
-bug = 'beattle'                                           # line 2
+bug = 'beatles'                                           # line 2
 pd "Show me the source of the bug: #{bug}"                # line 3
 pd "Show me the result of the calculation: #{(12.0/3.0)}" # line 4
 ```
@@ -401,7 +401,7 @@ Output:
 ```bash
 [PD] /Users/User/finance_calculator_app/pd_test.rb:3
    > pd "Show me the source of the bug: #{bug}"
-  => "Show me the source of the bug: beattle"
+  => "Show me the source of the bug: beatles"
 [PD] /Users/User/finance_calculator_app/pd_test.rb:4
    > pd "Show me the result of the calculation: #{(12.0/3.0)}"
   => "Show me the result of the calculation: 4.0"
@@ -515,7 +515,7 @@ Example:
 ```ruby
 # /Users/User/finance_calculator_app/pd_test.rb                                 # line 1
 PutsDebuggerer.app_path = File.join('/Users', 'User', 'finance_calculator_app') # line 2
-bug = 'beattle'                                                                 # line 3
+bug = 'beatles'                                                                 # line 3
 pd "Show me the source of the bug: #{bug}"                                      # line 4
 ```
 
@@ -524,7 +524,7 @@ Example Printout:
 ```bash
 [PD] /pd_test.rb:4
    > pd "Show me the source of the bug: #{bug}"
-  => "Show me the source of the bug: beattle"
+  => "Show me the source of the bug: beatles"
 ```
 
 #### `PutsDebuggerer.header`
