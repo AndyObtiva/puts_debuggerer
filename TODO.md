@@ -12,6 +12,7 @@ Here are tasks considered for future versions. Once done, they are moved to the 
 - Support passing options directly without an object (e.g. pd caller: true)
 - When using last arg as hash for options, leave out options that are not puts_debuggerer-specific for printing out
 - Add the ability to disable all pd statement with a switch for convenience when going back and forth with printing/not-printing (e.g. troubleshooting while testing performance)
+- Consider supporting `lines` and `line_count` as aliases for the `source_line_count` option
 - Have `caller` printing in Glimmer DSL for Opal print one statement per line
 - Support header: 30 to customize the length of the header (and do the same for footer and wrapper)
 - Support header: '#' to customize the character of the header (and do the same for footer and wrapper)
