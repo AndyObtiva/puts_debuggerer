@@ -7,6 +7,8 @@
 
 (credit to Aaron Patterson for partial inspiration: https://tenderlovemaking.com/2016/02/05/i-am-a-puts-debuggerer.html)
 
+If you like Awesome Print (or Amazing Print), you will love Puts Debuggerer (which builds upon them)!
+
 Debuggers are great! They help us troubleshoot complicated programming problems by inspecting values produced by code, line by line. They are invaluable when trying to understand what is going on in a large application composed of thousands or millions of lines of code.
 
 In day-to-day test-driven development and simple app debugging though, a puts statement can be a lot quicker in revealing what is going on than halting execution completely just to inspect a single value or a few. This is certainly true when writing the simplest possible code that could possibly work, and running a test every few seconds or minutes. Still, there are a number of problems with puts debugging, like difficulty in locating puts statements in a large output log, knowing which methods and line numbers were invoked, identifying which variables were printed, and seeing the content of structured hashes and arrays in an understandable format.
