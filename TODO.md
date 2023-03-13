@@ -4,6 +4,7 @@ Here are tasks considered for future versions. Once done, they are moved to the 
 
 ## Next
 
+- Fix issue with attempting to modify a frozen hash when passed as value for `pd` command (check if frozen)
 - Automatically print class and method name as part of the file name and line number printout
 - Automatically print `self`
 - Support displaying the date/time of the pd printout via an option (local and global)
