@@ -38,3 +38,4 @@ Here are tasks considered for future versions. Once done, they are moved to the 
 - Consider the idea of customizing print stream (e.g. stderr instead of stdout). Currently possible through setting `printer`
 - Highlight the pd being printed if multiple pds exist in the same line (perhaps by calling .red on its string reusing that from ap)
 - Have pd support running from JAR files in JRuby
+- Fix issue with using SimpleDelegator, which seems to break puts_debuggerer output for the class that inherits from it
