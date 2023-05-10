@@ -1,7 +1,6 @@
 # Puts Debuggerer (debugger-less debugging FTW)
 ## [Featured in State of the Art Rails 2021 Edition](https://github.com/DanielVartanov/state-of-the-art-rails/tree/3d538fc6ba5287ce6c1ed15ced598ce19bbe81b5)
 [![Gem Version](https://badge.fury.io/rb/puts_debuggerer.svg)](http://badge.fury.io/rb/puts_debuggerer)
-[![Build Status](https://travis-ci.org/AndyObtiva/puts_debuggerer.svg?branch=master)](https://travis-ci.org/AndyObtiva/puts_debuggerer)
 [![Coverage Status](https://coveralls.io/repos/github/AndyObtiva/puts_debuggerer/badge.svg?branch=master)](https://coveralls.io/github/AndyObtiva/puts_debuggerer?branch=master)
 [![Maintainability](https://api.codeclimate.com/v1/badges/81d8f6e046eb1b4a36f4/maintainability)](https://codeclimate.com/github/AndyObtiva/puts_debuggerer/maintainability)
 
