@@ -52,7 +52,7 @@ module PutsDebuggerer
   FORMATTER_DEFAULT = -> (data) {
       puts data[:wrapper] if data[:wrapper]
       puts data[:header] if data[:header]
-      print "#{data[:announcer]} #{data[:file]}#{':' if data[:line_number]}#{data[:line_number]}#{" (run:#{data[:run_number]})" if data[:run_number]}#{__format_pd_expression__(data[:pd_expression], data[:object])} "
+      print "#{data[:announcer]} #{data[:file]}#{':' if data[:line_number]}#{data[:line_number]} #{self.class.to_s}##{__method__}#{" (run:#{data[:run_number]})" if data[:run_number]}#{__format_pd_expression__(data[:pd_expression], data[:object])} "
       data[:object_printer].call
       puts data[:caller].map {|l| '     ' + l} unless data[:caller].to_a.empty?
       puts data[:footer] if data[:footer]

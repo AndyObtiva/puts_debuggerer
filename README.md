@@ -325,7 +325,7 @@ This is the recommended way for installing in [Rails](rubyonrails.org) apps in a
 Add the following to bundler's `Gemfile` (in Rails, you can optionally limit to the `:development` and `:test` groups).
 
 ```ruby
-gem 'puts_debuggerer', '~> 0.13.5'
+gem 'puts_debuggerer', '~> 0.14.0'
 ```
 
 Run:
@@ -351,7 +351,7 @@ end
 Or manually install and require library.
 
 ```bash
-gem install puts_debuggerer -v0.13.5
+gem install puts_debuggerer -v0.14.0
 ```
 
 ```ruby
