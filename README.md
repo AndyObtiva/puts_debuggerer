@@ -22,14 +22,14 @@ Basic Example:
 # /Users/User/trivia_app.rb      # line 1
 require 'pd'                     # line 2
 bug_or_band = 'beatles'          # line 3
-pd bug_or_band                   # line 4
+pd bug_or_band                   # line 4 (band)
 ```
 
 Output:
 
 ```bash
 [PD] /Users/User/trivia_app.rb:4
-   > pd bug_or_band                   # line 4
+   > pd bug_or_band                   # line 4 (band)
   => "beatles"
 ```
 
