@@ -14,7 +14,7 @@ describe 'PutsDebuggerer' do
       name = 'Robert'
       PutsDebuggererInvoker.dynamic_greeting(name)
       output = $stdout.string
-      expect(output).to eq("[PD] /spec/support/puts_debuggerer_invoker.rb:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
+      expect(output).to eq("[PD] /spec/support/puts_debuggerer_invoker.rb:10 in PutsDebuggererInvoker.dynamic_greeting\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
     end
   end
 end

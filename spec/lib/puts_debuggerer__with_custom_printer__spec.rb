@@ -39,14 +39,14 @@ describe 'PutsDebuggerer' do
       name = 'Robert'
       PutsDebuggererInvoker.dynamic_greeting(name)
       output = $stdout.string
-      expect(output).to eq("\n[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n\n")
+      expect(output).to eq("\n[PD] #{puts_debuggerer_invoker_file}:10 in PutsDebuggererInvoker.dynamic_greeting\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n\n")
     end
     
     it 'prints with default :puts printer (file relative to app path, line number, ruby expression, and evaluated string object)' do
       expect(PutsDebuggerer.printer).to eq(:puts)
       PutsDebuggererInvoker.static_nested_array
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:22\n   > pd [1, [2, 3]]\n  => #{expected_object_printout}\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:22 in PutsDebuggererInvoker.static_nested_array\n   > pd [1, [2, 3]]\n  => #{expected_object_printout}\n")
     end
     
     it 'prints with specified :print printer (file relative to app path, line number, ruby expression, and evaluated string object)' do
@@ -54,7 +54,7 @@ describe 'PutsDebuggerer' do
       expect(PutsDebuggerer.printer).to eq(:ap)
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
       output = $stdout.string
-      expect(output).to eq("\"[PD] #{puts_debuggerer_invoker_file}:26\\n   > pd *array_including_options\\n  => #{expected_object_printout_awesome_print}\\n\"\n")
+      expect(output).to eq("\"[PD] #{puts_debuggerer_invoker_file}:26 in PutsDebuggererInvoker.dynamic_nested_array\\n   > pd *array_including_options\\n  => #{expected_object_printout_awesome_print}\\n\"\n")
     end
     
     it 'prints with specified logger object (file relative to app path, line number, ruby expression, and evaluated string object)' do
@@ -63,14 +63,14 @@ describe 'PutsDebuggerer' do
       expect(PutsDebuggerer.printer).to eq(logger)
       PutsDebuggererInvoker.static_nested_array
       output = $stdout.string
-      expect(output).to eq("D, [2000-01-01T01:01:01.000000 ##{Process.pid}] DEBUG -- : [PD] #{puts_debuggerer_invoker_file}:22\n   > pd [1, [2, 3]]\n  => #{expected_object_printout}\n\n")
+      expect(output).to eq("D, [2000-01-01T01:01:01.000000 ##{Process.pid}] DEBUG -- : [PD] #{puts_debuggerer_invoker_file}:22 in PutsDebuggererInvoker.static_nested_array\n   > pd [1, [2, 3]]\n  => #{expected_object_printout}\n\n")
 
       $stdout = StringIO.new
       logger = Logger.new($stdout)
       PutsDebuggerer.printer = logger
       PutsDebuggererInvoker.logger_log logger, 'error', [1, [2, 3]]
       output = $stdout.string
-      expect(output).to eq("E, [2000-01-01T01:01:01.000000 ##{Process.pid}] ERROR -- : [PD] #{puts_debuggerer_invoker_file}:64\n   > logger.send(severity, *args)\n  => #{expected_object_printout}\n\n")
+      expect(output).to eq("E, [2000-01-01T01:01:01.000000 ##{Process.pid}] ERROR -- : [PD] #{puts_debuggerer_invoker_file}:64 in Array.logger_log\n   > logger.send(severity, *args)\n  => #{expected_object_printout}\n\n")
     end
     
     it 'prints with specified logging logger object (file relative to app path, line number, ruby expression, and evaluated string object)' do
@@ -80,11 +80,11 @@ describe 'PutsDebuggerer' do
       PutsDebuggerer.printer = logger
       expect(PutsDebuggerer.printer).to eq(logger)
       PutsDebuggererInvoker.static_nested_array
-      expected_output1 = "DEBUG  test : [PD] #{puts_debuggerer_invoker_file}:22\n   > pd [1, [2, 3]]\n  => #{expected_object_printout}\n\n"
+      expected_output1 = "DEBUG  test : [PD] #{puts_debuggerer_invoker_file}:22 in PutsDebuggererInvoker.static_nested_array\n   > pd [1, [2, 3]]\n  => #{expected_object_printout}\n\n"
       
       PutsDebuggererInvoker.logger_log logger, 'error', [1, [2, 3]]
       output = logger.appenders.first.sio.string
-      expected_output2 = "ERROR  test : [PD] #{puts_debuggerer_invoker_file}:64\n   > logger.send(severity, *args)\n  => #{expected_object_printout}\n\n"
+      expected_output2 = "ERROR  test : [PD] #{puts_debuggerer_invoker_file}:64 in Array.logger_log\n   > logger.send(severity, *args)\n  => #{expected_object_printout}\n\n"
       expect(output).to eq("#{expected_output1}#{expected_output2}")
     end
     
@@ -94,14 +94,14 @@ describe 'PutsDebuggerer' do
       return_value = PutsDebuggererInvoker.static_nested_array
       output = $stdout.string
       expect(output).to eq('')
-      expect(return_value).to eq("[PD] #{puts_debuggerer_invoker_file}:22\n   > pd [1, [2, 3]]\n  => #{expected_object_printout}\n")
+      expect(return_value).to eq("[PD] #{puts_debuggerer_invoker_file}:22 in PutsDebuggererInvoker.static_nested_array\n   > pd [1, [2, 3]]\n  => #{expected_object_printout}\n")
     end
     
     it 'does not print with printer as false, but returns rendered string instead of object' do
       return_value = PutsDebuggererInvoker.call_pd [1, [2, 3]], printer: false
       output = $stdout.string
       expect(output).to eq('')
-      expect(return_value).to eq("[PD] #{puts_debuggerer_invoker_file}:60\n   > pd *args\n  => #{expected_object_printout}\n")
+      expect(return_value).to eq("[PD] #{puts_debuggerer_invoker_file}:60 in PutsDebuggererInvoker.call_pd\n   > pd *args\n  => #{expected_object_printout}\n")
     end
     
     it 'raises informative error if print_engine was invalid' do
@@ -133,7 +133,7 @@ describe 'PutsDebuggerer' do
       name = 'Robert'
       PutsDebuggererInvoker.dynamic_greeting(name)
       output = $stdout.string
-      expect(output).to eq("Rails.logger.debug: [PD] /spec/support/puts_debuggerer_invoker.rb:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
+      expect(output).to eq("Rails.logger.debug: [PD] /spec/support/puts_debuggerer_invoker.rb:10 in PutsDebuggererInvoker.dynamic_greeting\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
     end
     
     it 'prints using Rails test env lambda printer' do
@@ -162,8 +162,8 @@ describe 'PutsDebuggerer' do
       PutsDebuggererInvoker.dynamic_greeting(name)
       output = $stdout.string
       expect(output).to eq(
-        "[PD] /spec/support/puts_debuggerer_invoker.rb:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n" +
-        "Rails.logger.debug: [PD] /spec/support/puts_debuggerer_invoker.rb:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n"
+        "[PD] /spec/support/puts_debuggerer_invoker.rb:10 in PutsDebuggererInvoker.dynamic_greeting\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n" +
+        "Rails.logger.debug: [PD] /spec/support/puts_debuggerer_invoker.rb:10 in PutsDebuggererInvoker.dynamic_greeting\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n"
       )
     end
   end

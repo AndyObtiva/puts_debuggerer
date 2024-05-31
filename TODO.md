@@ -6,8 +6,6 @@ Here are tasks considered for future versions. Once done, they are moved to the 
 
 - Fix issue with attempting to modify a frozen hash when passed as value for `pd` command (check if frozen)
 - When using last arg as hash for options, leave out options that are not puts_debuggerer-specific for printing out
-- Automatically print class and method name as part of the file name and line number printout
-- Automatically print `self`
 - Support displaying the date/time of the pd printout via an option (local and global)
 - Consider supporting `header: :method` to print the Class#method name as the header (consider supporting in footer/wrapper too)
 - Consider adding performance profiling to pd methods automatically, with some customization options too

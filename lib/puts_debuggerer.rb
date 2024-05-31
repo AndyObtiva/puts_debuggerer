@@ -1,3 +1,5 @@
+$LOAD_PATH.unshift(File.expand_path(__dir__)) unless $LOAD_PATH.include?(File.expand_path(__dir__))
+
 require 'puts_debuggerer/core_ext/kernel'
 require 'puts_debuggerer/core_ext/logger'
 require 'puts_debuggerer/core_ext/logging/logger'
@@ -52,7 +54,7 @@ module PutsDebuggerer
   FORMATTER_DEFAULT = -> (data) {
       puts data[:wrapper] if data[:wrapper]
       puts data[:header] if data[:header]
-      print "#{data[:announcer]} #{data[:file]}#{':' if data[:line_number]}#{data[:line_number]}#{" (run:#{data[:run_number]})" if data[:run_number]}#{__format_pd_expression__(data[:pd_expression], data[:object])} "
+      print "#{data[:announcer]} #{data[:file]}#{':' if data[:line_number]}#{data[:line_number]} in #{[data[:class], data[:method]].compact.join('.')}#{" (run:#{data[:run_number]})" if data[:run_number]}#{__format_pd_expression__(data[:pd_expression], data[:object])} "
       data[:object_printer].call
       puts data[:caller].map {|l| '     ' + l} unless data[:caller].to_a.empty?
       puts data[:footer] if data[:footer]
@@ -63,6 +65,7 @@ module PutsDebuggerer
   STACK_TRACE_CALL_LINE_NUMBER_REGEX = /\:(\d+)\:in /
   STACK_TRACE_CALL_SOURCE_FILE_REGEX = /[ ]*([^:]+)\:\d+\:in /
   STACK_TRACE_CALL_SOURCE_FILE_REGEX_OPAL = /(http[^\)]+)/
+  STACK_TRACE_CALL_METHOD_REGEX = /`([^']+)'$/
   OPTIONS = [:app_path, :source_line_count, :header, :h, :wrapper, :w, :footer, :f, :printer, :print_engine, :announcer, :formatter, :caller, :run_at]
   OPTION_ALIASES = {
     a: :announcer,

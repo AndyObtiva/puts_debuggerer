@@ -33,17 +33,17 @@ describe 'PutsDebuggerer' do
       name = 'Robert'
       PutsDebuggererInvoker.dynamic_greeting(name)
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => **\"Hello Robert\"**\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10 in PutsDebuggererInvoker.dynamic_greeting\n   > pd \"Hello \#{name}\"\n  => **\"Hello Robert\"**\n")
     end
     it 'prints file relative to app path, line number, ruby expression, and evaluated string object' do
       PutsDebuggererInvoker.static_nested_array
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:22\n   > pd [1, [2, 3]]\n  => #{expected_object_printout}\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:22 in PutsDebuggererInvoker.static_nested_array\n   > pd [1, [2, 3]]\n  => #{expected_object_printout}\n")
     end
     it 'prints file relative to app path, line number, ruby expression, and evaluated string object' do
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => #{expected_object_printout}\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26 in PutsDebuggererInvoker.dynamic_nested_array\n   > pd *array_including_options\n  => #{expected_object_printout}\n")
     end
     it 'raises informative error if print_engine was invalid' do
       expect {PutsDebuggerer.print_engine = :invalid}.to raise_error('print_engine must be a valid global method symbol (e.g. :p, :ap or :pp) or lambda/proc receiving an object arg')
@@ -51,13 +51,13 @@ describe 'PutsDebuggerer' do
     it 'supports passing extra options to print_engines like awesome_print' do
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], indent: 2)
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => #{expected_object_printout_indent2}\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26 in PutsDebuggererInvoker.dynamic_nested_array\n   > pd *array_including_options\n  => #{expected_object_printout_indent2}\n")
     end
     it 'ignores extra options with print_engines not supporting them' do
       PutsDebuggerer.print_engine = :print_meh
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], indent: 2)
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26\n   > pd *array_including_options\n  => Meh! [1, [2, 3]]\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26 in PutsDebuggererInvoker.dynamic_nested_array\n   > pd *array_including_options\n  => Meh! [1, [2, 3]]\n")
     end
   end
 

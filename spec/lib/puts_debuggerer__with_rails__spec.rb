@@ -44,7 +44,7 @@ describe 'PutsDebuggerer' do
       name = 'Robert'
       PutsDebuggererInvoker.dynamic_greeting(name)
       output = $stdout.string
-      expect(output).to eq("[PD] /spec/support/puts_debuggerer_invoker.rb:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
+      expect(output).to eq("[PD] /spec/support/puts_debuggerer_invoker.rb:10 in PutsDebuggererInvoker.dynamic_greeting\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
     end
     it 'defaults to Rails awesome_print logger in Rails app with awesome_print' do
       load "awesome_print/core_ext/kernel.rb"
@@ -52,7 +52,7 @@ describe 'PutsDebuggerer' do
       PutsDebuggererInvoker.static_nested_array
       output = $stdout.string
       expect(output).to eq(<<-MULTILINE
-[PD] /spec/support/puts_debuggerer_invoker.rb:22
+[PD] /spec/support/puts_debuggerer_invoker.rb:22 in PutsDebuggererInvoker.static_nested_array
    > pd [1, [2, 3]]
   => [
     [0] 1,

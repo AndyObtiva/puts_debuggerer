@@ -41,7 +41,7 @@ FOOTER: #{'<'*80}
       PutsDebuggererInvoker.dynamic_greeting(name)
       output = $stdout.string
       expected_caller = "     #{__FILE__}:#{__LINE__-2}:in `block (3 levels) in <top (required)>'"
-      expect(output).to eq("#{PutsDebuggerer::HEADER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n#{expected_caller}\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
+      expect(output).to eq("#{PutsDebuggerer::HEADER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:10 in PutsDebuggererInvoker.dynamic_greeting\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n#{expected_caller}\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
     end
     #TODO support formatting header, footer, and caller backtrace too
   end

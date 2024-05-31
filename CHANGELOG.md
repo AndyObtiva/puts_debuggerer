@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.0
+
+-  Support including class/method after file/line in every `pd` printout
+
 ## 0.13.5
 
 - Fix not printing source line in Rails app w/ Pry

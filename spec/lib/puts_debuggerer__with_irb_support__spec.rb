@@ -18,7 +18,10 @@ describe 'PutsDebuggerer' do
       allow_any_instance_of(Kernel).to receive(:__LINE__) {'285'}
       pd 'whoami'
       output = $stdout.string
-      expect(output).to eq("[PD] (irb):285\n   > pd 'whoami'\n  => \"whoami\"\n")
+      expect(output.lines.size).to eq(3)
+      expect(output.lines[0]).to match(/\[PD\] \(irb\):285 in RSpec::ExampleGroups::PutsDebuggerer[^:]*::IrbSupport/)
+      expect(output.lines[1]).to match(/   > pd 'whoami'/)
+      expect(output.lines[2]).to match(/  => \"whoami\"\n/)
     end
     it 'does not utilize IRB when not having conf io (like in MiniTest Rails)' do
       # senseless faking to get irb support to work (tested in IRB as working)
@@ -27,7 +30,10 @@ describe 'PutsDebuggerer' do
       allow_any_instance_of(Kernel).to receive(:__LINE__) {'285'}
       pd 'whoami'
       output = $stdout.string
-      expect(output).to eq("[PD] (irb):285\n   > \n  => \"whoami\"\n")
+      expect(output.lines.size).to eq(3)
+      expect(output.lines[0]).to match(/\[PD\] \(irb\):285 in RSpec::ExampleGroups::PutsDebuggerer[^:]*::IrbSupport/)
+      expect(output.lines[1]).to match(/   > /)
+      expect(output.lines[2]).to match(/  => \"whoami\"/)
     end
   end
 

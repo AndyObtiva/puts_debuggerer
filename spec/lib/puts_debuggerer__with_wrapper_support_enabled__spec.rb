@@ -11,28 +11,28 @@ describe 'PutsDebuggerer' do
         name = 'Robert'
         PutsDebuggererInvoker.dynamic_greeting(name)
         output = $stdout.string
-        expect(output).to eq("#{PutsDebuggerer::WRAPPER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n#{PutsDebuggerer::WRAPPER_DEFAULT}\n")
+        expect(output).to eq("#{PutsDebuggerer::WRAPPER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:10 in PutsDebuggererInvoker.dynamic_greeting\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n#{PutsDebuggerer::WRAPPER_DEFAULT}\n")
       end
       it 'disables wrapper with nil wrapper' do
         PutsDebuggerer.wrapper = nil
         name = 'Robert'
         PutsDebuggererInvoker.dynamic_greeting(name)
         output = $stdout.string
-        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
+        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10 in PutsDebuggererInvoker.dynamic_greeting\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
       end
       it 'disables wrapper with false wrapper' do
         PutsDebuggerer.wrapper = false
         name = 'Robert'
         PutsDebuggererInvoker.dynamic_greeting(name)
         output = $stdout.string
-        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
+        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10 in PutsDebuggererInvoker.dynamic_greeting\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
       end
       it 'disables wrapper with empty string wrapper' do
         PutsDebuggerer.wrapper = ''
         name = 'Robert'
         PutsDebuggererInvoker.dynamic_greeting(name)
         output = $stdout.string
-        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
+        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10 in PutsDebuggererInvoker.dynamic_greeting\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
       end
     end
     context 'as custom wrapper' do
@@ -47,7 +47,7 @@ describe 'PutsDebuggerer' do
         name = 'Robert'
         PutsDebuggererInvoker.dynamic_greeting(name)
         output = $stdout.string
-        expect(output).to eq("#{custom_wrapper}\n[PD] #{puts_debuggerer_invoker_file}:10\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n#{custom_wrapper}\n")
+        expect(output).to eq("#{custom_wrapper}\n[PD] #{puts_debuggerer_invoker_file}:10 in PutsDebuggererInvoker.dynamic_greeting\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n#{custom_wrapper}\n")
       end
     end
   end

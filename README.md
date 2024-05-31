@@ -1,5 +1,6 @@
-# Puts Debuggerer (debugger-less debugging FTW)
-## [Featured in State of the Art Rails 2021 Edition](https://github.com/DanielVartanov/state-of-the-art-rails/tree/3d538fc6ba5287ce6c1ed15ced598ce19bbe81b5)
+# Puts Debuggerer 1.0.0
+## Debugger-less Debugging FTW
+## [Featured in State of the Art Rails 2023 Edition](https://github.com/DanielVartanov/state-of-the-art-rails/tree/bd7a509f5f0ab07cebfeada779b5c73e1eaf22ed)
 [![Gem Version](https://badge.fury.io/rb/puts_debuggerer.svg)](http://badge.fury.io/rb/puts_debuggerer)
 [![Coverage Status](https://coveralls.io/repos/github/AndyObtiva/puts_debuggerer/badge.svg?branch=master)](https://coveralls.io/github/AndyObtiva/puts_debuggerer?branch=master)
 [![Maintainability](https://api.codeclimate.com/v1/badges/81d8f6e046eb1b4a36f4/maintainability)](https://codeclimate.com/github/AndyObtiva/puts_debuggerer/maintainability)
@@ -12,7 +13,7 @@ Debuggers are great! They help us troubleshoot complicated programming problems 
 
 In day-to-day test-driven development and simple app debugging though, a puts statement can be a lot quicker in revealing what is going on than halting execution completely just to inspect a single value or a few. This is certainly true when writing the simplest possible code that could possibly work, and running a test every few seconds or minutes. Still, there are a number of problems with puts debugging, like difficulty in locating puts statements in a large output log, knowing which methods and line numbers were invoked, identifying which variables were printed, and seeing the content of structured hashes and arrays in an understandable format.
 
-Enter [puts_debuggerer](https://rubygems.org/gems/puts_debuggerer)! A guilt-free puts debugging Ruby gem FTW that prints file names, line numbers, code statements, headers, footers, stack traces, and formats output nicely courtesy of [awesome_print](https://rubygems.org/gems/awesome_print) (or [amazing_print](https://github.com/amazing-print/amazing_print) if you prefer).
+Enter [puts_debuggerer](https://rubygems.org/gems/puts_debuggerer)! A guilt-free puts debugging Ruby gem FTW that prints file names, line numbers, invoked class methods, code statements, headers, footers, stack traces, and formats output nicely courtesy of [awesome_print](https://rubygems.org/gems/awesome_print) (or [amazing_print](https://github.com/amazing-print/amazing_print) if you prefer).
 
 [puts_debuggerer](https://rubygems.org/gems/puts_debuggerer) automates tips mentioned in [this blog post](https://tenderlovemaking.com/2016/02/05/i-am-a-puts-debuggerer.html) by Aaron Patterson using the `pd` method available everywhere after requiring the [gem](https://rubygems.org/gems/puts_debuggerer).
 
@@ -21,17 +22,24 @@ Basic Example:
 ```ruby
 # /Users/User/trivia_app.rb      # line 1
 require 'pd'                     # line 2
-bug_or_band = 'beatles'          # line 3
-pd bug_or_band                   # line 4 (band)
+class TriviaApp                  # line 3
+  def question                   # line 4
+    bug_or_band = 'Beatles'      # line 5
+    pd bug_or_band               # line 6
+  end                            # line 7
+end                              # line 8
+TriviaApp.new.question           # line 9
 ```
 
 Output:
 
 ```bash
-[PD] /Users/User/trivia_app.rb:4
-   > pd bug_or_band                   # line 4 (band)
-  => "beatles"
+[PD] /Users/User/trivia_app.rb:6 in TriviaApp.question
+   > pd bug_or_band               # line 6
+  => "Beatles"
 ```
+
+`pd` revealed that the variable contains the band name "Beatles" as its value not the bug "Beetle", in addition to revealing the printed code statement `pd bug_or_band`, the file name `/Users/User/trivia_app.rb`, the line number `6`, the class name `TriviaApp`, and the invoked method name `question`.
 
 ## Background
 
@@ -64,7 +72,7 @@ Which gets lost in a logging stream such as:
    (0.2ms)  COMMIT
 ```
 
-Here is a simple example using `pd` instead, which provides everything the puts statements above provide in addition to deducing the file name and line number automatically for dead easy debugging:
+Here is a simple example using `pd` instead, which provides everything the puts statements above provide in addition to deducing the file name, line number, and invoked class method automatically for dead-easy debugging:
 
 ```ruby
 pd order_total
@@ -78,7 +86,7 @@ Output:
    (0.2ms)  BEGIN
   SQL (0.3ms)  INSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"  [["key", "environment"], ["value", "development"], ["created_at", 2017-08-24 22:56:52 UTC], ["updated_at", 2017-08-24 22:56:52 UTC]]
    (0.3ms)  COMMIT
-[PD] /Users/User/ordering/order.rb:39
+[PD] /Users/User/ordering/order.rb:39 in Order.calculate_order_total
   > pd order_total
  => 195.50
   ActiveRecord::InternalMetadata Load (0.3ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
@@ -99,19 +107,19 @@ Output:
 ```
    (2.7ms)  CREATE TABLE "ar_internal_metadata" ("key" character varying PRIMARY KEY, "value" character varying, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)
   ActiveRecord::InternalMetadata Load (0.4ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
-[PD] /Users/User/ordering/order.rb:39
+[PD] /Users/User/ordering/order.rb:39 in Order.calculate_order_total
   > pd order_total
  => 195.50
    (0.2ms)  BEGIN
   SQL (0.3ms)  INSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"  [["key", "environment"], ["value", "development"], ["created_at", 2017-08-24 22:56:52 UTC], ["updated_at", 2017-08-24 22:56:52 UTC]]
    (0.3ms)  COMMIT
-[PD] /Users/User/ordering/order.rb:40
+[PD] /Users/User/ordering/order.rb:40 in Order.calculate_order_total
   > pd order_summary
  => "Pragmatic Ruby Book"
   ActiveRecord::InternalMetadata Load (0.3ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
    (0.2ms)  BEGIN
    (0.2ms)  COMMIT
-[PD] /Users/User/ordering/order.rb:41
+[PD] /Users/User/ordering/order.rb:41 in Order.calculate_order_total
   > pd order_details
  => "[Hard Cover] Pragmatic Ruby Book - English Version"
 ```
@@ -138,19 +146,19 @@ Output:
    (2.7ms)  CREATE TABLE "ar_internal_metadata" ("key" character varying PRIMARY KEY, "value" character varying, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)
   ActiveRecord::InternalMetadata Load (0.4ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-[PD] /Users/User/ordering/order.rb:39
+[PD] /Users/User/ordering/order.rb:39 in Order.calculate_order_total
   > pd order_total, header: true
  => 195.50
    (0.2ms)  BEGIN
   SQL (0.3ms)  INSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"  [["key", "environment"], ["value", "development"], ["created_at", 2017-08-24 22:56:52 UTC], ["updated_at", 2017-08-24 22:56:52 UTC]]
    (0.3ms)  COMMIT
-[PD] /Users/User/ordering/order.rb:40
+[PD] /Users/User/ordering/order.rb:40 in Order.calculate_order_total
   > pd order_summary
  => "Pragmatic Ruby Book"
   ActiveRecord::InternalMetadata Load (0.3ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
    (0.2ms)  BEGIN
    (0.2ms)  COMMIT
-[PD] /Users/User/ordering/order.rb:41
+[PD] /Users/User/ordering/order.rb:41 in Order.calculate_order_total
   > pd order_details
  => "[Hard Cover] Pragmatic Ruby Book - English Version"
 ```
@@ -177,19 +185,19 @@ Output:
    (2.7ms)  CREATE TABLE "ar_internal_metadata" ("key" character varying PRIMARY KEY, "value" character varying, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)
   ActiveRecord::InternalMetadata Load (0.4ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
 ################################################################################
-[PD] /Users/User/ordering/order.rb:39
+[PD] /Users/User/ordering/order.rb:39 in Order.calculate_order_total
   > pd order_total, header: '>'*80
  => 195.50
    (0.2ms)  BEGIN
   SQL (0.3ms)  INSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"  [["key", "environment"], ["value", "development"], ["created_at", 2017-08-24 22:56:52 UTC], ["updated_at", 2017-08-24 22:56:52 UTC]]
    (0.3ms)  COMMIT
-[PD] /Users/User/ordering/order.rb:40
+[PD] /Users/User/ordering/order.rb:40 in Order.calculate_order_total
   > pd order_summary
  => "Pragmatic Ruby Book"
   ActiveRecord::InternalMetadata Load (0.3ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
    (0.2ms)  BEGIN
    (0.2ms)  COMMIT
-[PD] /Users/User/ordering/order.rb:41
+[PD] /Users/User/ordering/order.rb:41 in Order.calculate_order_total
   > pd order_details, footer: '<'*80
  => "[Hard Cover] Pragmatic Ruby Book - English Version"
 ################################################################################
@@ -217,7 +225,7 @@ Output:
    (2.7ms)  CREATE TABLE "ar_internal_metadata" ("key" character varying PRIMARY KEY, "value" character varying, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)
   ActiveRecord::InternalMetadata Load (0.4ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
 ********************************************************************************
-[PD] /Users/User/ordering/order.rb:39
+[PD] /Users/User/ordering/order.rb:39 in Order.calculate_order_total
   > pd order_total, caller: true, wrapper: true
  => 195.50
      /Users/User/.rvm/gems/ruby-2.7.1/gems/bootsnap-1.4.6/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:23:in `require'
@@ -261,13 +269,13 @@ Output:
    (0.2ms)  BEGIN
   SQL (0.3ms)  INSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"  [["key", "environment"], ["value", "development"], ["created_at", 2017-08-24 22:56:52 UTC], ["updated_at", 2017-08-24 22:56:52 UTC]]
    (0.3ms)  COMMIT
-[PD] /Users/User/ordering/order.rb:40
+[PD] /Users/User/ordering/order.rb:40 in Order.calculate_order_total
   > pd order_summary
  => "Pragmatic Ruby Book"
   ActiveRecord::InternalMetadata Load (0.3ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
    (0.2ms)  BEGIN
    (0.2ms)  COMMIT
-[PD] /Users/User/ordering/order.rb:41
+[PD] /Users/User/ordering/order.rb:41 in Order.calculate_order_total
   > pd order_details
  => "[Hard Cover] Pragmatic Ruby Book - English Version"
 ```
@@ -292,7 +300,7 @@ pd order_details
    (2.7ms)  CREATE TABLE "ar_internal_metadata" ("key" character varying PRIMARY KEY, "value" character varying, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)
   ActiveRecord::InternalMetadata Load (0.4ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
 ********************************************************************************
-[PD] /Users/User/ordering/order.rb:39
+[PD] /Users/User/ordering/order.rb:39 in Order.calculate_order_total
   > pd order_total, caller: 3, wrapper: true
  => 195.50
      /Users/User/.rvm/gems/ruby-2.7.1/gems/bootsnap-1.4.6/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:23:in `require'
@@ -302,13 +310,13 @@ pd order_details
    (0.2ms)  BEGIN
   SQL (0.3ms)  INSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"  [["key", "environment"], ["value", "development"], ["created_at", 2017-08-24 22:56:52 UTC], ["updated_at", 2017-08-24 22:56:52 UTC]]
    (0.3ms)  COMMIT
-[PD] /Users/User/ordering/order.rb:40
+[PD] /Users/User/ordering/order.rb:40 in Order.calculate_order_total
   > pd order_summary
  => "Pragmatic Ruby Book"
   ActiveRecord::InternalMetadata Load (0.3ms)  SELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2  [["key", :environment], ["LIMIT", 1]]
    (0.2ms)  BEGIN
    (0.2ms)  COMMIT
-[PD] /Users/User/ordering/order.rb:41
+[PD] /Users/User/ordering/order.rb:41 in Order.calculate_order_total
   > pd order_details
  => "[Hard Cover] Pragmatic Ruby Book - English Version"
 ```
@@ -324,7 +332,7 @@ This is the recommended way for installing in [Rails](rubyonrails.org) apps in a
 Add the following to bundler's `Gemfile` (in Rails, you can optionally limit to the `:development` and `:test` groups).
 
 ```ruby
-gem 'puts_debuggerer', '~> 0.13.5'
+gem 'puts_debuggerer', '~> 1.0.0'
 ```
 
 Run:
@@ -350,7 +358,7 @@ end
 Or manually install and require library.
 
 ```bash
-gem install puts_debuggerer -v0.13.5
+gem install puts_debuggerer -v1.0.0
 ```
 
 ```ruby
@@ -386,13 +394,39 @@ gem "puts_debuggerer"
 
 ### Usage
 
-First, add `pd` method anywhere in your code to display details about an object or expression (if you're used to awesome_print, you're in luck! puts_debuggerer includes awesome_print as the default print engine for output).
+First, add `pd` method anywhere in your code to display details about an object or expression (if you're used to awesome_print, you're in luck! puts_debuggerer includes awesome_print (or amazing_print if preferred) as the default print engine for output).
+
+Example:
+
+```ruby
+# /Users/User/trivia_app.rb      # line 1
+require 'pd'                     # line 2
+class TriviaApp                  # line 3
+  def question                   # line 4
+    bug_or_band = 'Beatles'      # line 5
+    pd bug_or_band               # line 6
+  end                            # line 7
+end                              # line 8
+TriviaApp.new.question           # line 9
+```
+
+Output:
+
+```bash
+[PD] /Users/User/trivia_app.rb:6 in TriviaApp.question
+   > pd bug_or_band               # line 6
+  => "Beatles"
+```
+
+In addition to the object/expression output, you get to see the source file name, line number, invoked class method, and source code to help you debug and troubleshoot problems quicker (it even works in IRB).
+
+You can use `pd` at the top-level main object too, and it prings `Object.<main>` for the class/method.
 
 Example:
 
 ```ruby
 # /Users/User/finance_calculator_app/pd_test.rb           # line 1
-bug = 'beatles'                                           # line 2
+bug = 'Beetle'                                            # line 2
 pd "Show me the source of the bug: #{bug}"                # line 3
 pd "Show me the result of the calculation: #{(12.0/3.0)}" # line 4
 ```
@@ -400,19 +434,18 @@ pd "Show me the result of the calculation: #{(12.0/3.0)}" # line 4
 Output:
 
 ```bash
-[PD] /Users/User/finance_calculator_app/pd_test.rb:3
+[PD] /Users/User/finance_calculator_app/pd_test.rb:3 in Object.<main>
    > pd "Show me the source of the bug: #{bug}"
-  => "Show me the source of the bug: beatles"
-[PD] /Users/User/finance_calculator_app/pd_test.rb:4
+  => "Show me the source of the bug: Beetle"
+[PD] /Users/User/finance_calculator_app/pd_test.rb:4 in Object.<main>
    > pd "Show me the result of the calculation: #{(12.0/3.0)}"
   => "Show me the result of the calculation: 4.0"
 ```
 
-In addition to the main object/expression output, you get to see the source file name, line number, and source code to help you debug and troubleshoot problems quicker (it even works in IRB).
-
 Second, quickly locate printed lines using the Find feature (e.g. CTRL+F) by looking for:
 * [PD]
 * file:line_number
+* class.method
 * known ruby expression.
 
 Third, easily remove your ` pd ` statements via the source code Find feature once done debugging.
@@ -430,7 +463,7 @@ greeting = "Hello #{pd(name)}"                            # line 3
 Output:
 
 ```bash
-[PD] /Users/User/greeting_app/pd_test.rb:3
+[PD] /Users/User/greeting_app/pd_test.rb:3 in Object.<main>
    > greeting = "Hello #{pd(name)}"
   => "Hello Robert"
 ```
@@ -474,7 +507,7 @@ Prints out:
 
 ```bash
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-[PD] /Users/User/project/piecemeal.rb:3
+[PD] /Users/User/project/piecemeal.rb:3 in Object.<main>
    > pd data, header: true
   => [1, [2, 3]]
 ```
@@ -492,7 +525,7 @@ Prints out:
 ```bash
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
    -<[PD]>-
-   /Users/User/project/piecemeal.rb:3
+   /Users/User/project/piecemeal.rb:3 in Object.<main>
    > pd data, header: '>'*80, footer: '<'*80, announcer: "   -<[PD]>-\n  "
   => [1, [2, 3]]
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -516,16 +549,16 @@ Example:
 ```ruby
 # /Users/User/finance_calculator_app/pd_test.rb                                 # line 1
 PutsDebuggerer.app_path = File.join('/Users', 'User', 'finance_calculator_app') # line 2
-bug = 'beatles'                                                                 # line 3
+bug = 'Beetle'                                                                  # line 3
 pd "Show me the source of the bug: #{bug}"                                      # line 4
 ```
 
 Example Printout:
 
 ```bash
-[PD] /pd_test.rb:4
+[PD] /pd_test.rb:4 in Object.<main>
    > pd "Show me the source of the bug: #{bug}"
-  => "Show me the source of the bug: beatles"
+  => "Show me the source of the bug: Beetle"
 ```
 
 #### `PutsDebuggerer.header`
@@ -547,7 +580,7 @@ Prints out:
 
 ```bash
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-[PD] /Users/User/example.rb:1
+[PD] /Users/User/example.rb:1 in Object.<main>
    > pd (x=1), header: true
   => "1"
 ```
@@ -562,7 +595,7 @@ Prints out:
 
 ```bash
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-[PD] /Users/User/example.rb:1
+[PD] /Users/User/example.rb:1 in Object.<main>
    > pd (x=1), h: :t
   => "1"
 ```
@@ -579,11 +612,11 @@ Prints out:
 
 ```bash
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-[PD] /Users/User/example.rb:2
+[PD] /Users/User/example.rb:2 in Object.<main>
    > pd (x=1)
   => "1"
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-[PD] /Users/User/example.rb:3
+[PD] /Users/User/example.rb:3 in Object.<main>
    > pd (x=2)
   => "2"
 ```
@@ -606,7 +639,7 @@ pd (x=1), footer: true
 Prints out:
 
 ```bash
-[PD] /Users/User/example.rb:1
+[PD] /Users/User/example.rb:1 in Object.<main>
    > pd (x=1), footer: true
   => "1"
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -621,7 +654,7 @@ pd (x=1), f: :t
 Prints out:
 
 ```bash
-[PD] /Users/User/example.rb:1
+[PD] /Users/User/example.rb:1 in Object.<main>
    > pd (x=1), f: :t
   => "1"
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -638,11 +671,11 @@ pd (x=2)
 Prints out:
 
 ```bash
-[PD] /Users/User/example.rb:2
+[PD] /Users/User/example.rb:2 in Object.<main>
    > pd (x=1)
   => "1"
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-[PD] /Users/User/example.rb:3
+[PD] /Users/User/example.rb:3 in Object.<main>
    > pd (x=2)
   => "2"
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -667,7 +700,7 @@ Prints out:
 
 ```bash
 ********************************************************************************
-[PD] /Users/User/example.rb:1
+[PD] /Users/User/example.rb:1 in Object.<main>
    > pd x=1, wrapper: true
   => "1"
 ********************************************************************************
@@ -683,7 +716,7 @@ Prints out:
 
 ```bash
 ********************************************************************************
-[PD] /Users/User/example.rb:1
+[PD] /Users/User/example.rb:1 in Object.<main>
    > pd x=1, w: :t
   => "1"
 ********************************************************************************
@@ -701,12 +734,12 @@ Prints out:
 
 ```bash
 ********************************************************************************
-[PD] /Users/User/example.rb:2
+[PD] /Users/User/example.rb:2 in Object.<main>
    > pd (x=1)
   => "1"
 ********************************************************************************
 ********************************************************************************
-[PD] /Users/User/example.rb:3
+[PD] /Users/User/example.rb:3 in Object.<main>
    > pd (x=2)
   => "2"
 ********************************************************************************
@@ -727,7 +760,7 @@ pd (true ||
 Prints out:
 
 ```
-[PD] /Users/User/example.rb:1
+[PD] /Users/User/example.rb:1 in Object.<main>
    > pd (true ||
        false), source_line_count: 2
   => "true"
@@ -744,7 +777,7 @@ pd (true ||
 Prints out:
 
 ```
-[PD] /Users/User/example.rb:2
+[PD] /Users/User/example.rb:2 in Object.<main>
    > pd (true ||
        false), source_line_count: 2
   => "true"
@@ -798,7 +831,7 @@ Prints out the following in standard out stream only (not in log files):
 
 Print engine is similar to `printer`, except it is focused on the scope of formatting
 the data object being printed (excluding metadata such as file name, line number,
-and expression, which are handled by the `printer`).
+invoked class method, and expression, which are handled by the `printer`).
 As such, it is also a global method symbol or lambda expression.
 Examples of global methods are `:p`, `:ap`, and `:pp`.
 An example of a lambda expression is `lambda {|object| puts object.to_a.join(" | ")}`
@@ -819,7 +852,7 @@ pd array
 Prints out:
 
 ```bash
-[PD] /Users/User/example.rb:4
+[PD] /Users/User/example.rb:4 in Object.<main>
    > pd array
   => [1, [2, 3]]
 ```
@@ -840,7 +873,7 @@ Prints out:
 
 ```bash
 *** PD ***
-   /Users/User/example.rb:2
+   /Users/User/example.rb:2 in Object.<main>
    > pd x=1
   => "1"
 ```
@@ -850,15 +883,17 @@ Prints out:
 
 Formatter used in every print out
 Passed a data argument with the following keys:
-* :announcer (string)
-* :caller (array)
-* :file (string)
-* :footer (string)
-* :header (string)
-* :line_number (string)
-* :pd_expression (string)
-* :object (object)
-* :object_printer (proc)
+* `:announcer` (`String`)
+* `:caller` (`Array`)
+* `:class` (`String`)
+* `:file` (`String`)
+* `:footer` (`String`)
+* `:header` (`String`)
+* `:line_number` (`String`)
+* `:method` (`String`)
+* `:pd_expression` (`String`)
+* `:object` (`Object`)
+* `:object_printer` (`Proc`)
 
 NOTE: data for :object_printer is not a string, yet a proc that must
 be called to output value. It is a proc as it automatically handles usage
@@ -873,6 +908,8 @@ PutsDebuggerer.formatter = -> (data) {
   puts "HEADER: #{data[:header]}"
   puts "FILE: #{data[:file]}"
   puts "LINE: #{data[:line_number]}"
+  puts "CLASS: #{data[:class]}"
+  puts "METHOD: #{data[:method]}"
   puts "EXPRESSION: #{data[:pd_expression]}"
   print "PRINT OUT: "
   data[:object_printer].call
@@ -886,9 +923,11 @@ Prints out:
 
 ```bash
 -<[PD]>-
-FILE: /Users/User/example.rb
 HEADER: ********************************************************************************
+FILE: /Users/User/example.rb
 LINE: 9
+CLASS: Example
+METHOD: test
 EXPRESSION: x=1
 PRINT OUT: 1
 CALLER: #/Users/User/master_examples.rb:83:in `block (3 levels) in <top (required)>'
@@ -908,15 +947,17 @@ Example:
 
 ```ruby
 # File Name: /Users/User/sample_app/lib/sample.rb
-pd (x=1), caller: 3
+class Sample
+  pd (x=1), caller: 3
+end
 ```
 
 Prints out (fictional):
 
 ```bash
-[PD] /Users/User/sample_app/lib/sample.rb:2
+[PD] /Users/User/sample_app/lib/sample.rb:3 in Sample.<class:Sample>
     > pd x=1, caller: 3
-   => "1"
+   => 1
      /Users/User/sample_app/lib/master_samples.rb:368:in \`block (3 levels) in <top (required)>\'
      /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in \`eval\'
      /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in \`evaluate\'
@@ -927,15 +968,17 @@ Shortcut Example:
 
 ```ruby
 # File Name: /Users/User/sample_app/lib/sample.rb
-pd (x=1), c: 3
+class Sample
+  pd (x=1), c: 3
+end
 ```
 
 Prints out (fictional):
 
 ```bash
-[PD] /Users/User/sample_app/lib/sample.rb:2
+[PD] /Users/User/sample_app/lib/sample.rb:3 in Sample.<class:Sample>
     > pd x=1, caller: 3
-   => "1"
+   => 1
      /Users/User/sample_app/lib/master_samples.rb:368:in \`block (3 levels) in <top (required)>\'
      /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in \`eval\'
      /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in \`evaluate\'
@@ -947,23 +990,30 @@ Global Option Example:
 ```ruby
 # File Name: /Users/User/sample_app/lib/sample.rb
 PutsDebuggerer.caller = 3 # always print 3 lines only of the stack trace
-pd (x=1)
-pd (x=2)
+class Sample
+  class << self
+    def test
+      pd (x=1)
+      pd (x=2)
+    end
+  end
+end
+Sample.test
 ```
 
 Prints out:
 
 ```bash
-[PD] /Users/User/sample_app/lib/sample.rb:2
+[PD] /Users/User/sample_app/lib/sample.rb:6 in Sample.test
     > pd (x=1)
-   => "1"
+   => 1
      /Users/User/sample_app/lib/master_samples.rb:368:in \`block (3 levels) in <top (required)>\'
      /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in \`eval\'
      /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in \`evaluate\'
      /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/context.rb:381:in \`evaluate\'
-[PD] /Users/User/sample_app/lib/sample.rb:3
+[PD] /Users/User/sample_app/lib/sample.rb:7 in Sample.test
     > pd (x=2)
-   => "2"
+   => 2
      /Users/User/sample_app/lib/master_samples.rb:368:in \`block (3 levels) in <top (required)>\'
      /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in \`eval\'
      /Users/User/.rvm/rubies/ruby-2.4.0/lib/ruby/2.4.0/irb/workspace.rb:87:in \`evaluate\'
@@ -1135,4 +1185,4 @@ Note that it ignores the configured printer when printing exceptions as it relie
 
 [MIT](LICENSE.txt)
 
-Copyright (c) 2017-2021 - Andy Maleh.
+Copyright (c) 2017-2024 - Andy Maleh.

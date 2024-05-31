@@ -17,10 +17,10 @@ describe 'PutsDebuggerer' do
         PutsDebuggererInvoker.dynamic_greeting_run_at(name, 5)
         expect(output).to be_empty
         PutsDebuggererInvoker.dynamic_greeting_run_at(name, 5)
-        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 (run:5)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
+        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 in PutsDebuggererInvoker.dynamic_greeting_run_at (run:5)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
         $stdout = StringIO.new
         output = $stdout.string
-        PutsDebuggererInvoker.dynamic_greeting_run_at(name, 5)        
+        PutsDebuggererInvoker.dynamic_greeting_run_at(name, 5)
         expect(output).to be_empty
         $stdout = StringIO.new
         output = $stdout.string
@@ -38,7 +38,7 @@ describe 'PutsDebuggerer' do
         PutsDebuggererInvoker.dynamic_greeting_run_at(name, nil)
         PutsDebuggererInvoker.dynamic_greeting_run_at(name, nil)
         output = $stdout.string
-        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n" * 7)
+        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 in PutsDebuggererInvoker.dynamic_greeting_run_at\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n" * 7)
       end
     end
     
@@ -47,7 +47,7 @@ describe 'PutsDebuggerer' do
         name = 'Robert'
         output = $stdout.string
         PutsDebuggererInvoker.dynamic_greeting_run_at(name, [1, 3])
-        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 (run:1)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
+        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 in PutsDebuggererInvoker.dynamic_greeting_run_at (run:1)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
         
         $stdout = StringIO.new
         output = $stdout.string
@@ -57,7 +57,7 @@ describe 'PutsDebuggerer' do
         $stdout = StringIO.new
         output = $stdout.string
         PutsDebuggererInvoker.dynamic_greeting_run_at(name, [1, 3])
-        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 (run:3)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
+        expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 in PutsDebuggererInvoker.dynamic_greeting_run_at (run:3)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
         
         $stdout = StringIO.new
         output = $stdout.string
@@ -97,17 +97,17 @@ describe 'PutsDebuggerer' do
           $stdout = StringIO.new
           output = $stdout.string
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 3..5)
-          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 (run:3)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
+          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 in PutsDebuggererInvoker.dynamic_greeting_run_at (run:3)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
         
           $stdout = StringIO.new
           output = $stdout.string
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 3..5)
-          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 (run:4)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
+          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 in PutsDebuggererInvoker.dynamic_greeting_run_at (run:4)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
         
           $stdout = StringIO.new
           output = $stdout.string
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 3..5)
-          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 (run:5)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
+          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 in PutsDebuggererInvoker.dynamic_greeting_run_at (run:5)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
         
           $stdout = StringIO.new
           output = $stdout.string
@@ -136,27 +136,27 @@ describe 'PutsDebuggerer' do
           $stdout = StringIO.new
           output = $stdout.string
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 3..-1)
-          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 (run:3)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
+          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 in PutsDebuggererInvoker.dynamic_greeting_run_at (run:3)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
         
           $stdout = StringIO.new
           output = $stdout.string
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 3..-1)
-          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 (run:4)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
+          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 in PutsDebuggererInvoker.dynamic_greeting_run_at (run:4)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
         
           $stdout = StringIO.new
           output = $stdout.string
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 3..-1)
-          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 (run:5)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
+          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 in PutsDebuggererInvoker.dynamic_greeting_run_at (run:5)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
         
           $stdout = StringIO.new
           output = $stdout.string
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 3..-1)
-          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 (run:6)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
+          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 in PutsDebuggererInvoker.dynamic_greeting_run_at (run:6)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
         
           $stdout = StringIO.new
           output = $stdout.string
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 3..-1)
-          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 (run:7)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
+          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 in PutsDebuggererInvoker.dynamic_greeting_run_at (run:7)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
         end
         
         it 'skips first 2 runs, prints on the rest' do
@@ -173,27 +173,27 @@ describe 'PutsDebuggerer' do
           $stdout = StringIO.new
           output = $stdout.string
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 3...-1)
-          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 (run:3)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
+          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 in PutsDebuggererInvoker.dynamic_greeting_run_at (run:3)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
         
           $stdout = StringIO.new
           output = $stdout.string
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 3...-1)
-          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 (run:4)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
+          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 in PutsDebuggererInvoker.dynamic_greeting_run_at (run:4)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
         
           $stdout = StringIO.new
           output = $stdout.string
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 3...-1)
-          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 (run:5)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
+          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 in PutsDebuggererInvoker.dynamic_greeting_run_at (run:5)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
         
           $stdout = StringIO.new
           output = $stdout.string
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 3...-1)
-          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 (run:6)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
+          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 in PutsDebuggererInvoker.dynamic_greeting_run_at (run:6)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
         
           $stdout = StringIO.new
           output = $stdout.string
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 3...-1)
-          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 (run:7)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
+          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 in PutsDebuggererInvoker.dynamic_greeting_run_at (run:7)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
         end
       end
       
@@ -217,17 +217,17 @@ describe 'PutsDebuggerer' do
           $stdout = StringIO.new
           output = $stdout.string
           PutsDebuggererInvoker.dynamic_greeting(name)
-          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10 (run:3)\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
+          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10 in PutsDebuggererInvoker.dynamic_greeting (run:3)\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
         
           $stdout = StringIO.new
           output = $stdout.string
           PutsDebuggererInvoker.dynamic_greeting(name)
-          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10 (run:4)\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
+          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10 in PutsDebuggererInvoker.dynamic_greeting (run:4)\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
         
           $stdout = StringIO.new
           output = $stdout.string
           PutsDebuggererInvoker.dynamic_greeting(name)
-          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10 (run:5)\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
+          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10 in PutsDebuggererInvoker.dynamic_greeting (run:5)\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
         
           $stdout = StringIO.new
           output = $stdout.string
@@ -246,12 +246,12 @@ describe 'PutsDebuggerer' do
           name = 'Robert'
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 1..2)
           output = $stdout.string
-          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 (run:1)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
+          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 in PutsDebuggererInvoker.dynamic_greeting_run_at (run:1)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
         
           $stdout = StringIO.new
           output = $stdout.string
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 1..2)
-          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 (run:2)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
+          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 in PutsDebuggererInvoker.dynamic_greeting_run_at (run:2)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
         
           $stdout = StringIO.new
           output = $stdout.string
@@ -264,12 +264,12 @@ describe 'PutsDebuggerer' do
           $stdout = StringIO.new
           output = $stdout.string
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 1..2)
-          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 (run:1)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
+          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 in PutsDebuggererInvoker.dynamic_greeting_run_at (run:1)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
         
           $stdout = StringIO.new
           output = $stdout.string
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 1..2)
-          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 (run:2)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
+          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 in PutsDebuggererInvoker.dynamic_greeting_run_at (run:2)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
         
           $stdout = StringIO.new
           output = $stdout.string
@@ -281,12 +281,12 @@ describe 'PutsDebuggerer' do
           name = 'Robert'
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 1..2)
           output = $stdout.string
-          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 (run:1)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
+          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 in PutsDebuggererInvoker.dynamic_greeting_run_at (run:1)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
         
           $stdout = StringIO.new
           output = $stdout.string
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 1..2)
-          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 (run:2)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
+          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 in PutsDebuggererInvoker.dynamic_greeting_run_at (run:2)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
         
           $stdout = StringIO.new
           output = $stdout.string
@@ -299,12 +299,12 @@ describe 'PutsDebuggerer' do
           $stdout = StringIO.new
           output = $stdout.string
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 1..2)
-          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 (run:1)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
+          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 in PutsDebuggererInvoker.dynamic_greeting_run_at (run:1)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
         
           $stdout = StringIO.new
           output = $stdout.string
           PutsDebuggererInvoker.dynamic_greeting_run_at(name, 1..2)
-          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 (run:2)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
+          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:39 in PutsDebuggererInvoker.dynamic_greeting_run_at (run:2)\n   > pd \"Hello \#{name}\", run_at: run_at\n  => \"Hello Robert\"\n")
         
           $stdout = StringIO.new
           output = $stdout.string
@@ -317,12 +317,12 @@ describe 'PutsDebuggerer' do
           name = 'Robert'
           PutsDebuggererInvoker.dynamic_greeting(name)
           output = $stdout.string
-          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10 (run:1)\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
+          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10 in PutsDebuggererInvoker.dynamic_greeting (run:1)\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
         
           $stdout = StringIO.new
           output = $stdout.string
           PutsDebuggererInvoker.dynamic_greeting(name)
-          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10 (run:2)\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
+          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10 in PutsDebuggererInvoker.dynamic_greeting (run:2)\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
         
           $stdout = StringIO.new
           output = $stdout.string
@@ -335,12 +335,12 @@ describe 'PutsDebuggerer' do
           $stdout = StringIO.new
           output = $stdout.string
           PutsDebuggererInvoker.dynamic_greeting(name)
-          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10 (run:1)\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
+          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10 in PutsDebuggererInvoker.dynamic_greeting (run:1)\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
         
           $stdout = StringIO.new
           output = $stdout.string
           PutsDebuggererInvoker.dynamic_greeting(name)
-          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10 (run:2)\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
+          expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:10 in PutsDebuggererInvoker.dynamic_greeting (run:2)\n   > pd \"Hello \#{name}\"\n  => \"Hello Robert\"\n")
         
           $stdout = StringIO.new
           output = $stdout.string

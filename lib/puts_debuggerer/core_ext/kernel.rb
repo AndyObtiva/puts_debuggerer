@@ -143,6 +143,12 @@ module Kernel
     caller[caller_depth] && caller[caller_depth][regex, 1]
   end
   
+  # Provides caller method starting 1 level above caller of
+  # this method.
+  def __caller_method__(caller_depth=0)
+    regex = PutsDebuggerer::STACK_TRACE_CALL_METHOD_REGEX
+    caller[caller_depth] && caller[caller_depth][regex, 1]
+  end
   
   # Provides caller source line starting 1 level above caller of
   # this method.
@@ -189,6 +195,8 @@ module Kernel
     pd_data = {
       announcer: PutsDebuggerer.announcer,
       file: __caller_file__(depth)&.sub(PutsDebuggerer.app_path.to_s, ''),
+      class: self.is_a?(Module) ? self : self.class,
+      method: __caller_method__(depth)&.sub(PutsDebuggerer.app_path.to_s, ''),
       line_number: __caller_line_number__(depth),
       pd_expression: __caller_pd_expression__(depth, source_line_count),
       run_number: run_number,
