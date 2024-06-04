@@ -5,8 +5,10 @@ Here are tasks considered for future versions. Once done, they are moved to the 
 ## Next
 
 - Fix issue with attempting to modify a frozen hash when passed as value for `pd` command (check if frozen)
+- Enable easier setting of the `pd` log level for a Rails application than requiring a `PutsDebuggerer.printer` lambda by offering the option `PutsDebuggerer.log_level`.
 - When using last arg as hash for options, leave out options that are not puts_debuggerer-specific for printing out
 - Support displaying the date/time of the pd printout via an option (local and global)
+- Display class#method for instance methods and class::method for class methods
 - Consider supporting `header: :method` to print the Class#method name as the header (consider supporting in footer/wrapper too)
 - Consider adding performance profiling to pd methods automatically, with some customization options too
 - Fix issue with no printing code in bigger rails apps filled with other gems (perhaps there is some conflict?)
@@ -16,7 +18,7 @@ Here are tasks considered for future versions. Once done, they are moved to the 
 - Have `caller` printing in Glimmer DSL for Opal print one statement per line
 - Support header: 30 to customize the length of the header (and do the same for footer and wrapper)
 - Support header: '#' to customize the character of the header (and do the same for footer and wrapper)
-- h: true and f: true alternatives for header and footer (as well as other ideas to shorten)
+- :h and :f alternatives for header and footer (as well as other ideas to shorten)
 - Support `methods: true` to print unique methods not on Object or `methods: :all`, automatically sorted
 - Consider making header use >>> and footer <<< instead of * for better findability.
 - Provide option to set a logger as printer without hooking formatter unto logger

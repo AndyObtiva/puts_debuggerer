@@ -11,9 +11,9 @@ If you like [Awesome_Print](https://rubygems.org/gems/awesome_print) (or [Amazin
 
 Debuggers are great! They help us troubleshoot complicated programming problems by inspecting values produced by code, line by line. They are invaluable when trying to understand what is going on in a large application composed of thousands or millions of lines of code.
 
-In day-to-day test-driven development and simple app debugging though, a puts statement can be a lot quicker in revealing what is going on than halting execution completely just to inspect a single value or a few. This is certainly true when writing the simplest possible code that could possibly work, and running a test every few seconds or minutes. Still, there are a number of problems with puts debugging, like difficulty in locating puts statements in a large output log, knowing which methods and line numbers were invoked, identifying which variables were printed, and seeing the content of structured hashes and arrays in an understandable format.
+In day-to-day test-driven development and simple app debugging though, a puts statement can be a lot quicker in revealing what is going on than halting execution completely just to inspect a single value or a few. This is certainly true when writing the simplest possible code that could possibly work, and running a test every few seconds or minutes. Still, there are a number of problems with puts debugging, like difficulty in locating puts statements in a large output log, knowing which files, line numbers, and methods the puts statements were invoked from, identifying which variables were printed, and seeing the content of structured hashes and arrays in an understandable format.
 
-Enter [puts_debuggerer](https://rubygems.org/gems/puts_debuggerer)! A guilt-free puts debugging Ruby gem FTW that prints file names, line numbers, invoked class methods, code statements, headers, footers, stack traces, and formats output nicely courtesy of [awesome_print](https://rubygems.org/gems/awesome_print) (or [amazing_print](https://github.com/amazing-print/amazing_print) if you prefer).
+Enter [puts_debuggerer](https://rubygems.org/gems/puts_debuggerer)! A guilt-free puts debugging Ruby gem FTW that prints file names, line numbers, class names, method names, code statements, headers, footers, and stack traces; and formats output nicely courtesy of [awesome_print](https://rubygems.org/gems/awesome_print) (or [amazing_print](https://github.com/amazing-print/amazing_print) if you prefer).
 
 [puts_debuggerer](https://rubygems.org/gems/puts_debuggerer) automates tips mentioned in [this blog post](https://tenderlovemaking.com/2016/02/05/i-am-a-puts-debuggerer.html) by Aaron Patterson using the `pd` method available everywhere after requiring the [gem](https://rubygems.org/gems/puts_debuggerer).
 
@@ -39,7 +39,7 @@ Output:
   => "Beatles"
 ```
 
-`pd` revealed that the variable contains the band name "Beatles" as its value not the bug "Beetle", in addition to revealing the printed code statement `pd bug_or_band`, the file name `/Users/User/trivia_app.rb`, the line number `6`, the class name `TriviaApp`, and the invoked method name `question`.
+`pd` revealed that the variable contains the band name "Beatles" not the bug "Beetle", in addition to revealing the printed code statement `pd bug_or_band`, the file name `/Users/User/trivia_app.rb`, the line number `6`, the class name `TriviaApp`, and the method name `question`.
 
 ## Background
 
@@ -72,7 +72,7 @@ Which gets lost in a logging stream such as:
    (0.2ms)  COMMIT
 ```
 
-Here is a simple example using `pd` instead, which provides everything the puts statements above provide in addition to deducing the file name, line number, and invoked class method automatically for dead-easy debugging:
+Here is a simple example using `pd` instead, which provides everything the puts statements above provide in addition to deducing the file name, line number, class name, and method name automatically for dead-easy debugging:
 
 ```ruby
 pd order_total
@@ -353,6 +353,15 @@ unless Rails.env.development? || Rails.env.test?
 end
 ```
 
+The Rails `config.log_level` is assumed to be `:debug`. If you have it set to something else like `:info`, then you need to update `PutsDebuggerer.printer` to print at a different log level (e.g. `:info`) by adding the following code to the initializer above (this code is a modification of the default at `PutsDebuggerer::PRINTER_RAILS`):
+
+```ruby
+PutsDebuggerer.printer = lambda do |output| 
+  puts output if Rails.env.test?
+  Rails.logger.info(output)  
+end
+```
+
 ### Option 2: Manual
 
 Or manually install and require library.
@@ -418,7 +427,7 @@ Output:
   => "Beatles"
 ```
 
-In addition to the object/expression output, you get to see the source file name, line number, invoked class method, and source code to help you debug and troubleshoot problems quicker (it even works in IRB).
+In addition to the object/expression output, you get to see the source file name, line number, class name, method name, and source code to help you debug and troubleshoot problems quicker (it even works in IRB).
 
 You can use `pd` at the top-level main object too, and it prings `Object.<main>` for the class/method.
 
@@ -831,7 +840,7 @@ Prints out the following in standard out stream only (not in log files):
 
 Print engine is similar to `printer`, except it is focused on the scope of formatting
 the data object being printed (excluding metadata such as file name, line number,
-invoked class method, and expression, which are handled by the `printer`).
+class name, method name, and expression, which are handled by the `printer`).
 As such, it is also a global method symbol or lambda expression.
 Examples of global methods are `:p`, `:ap`, and `:pp`.
 An example of a lambda expression is `lambda {|object| puts object.to_a.join(" | ")}`
