@@ -17,7 +17,7 @@ describe 'PutsDebuggerer' do
     it 'supports enabling header per single puts' do
       PutsDebuggererInvoker.dynamic_nested_array(header: true) # support options alone
       output = $stdout.string
-      expect(output).to eq("#{PutsDebuggerer::HEADER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:26 in PutsDebuggererInvoker.dynamic_nested_array\n   > pd *array_including_options\n  => {}\n")
+      expect(output).to eq("#{PutsDebuggerer::HEADER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:26 in PutsDebuggererInvoker.dynamic_nested_array\n   > pd *array_including_options\n  => {:header=>true}\n")
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], header: true)
       output = $stdout.string
@@ -25,7 +25,7 @@ describe 'PutsDebuggerer' do
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array(name: 'Sean', header: true) # support hash including options
       output = $stdout.string
-      expect(output).to eq("#{PutsDebuggerer::HEADER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:26 in PutsDebuggererInvoker.dynamic_nested_array\n   > pd *array_including_options\n  => {:name=>\"Sean\"}\n")
+      expect(output).to eq("#{PutsDebuggerer::HEADER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:26 in PutsDebuggererInvoker.dynamic_nested_array\n   > pd *array_including_options\n  => {:name=>\"Sean\", :header=>true}\n")
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
       output = $stdout.string
@@ -34,7 +34,7 @@ describe 'PutsDebuggerer' do
     it 'supports enabling header per single puts using shortcut syntax' do
       PutsDebuggererInvoker.dynamic_nested_array(h: :t) # support options alone
       output = $stdout.string
-      expect(output).to eq("#{PutsDebuggerer::HEADER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:26 in PutsDebuggererInvoker.dynamic_nested_array\n   > pd *array_including_options\n  => {}\n")
+      expect(output).to eq("#{PutsDebuggerer::HEADER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:26 in PutsDebuggererInvoker.dynamic_nested_array\n   > pd *array_including_options\n  => {:h=>:t}\n")
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], h: :t)
       output = $stdout.string
@@ -42,7 +42,7 @@ describe 'PutsDebuggerer' do
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array(name: 'Sean', h: :t) # support hash including options
       output = $stdout.string
-      expect(output).to eq("#{PutsDebuggerer::HEADER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:26 in PutsDebuggererInvoker.dynamic_nested_array\n   > pd *array_including_options\n  => {:name=>\"Sean\"}\n")
+      expect(output).to eq("#{PutsDebuggerer::HEADER_DEFAULT}\n[PD] #{puts_debuggerer_invoker_file}:26 in PutsDebuggererInvoker.dynamic_nested_array\n   > pd *array_including_options\n  => {:name=>\"Sean\", :h=>:t}\n")
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
       output = $stdout.string
@@ -51,7 +51,7 @@ describe 'PutsDebuggerer' do
     it 'supports enabling footer per single puts' do
       PutsDebuggererInvoker.dynamic_nested_array(footer: true) # support options alone
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26 in PutsDebuggererInvoker.dynamic_nested_array\n   > pd *array_including_options\n  => {}\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26 in PutsDebuggererInvoker.dynamic_nested_array\n   > pd *array_including_options\n  => {:footer=>true}\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], footer: true)
       output = $stdout.string
@@ -59,7 +59,7 @@ describe 'PutsDebuggerer' do
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array(name: 'Sean', footer: true) # support hash including options
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26 in PutsDebuggererInvoker.dynamic_nested_array\n   > pd *array_including_options\n  => {:name=>\"Sean\"}\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26 in PutsDebuggererInvoker.dynamic_nested_array\n   > pd *array_including_options\n  => {:name=>\"Sean\", :footer=>true}\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
       output = $stdout.string
@@ -68,7 +68,7 @@ describe 'PutsDebuggerer' do
     it 'supports enabling footer per single puts using shortcut syntax' do
       PutsDebuggererInvoker.dynamic_nested_array(f: :t) # support options alone
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26 in PutsDebuggererInvoker.dynamic_nested_array\n   > pd *array_including_options\n  => {}\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26 in PutsDebuggererInvoker.dynamic_nested_array\n   > pd *array_including_options\n  => {:f=>:t}\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]], f: :t)
       output = $stdout.string
@@ -76,7 +76,7 @@ describe 'PutsDebuggerer' do
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array(name: 'Sean', f: :t) # support hash including options
       output = $stdout.string
-      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26 in PutsDebuggererInvoker.dynamic_nested_array\n   > pd *array_including_options\n  => {:name=>\"Sean\"}\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
+      expect(output).to eq("[PD] #{puts_debuggerer_invoker_file}:26 in PutsDebuggererInvoker.dynamic_nested_array\n   > pd *array_including_options\n  => {:name=>\"Sean\", :f=>:t}\n#{PutsDebuggerer::FOOTER_DEFAULT}\n")
       $stdout = StringIO.new
       PutsDebuggererInvoker.dynamic_nested_array([1, [2, 3]])
       output = $stdout.string

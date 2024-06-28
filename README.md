@@ -1,4 +1,4 @@
-# Puts Debuggerer 1.0.0
+# Puts Debuggerer 1.0.1
 ## Debugger-less Debugging FTW
 ## [Featured in State of the Art Rails 2023 Edition](https://github.com/DanielVartanov/state-of-the-art-rails/tree/bd7a509f5f0ab07cebfeada779b5c73e1eaf22ed)
 [![Gem Version](https://badge.fury.io/rb/puts_debuggerer.svg)](http://badge.fury.io/rb/puts_debuggerer)
@@ -332,7 +332,7 @@ This is the recommended way for installing in [Rails](rubyonrails.org) apps in a
 Add the following to bundler's `Gemfile` (in Rails, you can optionally limit to the `:development` and `:test` groups).
 
 ```ruby
-gem 'puts_debuggerer', '~> 1.0.0'
+gem 'puts_debuggerer', '~> 1.0.1'
 ```
 
 Run:
@@ -367,7 +367,7 @@ end
 Or manually install and require library.
 
 ```bash
-gem install puts_debuggerer -v1.0.0
+gem install puts_debuggerer -v1.0.1
 ```
 
 ```ruby

@@ -484,9 +484,7 @@ module PutsDebuggerer
         convert_options(objects.delete_at(-1))
       elsif objects.size == 1 && objects.first.is_a?(Hash)
         hash = objects.first
-        convert_options(hash.slice(*OPTIONS).tap do
-          hash.delete_if {|option| OPTIONS.include?(option)}
-        end)
+        convert_options(hash.slice(*OPTIONS))
       end
     end
     

@@ -4,8 +4,6 @@ Here are tasks considered for future versions. Once done, they are moved to the 
 
 ## Next
 
-- Fix issue with attempting to modify a frozen hash when passed as value for `pd` command (check if frozen)
-- Enable easier setting of the `pd` log level for a Rails application than requiring a `PutsDebuggerer.printer` lambda by offering the option `PutsDebuggerer.log_level`.
 - When using last arg as hash for options, leave out options that are not puts_debuggerer-specific for printing out
 - Support displaying the date/time of the pd printout via an option (local and global)
 - Display class#method for instance methods and class::method for class methods
@@ -39,3 +37,4 @@ Here are tasks considered for future versions. Once done, they are moved to the 
 - Highlight the pd being printed if multiple pds exist in the same line (perhaps by calling .red on its string reusing that from ap)
 - Have pd support running from JAR files in JRuby
 - Fix issue with using SimpleDelegator, which seems to break puts_debuggerer output for the class that inherits from it
+- Enable easier setting of the `pd` log level for a Rails application than requiring a `PutsDebuggerer.printer` lambda by offering the option `PutsDebuggerer.log_level`.

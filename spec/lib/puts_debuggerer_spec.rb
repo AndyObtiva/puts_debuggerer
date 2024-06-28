@@ -67,6 +67,15 @@ describe 'PutsDebuggerer' do
     output = $stdout.string
     expect(output).to eq("")
   end
+  
+  it 'prints frozen hash' do
+    hash = {a: 1, b: 2, c: 3, h: :t, f: :t}.freeze
+    result = PutsDebuggererInvoker.call_pd(hash)
+    # TODO it is odd we are getting the PutsDebuggerInvoker file, but the Array class. See if we should fix something here.
+    expect(result).to eq(hash)
+    output = $stdout.string
+    expect(output).to eq(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n[PD] /Users/andymaleh/code/puts_debuggerer/spec/support/puts_debuggerer_invoker.rb:60 in PutsDebuggererInvoker.call_pd\n   > pd *args\n  => {:a=>1, :b=>2, :c=>3, :h=>:t, :f=>:t}\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n")
+  end
 
   context 'look into puts debuggerer blog post by tenderlove for other goodies to add'
   context 'deadlock detection support'

@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.0.1
+
+- Fix issue with deleting `pd` options from a `Hash` if it was the only argument breaking the guarantee that `pd` never modifies the printed object, which could cause bugs.
+- Fix issue with attempting to modify a frozen `Hash` when passing a frozen `Hash` as the only argument for `pd` method
+
 ## 1.0.0
 
 -  Support including class/method after file/line in every `pd` printout
